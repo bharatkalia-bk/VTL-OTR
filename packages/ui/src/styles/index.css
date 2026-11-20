@@ -1,0 +1,25 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/noto-sans-devanagari/400.css';
+@import '@fontsource/noto-sans-devanagari/600.css';
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { color-scheme: light; -webkit-text-size-adjust: 100%; }
+  body { @apply bg-surface text-ink font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-heading text-navy; letter-spacing: -0.01em; }
+  :lang(hi) body, :lang(hi) h1, :lang(hi) h2, :lang(hi) h3 { font-family: 'Noto Sans Devanagari', Inter, sans-serif; }
+  :focus-visible { outline: 3px solid rgb(var(--vtl-orange-rgb)); outline-offset: 2px; }
+  .tabular, .tabular-nums { font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+}
+@layer components {
+  .sr-only-focusable:not(:focus) { @apply sr-only; }
+}

@@ -1,0 +1,35 @@
+{{> header title="Application Form" subtitle=exam.title}}
+<div class="idbox">
+  <div><div class="label">Application No.</div><div class="value num">{{applicationNo}}</div></div>
+  <div style="text-align:right"><div class="label">OTR ID</div><div class="num" style="font-weight:700">{{otrId}}</div><div class="label" style="margin-top:4px">Status <span class="badge {{statusTone}}">{{status}}</span></div></div>
+</div>
+<div class="row" style="margin-top:6px">
+  <div class="grow">
+    <div class="band">Examination</div>
+    <div class="box"><table class="kv">
+      <tr><td class="k">Examination</td><td class="v">{{exam.title}}</td></tr>
+      <tr><td class="k">Notification No.</td><td class="v num">{{exam.notificationNo}}</td></tr>
+      <tr><td class="k">Conducting body</td><td class="v">{{exam.body}}</td></tr>
+      <tr><td class="k">Post preferences</td><td class="v">{{#each posts}}{{inc @index}}. {{this}}<br>{{/each}}</td></tr>
+      <tr><td class="k">Centre city preferences</td><td class="v">{{#each cities}}{{inc @index}}. {{this}}<br>{{/each}}</td></tr>
+      <tr><td class="k">Fee</td><td class="v num">Rs {{fee}} ({{feeRule}})</td></tr>
+      <tr><td class="k">Submitted on</td><td class="v num">{{submittedAt}}</td></tr>
+    </table></div>
+  </div>
+  <div class="media" style="padding-top:34px"><img class="photo" src="{{photo}}" alt="Photograph"><img class="sig" src="{{signature}}" alt="Signature"></div>
+</div>
+<div class="band">Candidate details (from OTR)</div>
+<div class="box"><table class="kv">
+  <tr><td class="k">Name</td><td class="v">{{p.fullName}}</td></tr>
+  <tr><td class="k">Father's / Mother's name</td><td class="v">{{p.fatherName}} / {{p.motherName}}</td></tr>
+  <tr><td class="k">Date of birth · Gender</td><td class="v num">{{p.dob}} · {{p.gender}}</td></tr>
+  <tr><td class="k">Category</td><td class="v">{{c.category}}{{#if c.pwd}} · PwD{{/if}}{{#if c.exServiceman}} · Ex-serviceman{{/if}}</td></tr>
+  <tr><td class="k">Address</td><td class="v">{{addrPermanent}}</td></tr>
+</table></div>
+{{#if custom.length}}<div class="band">Exam-specific details</div>
+<div class="box"><table class="kv">{{#each custom}}<tr><td class="k">{{label}}</td><td class="v">{{value}}</td></tr>{{/each}}</table></div>{{/if}}
+<div class="band">Eligibility check</div>
+<div class="box"><table class="grid"><tr><th>Criterion</th><th>Result</th><th>Detail</th></tr>
+{{#each eligibility}}<tr><td>{{code}}</td><td><span class="badge {{#if passed}}ok{{else}}bad{{/if}}">{{#if passed}}Eligible{{else}}Not eligible{{/if}}</span></td><td>{{detail}}</td></tr>{{/each}}
+</table></div>
+{{> footer}}

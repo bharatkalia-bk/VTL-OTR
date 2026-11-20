@@ -1,0 +1,710 @@
+// VTL OTR data model.
+// Fields suffixed `Enc` hold AES-256-GCM ciphertext (see src/security/field-crypto.ts).
+// Fields suffixed `Idx` hold HMAC-SHA256 blind indexes for exact-match lookup without plaintext.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CandidateStatus {
+  DRAFT
+  SUBMITTED
+  BLOCKED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  TRANSGENDER
+}
+
+enum Category {
+  GEN
+  EWS
+  OBC_NCL
+  SC
+  ST
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  EXAM_ADMIN
+  VERIFIER
+  HELPDESK_AGENT
+  AUDITOR
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MediaKind {
+  PHOTO
+  SIGNATURE
+}
+
+enum ExamStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  PAYMENT_PENDING
+  PAID
+  FEE_EXEMPT
+  REJECTED
+  WITHDRAWN
+}
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  SUCCESS
+  FAILED
+  REFUND_MARKED
+}
+
+enum CorrectionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum FlagStatus {
+  OPEN
+  CLEARED
+  CONFIRMED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum JobStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FAILED
+}
+
+// ───────────────────────── Candidates ─────────────────────────
+
+model Candidate {
+  id              String          @id @default(uuid()) @db.Uuid
+  otrId           String?         @unique
+  otrSeq          Int?
+  status          CandidateStatus @default(DRAFT)
+  mobileEnc       String
+  mobileIdx       String          @unique
+  emailEnc        String
+  emailIdx        String          @unique
+  mobileVerifiedAt DateTime?
+  emailVerifiedAt DateTime?
+  passwordHash    String?
+  failedLogins    Int             @default(0)
+  lockedUntil     DateTime?
+  language        String          @default("en")
+  /// HMAC of normalised (name + DOB + father's name), for duplicate-identity detection
+  dedupeKey       String
+  /// HMAC tokens of normalised name parts, for admin search without plaintext
+  nameTokens      String[]
+  blockedReason   String?
+  submittedAt     DateTime?
+  lastLoginAt     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  profile         CandidateProfile?
+  education       Education[]
+  documents       Document[]
+  media           MediaAsset[]
+  photoAttempts   PhotoAttempt[]
+  consents        Consent[]
+  corrections     CorrectionRequest[]
+  applications    Application[]
+  tickets         HelpdeskTicket[]
+  notifications   Notification[]
+
+  @@index([dedupeKey])
+  @@index([status, createdAt])
+  @@index([nameTokens], type: Gin)
+}
+
+model CandidateProfile {
+  candidateId          String    @id @db.Uuid
+  candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  fullNameEnc          String?
+  fatherNameEnc        String?
+  motherNameEnc        String?
+  dobEnc               String?
+  gender               Gender?
+  nationality          String?
+  maritalStatus        String?
+  idMark1Enc           String?
+  idMark2Enc           String?
+  category             Category?
+  pwd                  Boolean   @default(false)
+  pwdType              String?
+  pwdPercent           Int?
+  exServiceman         Boolean   @default(false)
+  serviceYears         Int?
+  domicileStateCode    String?
+  categoryCertDocId    String?   @db.Uuid
+  pwdCertDocId         String?   @db.Uuid
+  exsmCertDocId        String?   @db.Uuid
+  /// encrypted JSON of permanent / correspondence address
+  permanentAddressEnc  String?
+  correspondenceAddressEnc String?
+  sameAddress          Boolean   @default(true)
+  /// non-sensitive geography kept in clear for reports
+  stateCode            String?
+  districtId           Int?
+  declarationAt        DateTime?
+  declarationPlace     String?
+  completedSteps       String[]
+  aadhaarMasked        String?
+  aadhaarRefToken      String?
+  aadhaarVerifiedAt    DateTime?
+  apaarIdEnc           String?
+  digilockerLinkedAt   DateTime?
+  updatedAt            DateTime  @updatedAt
+
+  @@index([stateCode])
+  @@index([category])
+}
+
+model Education {
+  id                String    @id @default(uuid()) @db.Uuid
+  candidateId       String    @db.Uuid
+  candidate         Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  level             String
+  qualificationName String
+  boardOrUniversity String
+  yearOfPassing     Int
+  status            String
+  resultType        String
+  marks             Float
+  maxMarks          Float?
+  cgpaScale         Float?
+  rollNoEnc         String?
+  documentId        String?   @db.Uuid
+  sortOrder         Int       @default(0)
+
+  @@index([candidateId])
+}
+
+model Document {
+  id                 String             @id @default(uuid()) @db.Uuid
+  candidateId        String?            @db.Uuid
+  candidate          Candidate?         @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  kind               String
+  objectKey          String             @unique
+  fileName           String
+  mime               String
+  sizeBytes          Int
+  sha256             String
+  source             String             @default("UPLOAD")
+  verificationStatus VerificationStatus @default(PENDING)
+  verifiedById       String?            @db.Uuid
+  verifiedAt         DateTime?
+  rejectionReason    String?
+  createdAt          DateTime           @default(now())
+
+  @@index([candidateId, kind])
+  @@index([verificationStatus, createdAt])
+}
+
+model MediaAsset {
+  id             String    @id @default(uuid()) @db.Uuid
+  candidateId    String    @db.Uuid
+  candidate      Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  kind           MediaKind
+  objectKey      String    @unique
+  sha256         String
+  width          Int
+  height         Int
+  sizeBytes      Int
+  /// LIVE (photo), DRAWN or UPLOADED (signature)
+  method         String
+  capturedAt     DateTime?
+  userAgent      String?
+  livenessPassed Boolean?
+  livenessMethod String?
+  scores         Json?
+  attemptNo      Int?
+  isCurrent      Boolean   @default(true)
+  duplicateFlag  Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+
+  @@index([sha256])
+  @@index([candidateId, kind, isCurrent])
+}
+
+model PhotoAttempt {
+  id          String    @id @default(uuid()) @db.Uuid
+  candidateId String    @db.Uuid
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  attemptNo   Int
+  scores      Json
+  liveness    Json
+  accepted    Boolean   @default(false)
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  @@index([candidateId])
+}
+
+model DuplicateFlag {
+  id           String     @id @default(uuid()) @db.Uuid
+  /// PHOTO_HASH or IDENTITY
+  type         String
+  key          String
+  candidateIds String[]
+  status       FlagStatus @default(OPEN)
+  notes        String?
+  reviewedById String?    @db.Uuid
+  reviewedAt   DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([type, key])
+  @@index([status, createdAt])
+}
+
+model Consent {
+  id            String    @id @default(uuid()) @db.Uuid
+  candidateId   String    @db.Uuid
+  candidate     Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  purposeCode   String
+  noticeVersion String
+  language      String
+  grantedAt     DateTime  @default(now())
+  withdrawnAt   DateTime?
+  ip            String?
+  userAgent     String?
+
+  @@index([candidateId])
+}
+
+model CorrectionRequest {
+  id                String           @id @default(uuid()) @db.Uuid
+  candidateId       String           @db.Uuid
+  candidate         Candidate        @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  field             String
+  currentValueEnc   String?
+  requestedValueEnc String
+  reason            String
+  documentId        String?          @db.Uuid
+  status            CorrectionStatus @default(PENDING)
+  decidedById       String?          @db.Uuid
+  decisionReason    String?
+  decidedAt         DateTime?
+  createdAt         DateTime         @default(now())
+
+  @@index([status, createdAt])
+  @@index([candidateId])
+}
+
+// ───────────────────────── Auth / staff ─────────────────────────
+
+model RefreshToken {
+  id          String    @id @default(uuid()) @db.Uuid
+  subjectType String
+  subjectId   String    @db.Uuid
+  familyId    String    @db.Uuid
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  replacedById String?  @db.Uuid
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  @@index([subjectType, subjectId])
+  @@index([familyId])
+}
+
+model AdminUser {
+  id            String      @id @default(uuid()) @db.Uuid
+  name          String
+  email         String      @unique
+  passwordHash  String
+  roles         AdminRole[]
+  totpSecretEnc String?
+  totpEnrolledAt DateTime?
+  recoveryCodes String[]
+  isActive      Boolean     @default(true)
+  failedLogins  Int         @default(0)
+  lockedUntil   DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+/// Append-only (enforced by trigger in migration).
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  at        DateTime @default(now())
+  actorType String
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  beforeEnc String?
+  afterEnc  String?
+  ip        String?
+  userAgent String?
+  requestId String?
+
+  @@index([entity, entityId, at])
+  @@index([actorType, actorId, at])
+  @@index([at])
+}
+
+// ───────────────────────── Exams ─────────────────────────
+
+model Exam {
+  id                   String      @id @default(uuid()) @db.Uuid
+  code                 String      @unique
+  titleEn              String
+  titleHi              String
+  notificationNo       String
+  conductingBody       String
+  descriptionEn        String      @default("")
+  descriptionHi        String      @default("")
+  status               ExamStatus  @default(DRAFT)
+  dates                Json
+  ageCutoffDate        String
+  maxCentrePreferences Int         @default(3)
+  customFields         Json        @default("[]")
+  rollNoPrefix         String      @default("VTL")
+  admitCardsReleasedAt DateTime?
+  resultsPublishedAt   DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  posts        Post[]
+  feeRules     FeeRule[]
+  centreCities ExamCentreCity[]
+  applications Application[]
+
+  @@index([status])
+}
+
+model Post {
+  id          String @id @default(uuid()) @db.Uuid
+  examId      String @db.Uuid
+  exam        Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  code        String
+  titleEn     String
+  titleHi     String
+  vacancies   Json   @default("{}")
+  eligibility Json
+
+  @@unique([examId, code])
+}
+
+model FeeRule {
+  id         String @id @default(uuid()) @db.Uuid
+  examId     String @db.Uuid
+  exam       Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  priority   Int
+  label      String
+  amount     Int
+  conditions Json   @default("{}")
+
+  @@index([examId])
+}
+
+model ExamCentreCity {
+  id        String       @id @default(uuid()) @db.Uuid
+  examId    String       @db.Uuid
+  exam      Exam         @relation(fields: [examId], references: [id], onDelete: Cascade)
+  cityName  String
+  stateCode String
+  centres   ExamCentre[]
+
+  @@unique([examId, cityName])
+}
+
+model ExamCentre {
+  id              String         @id @default(uuid()) @db.Uuid
+  cityId          String         @db.Uuid
+  city            ExamCentreCity @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  code            String
+  name            String
+  address         String
+  capacity        Int
+  reportingTime   String
+  gateClosingTime String
+  admitCards      AdmitCard[]
+
+  @@unique([cityId, code])
+}
+
+model Application {
+  id                  String            @id @default(uuid()) @db.Uuid
+  applicationNo       String            @unique
+  candidateId         String            @db.Uuid
+  candidate           Candidate         @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  examId              String            @db.Uuid
+  exam                Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  postIds             String[]
+  centreCityIds       String[]
+  customFieldValues   Json              @default("{}")
+  eligibilitySnapshot Json?
+  profileSnapshotEnc  String?
+  photoKey            String?
+  signatureKey        String?
+  feeAmount           Int               @default(0)
+  feeRuleLabel        String?
+  status              ApplicationStatus @default(DRAFT)
+  submittedAt         DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  events    ApplicationEvent[]
+  payments  Payment[]
+  admitCard AdmitCard?
+  result    Result?
+
+  @@unique([candidateId, examId])
+  @@index([examId, status])
+  @@index([status, submittedAt])
+}
+
+model ApplicationEvent {
+  id            String      @id @default(uuid()) @db.Uuid
+  applicationId String      @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  status        String
+  note          String?
+  at            DateTime    @default(now())
+
+  @@index([applicationId, at])
+}
+
+model Payment {
+  id                 String        @id @default(uuid()) @db.Uuid
+  applicationId      String        @db.Uuid
+  application        Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  merchantTxnId      String        @unique
+  gateway            String
+  gatewayTxnId       String?       @unique
+  amount             Int
+  status             PaymentStatus @default(INITIATED)
+  rawCallback        Json?
+  reconciledAt       DateTime?
+  reconciliationNote String?
+  manualVerifiedById String?       @db.Uuid
+  refundMarkedAt     DateTime?
+  refundNote         String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  events             PaymentEvent[]
+
+  @@index([status, createdAt])
+  @@index([applicationId])
+}
+
+model PaymentEvent {
+  id             String   @id @default(uuid()) @db.Uuid
+  paymentId      String   @db.Uuid
+  payment        Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  source         String
+  idempotencyKey String   @unique
+  payload        Json
+  at             DateTime @default(now())
+}
+
+model AdmitCard {
+  id               String      @id @default(uuid()) @db.Uuid
+  applicationId    String      @unique @db.Uuid
+  application      Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  examId           String      @db.Uuid
+  rollNo           String
+  centreId         String?     @db.Uuid
+  centre           ExamCentre? @relation(fields: [centreId], references: [id])
+  allocationMethod String      @default("AUTO")
+  qrToken          String?
+  pdfObjectKey     String?
+  generatedAt      DateTime?
+  releasedAt       DateTime?
+  downloadedAt     DateTime?
+
+  @@unique([examId, rollNo])
+  @@index([centreId])
+}
+
+model Result {
+  id            String      @id @default(uuid()) @db.Uuid
+  applicationId String      @unique @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  status        String
+  score         Float?
+  rank          Int?
+  publishedAt   DateTime    @default(now())
+}
+
+// ───────────────────────── Support & comms ─────────────────────────
+
+model HelpdeskTicket {
+  id           String          @id @default(uuid()) @db.Uuid
+  ticketNo     String          @unique
+  candidateId  String?         @db.Uuid
+  candidate    Candidate?      @relation(fields: [candidateId], references: [id], onDelete: SetNull)
+  /// encrypted contact for pre-login tickets
+  contactEnc   String?
+  category     String
+  subject      String
+  status       TicketStatus    @default(OPEN)
+  assignedToId String?         @db.Uuid
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  messages     TicketMessage[]
+
+  @@index([status, createdAt])
+  @@index([candidateId])
+}
+
+model TicketMessage {
+  id           String         @id @default(uuid()) @db.Uuid
+  ticketId     String         @db.Uuid
+  ticket       HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorType   String
+  authorId     String?
+  message      String
+  attachmentId String?        @db.Uuid
+  createdAt    DateTime       @default(now())
+}
+
+model Notification {
+  id          String    @id @default(uuid()) @db.Uuid
+  candidateId String    @db.Uuid
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  titleKey    String
+  params      Json      @default("{}")
+  link        String?
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([candidateId, createdAt])
+}
+
+model MessageTemplate {
+  id            String  @id @default(uuid()) @db.Uuid
+  code          String
+  channel       String
+  language      String
+  subject       String  @default("")
+  body          String
+  dltTemplateId String?
+
+  @@unique([code, channel, language])
+}
+
+model BulkCampaign {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  templateCode String
+  filters      Json
+  status       JobStatus @default(QUEUED)
+  total        Int       @default(0)
+  sent         Int       @default(0)
+  failed       Int       @default(0)
+  createdById  String    @db.Uuid
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+}
+
+model OutboundMessage {
+  id           String    @id @default(uuid()) @db.Uuid
+  channel      String
+  templateCode String
+  targetIdx    String
+  status       String    @default("QUEUED")
+  attempts     Int       @default(0)
+  providerRef  String?
+  error        String?
+  campaignId   String?   @db.Uuid
+  createdAt    DateTime  @default(now())
+  sentAt       DateTime?
+
+  @@index([campaignId])
+  @@index([status, createdAt])
+}
+
+model ReportJob {
+  id          String    @id @default(uuid()) @db.Uuid
+  type        String
+  format      String    @default("xlsx")
+  params      Json      @default("{}")
+  status      JobStatus @default(QUEUED)
+  objectKey   String?
+  rowCount    Int?
+  error       String?
+  createdById String    @db.Uuid
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+}
+
+// ───────────────────────── Masters & settings ─────────────────────────
+
+model State {
+  code      String     @id
+  nameEn    String
+  nameHi    String
+  isUT      Boolean    @default(false)
+  districts District[]
+}
+
+model District {
+  id        Int    @id @default(autoincrement())
+  stateCode String
+  state     State  @relation(fields: [stateCode], references: [code], onDelete: Cascade)
+  name      String
+
+  @@unique([stateCode, name])
+}
+
+model Board {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  stateCode String?
+}
+
+model University {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  stateCode String?
+}
+
+model Qualification {
+  id    Int    @id @default(autoincrement())
+  level String
+  name  String
+
+  @@unique([level, name])
+}
+
+model SystemSetting {
+  key         String   @id
+  value       Json
+  updatedById String?  @db.Uuid
+  updatedAt   DateTime @updatedAt
+}

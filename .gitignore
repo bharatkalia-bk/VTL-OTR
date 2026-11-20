@@ -7,3 +7,5 @@ coverage/
 .turbo/
 playwright-report/
 test-results/
+.storage/
+apps/api/.env
