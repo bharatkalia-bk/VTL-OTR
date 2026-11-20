@@ -97,7 +97,7 @@ export class ReportsService implements OnModuleInit {
       let buf: Buffer;
       if (j.format === 'csv') {
         const esc = (v: unknown) => { const s = v === null || v === undefined ? '' : String(v); return /[",\n]/.test(s) || /^[=+\-@]/.test(s) ? `"${s.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""')}"` : s; };
-        buf = Buffer.from(`﻿${[headers.join(','), ...rows.map((r) => headers.map((h) => esc(r[h])).join(','))].join('\n')}`, 'utf8');
+        buf = Buffer.from(`\uFEFF${[headers.join(','), ...rows.map((r) => headers.map((h) => esc(r[h])).join(','))].join('\n')}`, 'utf8');
       } else {
         const wb = new ExcelJS.Workbook();
         wb.creator = 'VTL OTR';

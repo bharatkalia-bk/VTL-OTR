@@ -19,8 +19,9 @@ export function AddressStep({ profile, onNext, onBack, readOnly }: StepProps) {
   const a = profile.address;
   const { register, watch, handleSubmit, setValue, setError, formState: { errors, isSubmitting } } = useForm<AddressInput>({
     resolver: zodResolver(addressSchema),
-    defaultValues: { permanent: a?.permanent ?? empty, correspondenceSameAsPermanent: a?.correspondenceSameAsPermanent ?? true, correspondence: a?.correspondence ?? empty },
+    defaultValues: { permanent: a?.permanent ?? empty, correspondenceSameAsPermanent: a?.correspondenceSameAsPermanent ?? true, correspondence: a?.correspondence ?? (a?.correspondenceSameAsPermanent === false ? empty : undefined) },
     disabled: readOnly,
+    shouldUnregister: true,
   });
   const v = watch();
   const same = v.correspondenceSameAsPermanent;
@@ -37,7 +38,7 @@ export function AddressStep({ profile, onNext, onBack, readOnly }: StepProps) {
     } catch (e) {
       setFormError(applyServerErrors(e, setError, t));
     }
-  });
+  }, () => setFormError(t('errors.VALIDATION_FAILED')));
   return (
     <form onSubmit={submit} noValidate>
       <StepCard title={t('wizard.steps.address')} description={t('wizard.addressDesc')} saveStatus={save} footer={!readOnly && <StepNav onBack={onBack} loading={isSubmitting} />}>
@@ -45,7 +46,7 @@ export function AddressStep({ profile, onNext, onBack, readOnly }: StepProps) {
         <h3 className="mb-3 font-semibold">{t('fields.permanentAddress')}</h3>
         <AddressFields prefix="permanent" register={register} errors={errors.permanent} stateCode={v.permanent.stateCode} onStateChange={() => setValue('permanent.districtId', 0)} />
         <div className="my-5 border-t border-border pt-5">
-          <Checkbox label={t('fields.sameAddress')} checked={same} onChange={(e) => setValue('correspondenceSameAsPermanent', e.target.checked)} data-testid="addr-same" />
+          <Checkbox label={t('fields.sameAddress')} {...register('correspondenceSameAsPermanent')} data-testid="addr-same" />
         </div>
         {!same && (
           <>

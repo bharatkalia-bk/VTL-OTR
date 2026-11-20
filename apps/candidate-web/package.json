@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 5173",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --passWithNoTests --dir src",
     "e2e": "playwright test --trace off",
     "mediapipe": "node ../../scripts/fetch-mediapipe.mjs",
     "predev": "node ../../scripts/fetch-mediapipe.mjs",
@@ -29,16 +29,17 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "1.63.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "otplib": "^12.0.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.7.2",
     "vite": "^5.4.11",
-    "vitest": "^2.1.8",
-    "otplib": "^12.0.1"
+    "vitest": "^2.1.8"
   }
 }

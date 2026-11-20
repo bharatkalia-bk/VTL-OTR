@@ -50,7 +50,7 @@ export function EducationStep({ profile, onNext, onBack }: StepProps) {
     } catch (e) {
       setFormError(applyServerErrors(e, setError, t));
     }
-  });
+  }, () => setFormError(t('errors.VALIDATION_FAILED')));
   const connectDigiLocker = async () => {
     try {
       const r = await api.post<{ url: string }>('/me/identity/digilocker/connect');

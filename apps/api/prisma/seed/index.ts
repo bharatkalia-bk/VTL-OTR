@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { PrismaClient, type Prisma } from '@prisma/client';
 import { DEFAULT_FEE_RULES, formatOtrId, normaliseName, type EligibilityRuleInput } from '@vtl/shared';
 import { createHash, randomUUID } from 'node:crypto';

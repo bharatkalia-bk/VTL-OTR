@@ -35,7 +35,7 @@ export function CategoryStep({ profile, onNext, onBack, readOnly }: StepProps) {
     } catch (e) {
       setFormError(applyServerErrors(e, setError, t));
     }
-  });
+  }, () => setFormError(t('errors.VALIDATION_FAILED')));
   const fe = (k: keyof Form) => (errors[k]?.message ? String(errors[k]?.message).startsWith('validation.') ? t(String(errors[k]?.message)) : String(errors[k]?.message) : undefined);
   return (
     <form onSubmit={submit} noValidate>

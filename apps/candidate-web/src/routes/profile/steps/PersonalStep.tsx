@@ -37,7 +37,7 @@ export function PersonalStep({ profile, onNext, readOnly }: StepProps) {
     } catch (e) {
       setFormError(applyServerErrors(e, setError, t));
     }
-  });
+  }, () => setFormError(t('errors.VALIDATION_FAILED')));
   const err = (k: keyof PersonalInput) => tr(t, errors[k]?.message);
   const inp = (k: keyof PersonalInput, extra: Record<string, unknown> = {}) => (f: { id: string; describedBy?: string; invalid: boolean }) => (
     <Input id={f.id} aria-describedby={f.describedBy} aria-invalid={f.invalid} {...register(k)} {...extra} data-testid={`personal-${k}`} />

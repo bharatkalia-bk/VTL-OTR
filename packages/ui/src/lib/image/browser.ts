@@ -58,11 +58,12 @@ function withNoise(src: HTMLCanvasElement, amp: number, seed = 1): HTMLCanvasEle
   const img = ctx.getImageData(0, 0, c.width, c.height);
   let s = seed >>> 0;
   for (let p = 0; p < img.data.length; p += 4) {
-    s = (s * 1664525 + 1013904223) >>> 0;
-    const n = ((s / 0xffffffff) * 2 - 1) * amp;
-    img.data[p] = Math.max(0, Math.min(255, img.data[p]! + n));
-    img.data[p + 1] = Math.max(0, Math.min(255, img.data[p + 1]! + n));
-    img.data[p + 2] = Math.max(0, Math.min(255, img.data[p + 2]! + n));
+    // independent per-channel grain: browsers switch to 4:4:4 chroma at quality 1.0, so this reaches
+    // the minimum size with a far fainter texture than luma-only noise would need
+    for (let k = 0; k < 3; k++) {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      img.data[p + k] = Math.max(0, Math.min(255, img.data[p + k]! + ((s / 0xffffffff) * 2 - 1) * amp));
+    }
   }
   ctx.putImageData(img, 0, 0);
   return c;
@@ -77,7 +78,7 @@ export async function encodeJpegInRange(src: HTMLCanvasElement, minBytes: number
   const w = src.width;
   const h = src.height;
   let result: Awaited<ReturnType<typeof compressToRange>> | null = null;
-  for (const amp of [0, 3, 6, 10, 16, 24, 32]) {
+  for (const amp of [0, 4, 8, 12, 16, 24]) {
     const base = withNoise(src, amp);
     result = await compressToRange(async (quality, scale) => {
       let c = base;
@@ -89,7 +90,7 @@ export async function encodeJpegInRange(src: HTMLCanvasElement, minBytes: number
       }
       const blob = await canvasToBlob(c, 'image/jpeg', quality);
       return { size: blob.size, data: blob };
-    }, minBytes, maxBytes);
+    }, minBytes, maxBytes, { maxQ: 1 });
     if (result.withinRange || result.size > maxBytes) break;
   }
   return result!;

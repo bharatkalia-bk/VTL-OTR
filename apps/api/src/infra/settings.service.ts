@@ -33,7 +33,7 @@ export class SettingsService {
 
   async update(patch: Partial<Settings>, actorId?: string): Promise<Settings> {
     const merged = settingsSchema.parse({ ...(await this.get()), ...patch });
-    for (const [key, value] of Object.entries(patch)) {
+    for (const key of Object.keys(patch)) {
       await this.prisma.systemSetting.upsert({
         where: { key },
         create: { key, value: merged[key as keyof Settings] as object, updatedById: actorId },

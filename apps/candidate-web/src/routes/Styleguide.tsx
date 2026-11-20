@@ -1,6 +1,9 @@
 import { Alert, Badge, Button, Card, CardBody, CardHeader, Checkbox, DataTable, Dialog, EmptyState, Field, FileUpload, Input, LivePhotoCapture, Logo, OtpInput, ProgressBar, RadioGroup, Select, SignaturePad, Spinner, StatCard, Stepper, Tabs, Textarea, Timeline } from '@vtl/ui';
 import { Users } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import type { LivenessMethod } from '@vtl/shared';
 import { useState } from 'react';
+import { api } from '../lib/api';
 import { useTranslation } from 'react-i18next';
 import { Page, PageHeader } from '../components/Layout';
 
@@ -17,6 +20,7 @@ export default function Styleguide() {
   const [tab, setTab] = useState<'a' | 'b'>('a');
   const [dialog, setDialog] = useState(false);
   const [camera, setCamera] = useState(false);
+  const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ livenessMethods: LivenessMethod[] }>('/public/config') });
   return (
     <>
       <PageHeader title={t('styleguide.title')} description={t('styleguide.subtitle')} />
@@ -64,7 +68,7 @@ export default function Styleguide() {
             <Dialog open={dialog} onClose={() => setDialog(false)} title="Confirm submission" closeLabel="Close" footer={<Button variant="primary" onClick={() => setDialog(false)}>Confirm</Button>}><p className="text-sm">Dialogs use the native dialog element for focus trapping.</p></Dialog>
           </CardBody></Card>
           <Card><CardHeader title="Live photo capture" description="Camera only. No file input. Uses MediaPipe in-browser checks + liveness." /><CardBody>
-            {camera ? <LivePhotoCapture candidateName="DEMO CANDIDATE" startSession={async () => 'styleguide-demo-session'} onComplete={async () => undefined} /> : <Button variant="secondary" onClick={() => setCamera(true)}>Load camera component</Button>}
+            {camera ? <LivePhotoCapture candidateName="DEMO CANDIDATE" livenessMethods={cfg.data?.livenessMethods} startSession={async () => 'styleguide-demo-session'} onComplete={async () => undefined} /> : <Button variant="secondary" onClick={() => setCamera(true)}>Load camera component</Button>}
           </CardBody></Card>
           <Card><CardHeader title="Signature" /><CardBody><SignaturePad onComplete={async () => undefined} /></CardBody></Card>
         </div>

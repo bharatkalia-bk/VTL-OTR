@@ -3,7 +3,7 @@
 Product: **VTL OTR** (VTL One Time Registration Platform), a product of Vensysco Technologies Limited.
 Source brief: [`docs/BRIEF.md`](./BRIEF.md). Assumptions: [`docs/ASSUMPTIONS.md`](./ASSUMPTIONS.md).
 
-Status: **awaiting approval**. No application code will be written until this plan is approved.
+Status: **approved ("cover up all the gaps and go ahead", "make all at once") and implemented**. All six phases were delivered in one pass; see the README for how to run and test, and ASSUMPTIONS.md for the decisions taken along the way. Note: the data model below is the planning view; the implemented schema stores addresses as encrypted JSON on the profile and photo/signature as `MediaAsset` rows (see ARCHITECTURE.md).
 
 ---
 

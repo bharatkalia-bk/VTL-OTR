@@ -30,7 +30,7 @@ export class PublicController {
   @Get('public/config')
   async config() {
     const s = await this.settings.get();
-    return { helpdesk: s.helpdesk, faqs: s.faqs, photoSpec: s.photoSpec, signatureSpec: s.signatureSpec, documentMaxBytes: s.documentMaxBytes, otrIdFormat: s.otrIdFormat };
+    return { helpdesk: s.helpdesk, faqs: s.faqs, photoSpec: s.photoSpec, livenessMethods: s.livenessMethods, signatureSpec: s.signatureSpec, documentMaxBytes: s.documentMaxBytes, otrIdFormat: s.otrIdFormat };
   }
 
   @Get('public/exams')

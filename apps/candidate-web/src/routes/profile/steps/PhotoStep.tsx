@@ -15,7 +15,7 @@ export function PhotoStep({ profile, onNext, onBack, readOnly }: StepProps) {
   const setProfile = useSetProfile();
   const [retake, setRetake] = useState(!profile.photo);
   const [sigEdit, setSigEdit] = useState(!profile.signature);
-  const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ photoSpec: PhotoSpec; signatureSpec: { width: number; height: number; minBytes: number; maxBytes: number } }>('/public/config') });
+  const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ photoSpec: PhotoSpec; livenessMethods: LivenessMethod[]; signatureSpec: { width: number; height: number; minBytes: number; maxBytes: number } }>('/public/config') });
   const [attemptsUsed, setAttemptsUsed] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const refresh = async () => setProfile(await api.get<Profile>('/me/profile'));
@@ -43,6 +43,7 @@ export function PhotoStep({ profile, onNext, onBack, readOnly }: StepProps) {
             <LivePhotoCapture
               candidateName={profile.personal.fullName ?? ''}
               spec={cfg.data.photoSpec}
+              livenessMethods={cfg.data.livenessMethods}
               attemptsUsed={attemptsUsed ?? undefined}
               startSession={async () => {
                 try {

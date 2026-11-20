@@ -40,7 +40,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </div>
       <header className="sticky top-0 z-40 bg-navy text-white shadow">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
-          <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-3 rounded py-2" aria-label={t('app.homeLink')}>
+          <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-3 rounded py-2">
             <Logo variant="white" height={32} className="hidden sm:block" />
             <Logo variant="mark" height={30} className="rounded bg-white p-0.5 sm:hidden" alt="" />
             <span className="border-l border-white/20 pl-3 leading-tight">
