@@ -3,7 +3,7 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Captcha, type CaptchaValue } from '../../components/Captcha';
-import { Page, PageHeader } from '../../components/Layout';
+import { AuthPage, PageHeader } from '../../components/Layout';
 import { api } from '../../lib/api';
 import { errorMessage } from '../../lib/forms';
 
@@ -34,7 +34,7 @@ export default function ForgotOtr() {
   return (
     <>
       <PageHeader title={t('forgotOtr.title')} description={t('forgotOtr.subtitle')} />
-      <Page narrow>
+      <AuthPage>
         <Card><CardBody>
           {done ? (
             <Alert tone="success" title={t('forgotOtr.sentTitle')}>{t('forgotOtr.sentBody')}<div className="mt-3"><Link to="/login" className="text-info underline">{t('nav.login')}</Link></div></Alert>
@@ -48,7 +48,7 @@ export default function ForgotOtr() {
             </form>
           )}
         </CardBody></Card>
-      </Page>
+      </AuthPage>
     </>
   );
 }

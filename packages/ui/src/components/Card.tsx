@@ -46,7 +46,7 @@ const tileTone = {
 export function GradientTile({ label, value, hint, icon, tone = 'navy', bars, className }: { label: ReactNode; value: ReactNode; hint?: ReactNode; icon?: ReactNode; tone?: keyof typeof tileTone; bars?: number[]; className?: string }) {
   const max = Math.max(1, ...(bars ?? [1]));
   return (
-    <div className={cn('relative overflow-hidden rounded-card bg-gradient-to-br p-5 text-white shadow-raised', tileTone[tone], className)}>
+    <div className={cn('hover-lift relative overflow-hidden rounded-card bg-gradient-to-br p-5 text-white shadow-raised', tileTone[tone], className)}>
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm font-semibold text-white/90">{label}</p>
         {icon && <span className="rounded-full bg-white/15 p-2 [&_svg]:h-4 [&_svg]:w-4" aria-hidden>{icon}</span>}
@@ -54,7 +54,7 @@ export function GradientTile({ label, value, hint, icon, tone = 'navy', bars, cl
       <div className="mt-4 flex items-end justify-between gap-3">
         {bars && bars.length > 0 && (
           <div className="flex h-12 items-end gap-1" aria-hidden>
-            {bars.map((b, i) => <span key={i} className="w-1.5 rounded-t bg-white/80" style={{ height: `${Math.max(8, (b / max) * 100)}%` }} />)}
+            {bars.map((b, i) => <span key={i} className="anim-fade-up w-1.5 rounded-t bg-white/80" style={{ height: `${Math.max(8, (b / max) * 100)}%`, animationDelay: `${i * 0.05}s` }} />)}
           </div>
         )}
         <div className="ml-auto text-right">

@@ -3,7 +3,7 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Captcha, type CaptchaValue } from '../../components/Captcha';
-import { Page, PageHeader } from '../../components/Layout';
+import { AuthPage, PageHeader } from '../../components/Layout';
 import { api } from '../../lib/api';
 import { errorMessage } from '../../lib/forms';
 
@@ -33,7 +33,7 @@ export default function ForgotPassword() {
   return (
     <>
       <PageHeader title={t('forgotPw.title')} description={t('forgotPw.subtitle')} />
-      <Page narrow>
+      <AuthPage>
         <Card><CardBody>
           {error && <Alert tone="danger" className="mb-4">{error}</Alert>}
           {done ? (
@@ -54,7 +54,7 @@ export default function ForgotPassword() {
             </form>
           )}
         </CardBody></Card>
-      </Page>
+      </AuthPage>
     </>
   );
 }

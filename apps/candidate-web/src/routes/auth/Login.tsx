@@ -4,7 +4,7 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Captcha, type CaptchaValue } from '../../components/Captcha';
-import { Page, PageHeader } from '../../components/Layout';
+import { AuthPage, PageHeader } from '../../components/Layout';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { errorMessage } from '../../lib/forms';
@@ -15,7 +15,7 @@ export default function Login() {
   return (
     <>
       <PageHeader title={t('login.title')} description={t('login.subtitle')} />
-      <Page narrow>
+      <AuthPage>
         <Card>
           <div className="px-4 pt-2 sm:px-6"><Tabs label={t('login.title')} value={mode} onChange={setMode} tabs={[{ value: 'password', label: t('login.withPassword') }, { value: 'otp', label: t('login.withOtp') }]} /></div>
           <CardBody>{mode === 'password' ? <PasswordLogin /> : <OtpLogin />}</CardBody>
@@ -25,7 +25,7 @@ export default function Login() {
           <Link to="/forgot-password" className="text-info underline">{t('login.forgotPassword')}</Link>
         </div>
         <p className="mt-6 text-center text-sm text-ink-muted">{t('login.newHere')} <Link to="/register" className="font-medium text-info underline">{t('nav.register')}</Link></p>
-      </Page>
+      </AuthPage>
     </>
   );
 }

@@ -47,13 +47,15 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
-      <section className="relative hidden overflow-hidden bg-gradient-to-br from-navy via-navy-700 to-orange-700 p-10 text-white lg:flex lg:flex-col" aria-label="About the staff console">
+      <section className="relative isolate hidden overflow-hidden bg-navy p-10 text-white lg:flex lg:flex-col" aria-label="About the staff console">
+        <img src="/images/login-hall.jpg" alt="" className="anim-slow-zoom absolute inset-0 -z-20 h-full w-full object-cover" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-navy/95 via-navy-700/90 to-orange-700/85" aria-hidden />
         <Logo variant="white" height={40} />
-        <h1 className="mt-10 max-w-md font-heading text-4xl font-bold leading-tight text-white">One console for every stage of recruitment</h1>
+        <h1 className="anim-fade-up mt-10 max-w-md font-heading text-4xl font-bold leading-tight text-white">One console for every stage of recruitment</h1>
         <p className="mt-3 max-w-md text-white/85">Registration, exam day, answer keys, results, interviews, allotment and document verification. Each role sees only its own work.</p>
         <ul className="mt-8 grid max-w-xl grid-cols-2 gap-3">
           {ROLES.map((r) => (
-            <li key={r.title} className="flex items-start gap-3 rounded-card bg-white/10 p-3 backdrop-blur">
+            <li key={r.title} className="anim-fade-up flex items-start gap-3 rounded-card bg-white/10 p-3 backdrop-blur transition-colors hover:bg-white/20">
               <span className="rounded-full bg-white/15 p-2 [&_svg]:h-4 [&_svg]:w-4" aria-hidden>{r.icon}</span>
               <span><span className="block text-sm font-semibold">{r.title}</span><span className="text-xs text-white/80">{r.text}</span></span>
             </li>
@@ -65,7 +67,7 @@ export default function Login() {
       <main className="flex items-center justify-center bg-surface p-4 sm:p-8">
         <div className="w-full max-w-md">
           <div className="mb-6 flex flex-col items-center gap-2 lg:hidden"><Logo height={40} /></div>
-          <div className="rounded-card border border-border bg-white p-6 shadow-raised sm:p-8">
+          <div className="anim-fade-up rounded-card border border-border bg-white p-6 shadow-raised sm:p-8">
             <h2 className="font-heading text-2xl font-bold">Staff sign in</h2>
             <p className="mb-5 mt-1 text-sm text-ink-muted">Authorised personnel only. Sign in with your password and a one-time code sent to your email. Every action is logged.</p>
             {error && <Alert tone="danger" className="mb-4">{error}</Alert>}

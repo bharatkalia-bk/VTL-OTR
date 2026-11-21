@@ -14,3 +14,4 @@ export * from './camera/SignaturePad';
 export * from './camera/faceChecks';
 export * from './camera/machine';
 export * from './lib/image/analysis';
+export * from './components/Reveal';

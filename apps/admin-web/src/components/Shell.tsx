@@ -83,7 +83,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 {items.map((n) => (
                   <li key={n.to}>
                     <NavLink to={n.to} end={n.to === '/'} onClick={onNavigate}
-                      className={({ isActive }) => cn('flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-surface [&_svg]:h-4 [&_svg]:w-4 [&_svg]:text-ink-muted',
+                      className={({ isActive }) => cn('flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink transition-all duration-200 hover:translate-x-0.5 hover:bg-surface [&_svg]:h-4 [&_svg]:w-4 [&_svg]:text-ink-muted',
                         isActive && 'bg-orange-50 font-semibold text-orange-700 shadow-[inset_3px_0_0_rgb(var(--vtl-orange-rgb))] [&_svg]:text-orange-600')}>
                       <span aria-hidden>{n.icon}</span>{n.label}
                     </NavLink>
@@ -146,7 +146,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <button onClick={() => void logout()} className="rounded-full p-2 text-ink hover:bg-surface" aria-label="Log out" title="Log out"><LogOut className="h-5 w-5" aria-hidden /></button>
           </div>
         </header>
-        <main id="main" tabIndex={-1} className="flex-1 p-4 focus:outline-none md:p-6">{children}</main>
+        <main id="main" key={loc.pathname} tabIndex={-1} className="anim-fade-in flex-1 p-4 focus:outline-none md:p-6">{children}</main>
       </div>
     </div>
   );

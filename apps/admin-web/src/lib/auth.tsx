@@ -17,7 +17,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const user = q.data ?? null;
   const can = (...roles: AdminRole[]) => !!user && (user.roles.includes('SUPER_ADMIN') || roles.some((r) => user.roles.includes(r)));
-  const logout = async () => { await api.post('/admin/auth/logout').catch(() => undefined); qc.clear(); await q.refetch(); };
+  const logout = async () => {
+    await api.post('/admin/auth/logout').catch(() => undefined);
+    qc.clear();
+    // Back to the public homepage (portal cards for every role).
+    const cfg = await api.get<{ candidateUrl?: string }>('/public/config').catch(() => null);
+    window.location.assign(cfg?.candidateUrl ?? '/');
+  };
   return <C.Provider value={{ user, loading: q.isLoading, refetch: q.refetch, logout, can }}>{children}</C.Provider>;
 }
 export const useAuth = () => { const c = useContext(C); if (!c) throw new Error('no auth'); return c; };

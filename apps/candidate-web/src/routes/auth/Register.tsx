@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import type { z } from 'zod';
 import { Captcha, type CaptchaValue } from '../../components/Captcha';
-import { Page, PageHeader } from '../../components/Layout';
+import { AuthPage, PageHeader } from '../../components/Layout';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { applyServerErrors, errorMessage, tr } from '../../lib/forms';
@@ -25,13 +25,13 @@ export default function Register() {
   return (
     <>
       <PageHeader title={t('register.title')} description={t('register.subtitle')} />
-      <Page narrow>
+      <AuthPage>
         <div className="mb-4"><Stepper steps={steps} current={stage} stepOfLabel={(c, n) => t('common.stepOf', { cur: c, total: n })} /></div>
         {stage === 0 && <DetailsStep lang={i18n.language} onDone={(r) => { setReg(r); setStage(1); }} />}
         {stage === 1 && reg && <VerifyStep reg={reg} onResent={(id) => setReg({ ...reg, registrationId: id })} onDone={(tk) => { setToken(tk); setStage(2); }} />}
         {stage === 2 && token && <PasswordStep token={token} />}
         <p className="mt-6 text-center text-sm text-ink-muted">{t('register.haveAccount')} <Link to="/login" className="font-medium text-info underline">{t('nav.login')}</Link></p>
-      </Page>
+      </AuthPage>
     </>
   );
 }

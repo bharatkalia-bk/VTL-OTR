@@ -3,7 +3,7 @@ import { Globe, LogOut, Menu, UserRound, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 
@@ -23,13 +23,13 @@ export function LanguageToggle({ onNavy }: { onNavy?: boolean }) {
 export function Layout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
-  const nav = useNavigate();
   const [open, setOpen] = useState(false);
   const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ demoMode?: boolean; demoFixedOtp?: string | null }>('/public/config'), staleTime: Infinity });
   const links = user
     ? [{ to: '/dashboard', label: t('nav.dashboard') }, { to: '/profile', label: t('nav.profile') }, { to: '/exams', label: t('nav.exams') }, { to: '/applications', label: t('nav.applications') }, { to: '/results', label: t('nav.results') }, { to: '/helpdesk', label: t('nav.helpdesk') }]
     : [{ to: '/', label: t('nav.home') }, { to: '/helpline', label: t('nav.helpline') }, { to: '/helpdesk', label: t('nav.helpdesk') }];
-  const doLogout = async () => { await logout(); setOpen(false); nav('/login'); };
+  // Full reload to the homepage: no data from the old session stays in memory, and no protected page can redirect first.
+  const doLogout = async () => { setOpen(false); await logout(); window.location.replace('/'); };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -131,18 +131,40 @@ export function Layout({ children }: { children: ReactNode }) {
 
 export function PageHeader({ title, description, actions }: { title: ReactNode; description?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-2 pt-6 sm:pt-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-          {description && <p className="mt-1 text-ink-muted">{description}</p>}
+    <div className="relative overflow-hidden bg-gradient-to-r from-navy via-navy-700 to-navy-600 text-white">
+      <span className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-orange/25 blur-2xl" aria-hidden />
+      <span className="pointer-events-none absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-orange-600 via-orange to-transparent" aria-hidden />
+      <div className="relative mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-3 px-4 pb-6 pt-7 sm:pb-8 sm:pt-9">
+        <div className="anim-fade-up">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">{title}</h1>
+          {description && <p className="mt-1 text-white/80">{description}</p>}
         </div>
-        {actions}
+        {actions && <div className="anim-fade-up anim-delay-1">{actions}</div>}
       </div>
     </div>
   );
 }
 
 export function Page({ children, narrow }: { children: ReactNode; narrow?: boolean }) {
-  return <div className={cn('mx-auto px-4 py-4', narrow ? 'max-w-xl' : 'max-w-6xl')}>{children}</div>;
+  return <div className={cn('anim-fade-in mx-auto px-4 py-6', narrow ? 'max-w-xl' : 'max-w-6xl')}>{children}</div>;
+}
+
+/** Login, registration and recovery: the form beside a photo panel on wide screens. */
+export function AuthPage({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+  return (
+    <div className="anim-fade-in mx-auto grid max-w-6xl items-start gap-8 px-4 py-6 lg:grid-cols-[1fr_minmax(0,560px)] lg:py-10">
+      <aside className="relative hidden min-h-[520px] overflow-hidden rounded-2xl shadow-raised lg:block" aria-hidden>
+        <img src="/images/login-hall.jpg" alt="" className="anim-slow-zoom absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-navy/10" />
+        <div className="absolute inset-x-0 bottom-0 p-8 text-white">
+          <p className="font-heading text-2xl font-bold leading-snug">{t('authAside.title')}</p>
+          <ul className="mt-4 space-y-2 text-sm text-white/90">
+            {(['b1', 'b2', 'b3'] as const).map((k, i) => <li key={k} className={`anim-fade-up anim-delay-${i + 1} flex items-center gap-2`}><span className="h-1.5 w-1.5 rounded-full bg-orange" />{t(`authAside.${k}`)}</li>)}
+          </ul>
+        </div>
+      </aside>
+      <div className="anim-fade-up">{children}</div>
+    </div>
+  );
 }

@@ -33,8 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const setUser = useCallback((u: SessionUser | null) => qc.setQueryData(['me'], u), [qc]);
   const logout = useCallback(async () => {
     await api.post('/auth/logout').catch(() => undefined);
-    qc.clear();
+    // Stop any in-flight "who am I" request first: if it finished after logout it would restore the old user.
+    await qc.cancelQueries();
     qc.setQueryData(['me'], null);
+    qc.removeQueries({ predicate: (q) => q.queryKey[0] !== 'me' });
   }, [qc]);
   const value = useMemo(() => ({ user: q.data ?? null, loading: q.isLoading, setUser, logout, refetch: q.refetch }), [q.data, q.isLoading, setUser, logout, q.refetch]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -73,7 +73,27 @@
     "faqTitle": "Frequently asked questions",
     "helpTitle": "Helpdesk",
     "raiseTicket": "Raise a ticket",
-    "otpWarning": "Never share your OTP or password with anyone, including helpdesk staff."
+    "otpWarning": "Never share your OTP or password with anyone, including helpdesk staff.",
+    "statsLabel": "At a glance",
+    "statOpen": "exams open now",
+    "statVacancies": "vacancies in open exams",
+    "statLanguages": "languages: English and Hindi",
+    "statOneReg": "registration for every exam",
+    "secureTitle": "Fair and secure, from registration to result",
+    "secureSubtitle": "Every step is designed so that only you can apply in your name, and every candidate is judged on the same scale.",
+    "secureImgAlt": "An examination hall with rows of desks",
+    "secure1Title": "Live photo with liveness",
+    "secure1Body": "Your photo is taken live by the camera, never uploaded, so nobody else can use your identity.",
+    "secure2Title": "Signed QR admit cards",
+    "secure2Body": "The centre scans your admit card to confirm it is genuine and matches your photograph.",
+    "secure3Title": "Observers and biometrics",
+    "secure3Body": "Independent observers and biometric checks at every centre keep the exam clean.",
+    "secure4Title": "Normalised, transparent scores",
+    "secure4Body": "Multi-shift exams are normalised; you can see your response sheet and challenge the answer key.",
+    "floatTitle": "Admit card verified",
+    "floatBody": "QR signature matched",
+    "ctaTitle": "Ready to start your journey?",
+    "ctaBody": "Register once in about 15 minutes and apply to any exam in a few clicks."
   },
   "auth": {
     "captcha": "Security check",
@@ -930,5 +950,11 @@
     "cbt": "Computer based test",
     "omr": "Pen and paper (OMR)",
     "gate": "Gate closes {{time}}"
+  },
+  "authAside": {
+    "title": "One registration. Every government exam.",
+    "b1": "Mobile and email verified by OTP",
+    "b2": "Live photo: nobody can apply in your name",
+    "b3": "Your data is encrypted and never sold"
   }
 }
