@@ -10,7 +10,12 @@ if [[ -n "${CODESPACE_NAME:-}" ]]; then
 else
   CANDIDATE_URL=http://localhost:5173; ADMIN_URL=http://localhost:5174
 fi
-pkill -f "dist/src/main.js" 2>/dev/null; pkill -f "vite preview" 2>/dev/null; sleep 1
+# Stop anything left from a previous start (the vite process line reads "node .../vite.js preview").
+pkill -f "dist/src/main.js" 2>/dev/null; pkill -f "vite(\.js)? preview" 2>/dev/null; sleep 2
+for port in 4000 5173 5174; do
+  pid=$(lsof -t -iTCP:$port -sTCP:LISTEN 2>/dev/null || true)
+  [[ -n "$pid" ]] && kill -9 $pid 2>/dev/null
+done
 # Rebuild anything missing (for example if the first-time setup was interrupted).
 [[ -f apps/api/dist/src/main.js ]] || (pnpm --filter @vtl/shared build && cd apps/api && npx prisma generate && npx prisma migrate deploy && npx tsc -p tsconfig.build.json)
 [[ -f apps/candidate-web/dist/index.html ]] || pnpm --filter @vtl/candidate-web build
@@ -25,6 +30,8 @@ pkill -f "dist/src/main.js" 2>/dev/null; pkill -f "vite preview" 2>/dev/null; sl
 (cd apps/admin-web && setsid nohup npx vite preview --port 5174 --strictPort > $LOGS/admin.log 2>&1 < /dev/null &)
 for i in $(seq 1 45); do curl -sf localhost:4000/api/v1/health/live >/dev/null && curl -sf localhost:5173 >/dev/null && break; sleep 2; done
 curl -sf localhost:4000/api/v1/health/live >/dev/null || echo "WARNING: the API did not start. See $LOGS/api.log"
+curl -sf localhost:5173 >/dev/null || { echo "WARNING: the candidate site did not start. Last lines of $LOGS/candidate.log:"; tail -15 $LOGS/candidate.log; }
+curl -sf localhost:5174 >/dev/null || { echo "WARNING: the staff console did not start. Last lines of $LOGS/admin.log:"; tail -15 $LOGS/admin.log; }
 # Make the two sites reachable by anyone with the link (best effort; otherwise set it in the Ports tab).
 if [[ -n "${CODESPACE_NAME:-}" ]] && command -v gh >/dev/null; then
   gh codespace ports visibility 5173:public 5174:public -c "$CODESPACE_NAME" >/dev/null 2>&1 || true
