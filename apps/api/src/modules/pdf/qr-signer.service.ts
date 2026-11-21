@@ -51,11 +51,16 @@ export class QrSignerService {
   }
 
   async verify(token: string): Promise<AdmitQrPayload | null> {
-    const [body, sig] = token.split('.');
-    if (!body || !sig) return null;
+    const parts = token.split('.');
+    const [body, sig] = parts;
+    if (parts.length !== 2 || !body || !sig) return null;
+    // Reject non-canonical base64url (e.g. altered padding bits) so one signature has exactly one valid encoding.
+    const sigBytes = Buffer.from(sig, 'base64url');
+    if (sigBytes.length !== 64 || sigBytes.toString('base64url') !== sig) return null;
+    if (Buffer.from(body, 'base64url').toString('base64url') !== body) return null;
     const k = await this.load();
     try {
-      if (!verify(null, Buffer.from(body), k.pub, Buffer.from(sig, 'base64url'))) return null;
+      if (!verify(null, Buffer.from(body), k.pub, sigBytes)) return null;
       return JSON.parse(Buffer.from(body, 'base64url').toString()) as AdmitQrPayload;
     } catch {
       return null;

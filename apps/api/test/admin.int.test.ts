@@ -100,8 +100,20 @@ describe('exam management → admit cards → candidate download → QR verify',
     const ac = await prisma.admitCard.findFirstOrThrow({ where: { applicationId: appId } });
     const verify = await new Client(app).get(`/api/v1/verify/admit/${ac.qrToken}`);
     expect(verify.body).toMatchObject({ valid: true, rollNo: ac.rollNo });
-    const tampered = ac.qrToken!.replace(/.$/, (ch) => (ch === 'A' ? 'B' : 'A'));
-    expect((await new Client(app).get(`/api/v1/verify/admit/${tampered}`)).body.valid).toBe(false);
+    const [body, sig] = ac.qrToken!.split('.') as [string, string];
+    const valid = async (t: string) => (await new Client(app).get(`/api/v1/verify/admit/${t}`)).body.valid as boolean;
+    // forged content: change the roll number inside the signed payload
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    const forged = Buffer.from(JSON.stringify({ ...payload, r: `${payload.r}9` })).toString('base64url');
+    expect(await valid(`${forged}.${sig}`)).toBe(false);
+    // corrupted signature: flip a character that carries data (not the trailing padding bits)
+    const flipped = sig.slice(0, 10) + (sig[10] === 'A' ? 'B' : 'A') + sig.slice(11);
+    expect(await valid(`${body}.${flipped}`)).toBe(false);
+    // non-canonical encoding of the same signature (altered padding bits) is rejected too
+    const last = sig.at(-1)!;
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    const padVariant = sig.slice(0, -1) + alphabet[alphabet.indexOf(last) ^ 1];
+    expect(await valid(`${body}.${padVariant}`)).toBe(false);
   }, 120000);
 
   it('audit log records admin actions with decoded before/after for auditors', async () => {

@@ -8,7 +8,7 @@ jobs:
         image: postgres:16
         env: { POSTGRES_USER: vtl, POSTGRES_PASSWORD: vtl, POSTGRES_DB: vtl_otr_test }
         ports: ["5432:5432"]
-        options: --health-cmd "pg_isready -U vtl" --health-interval 5s --health-retries 10
+        options: --health-cmd "pg_isready -U vtl -d vtl_otr_test" --health-interval 5s --health-retries 10
       redis:
         image: redis:7
         ports: ["6379:6379"]
