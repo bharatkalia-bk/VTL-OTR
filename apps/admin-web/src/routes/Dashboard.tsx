@@ -127,7 +127,7 @@ export default function Dashboard() {
             <CardHeader title="Applications per exam" description="Submitted applications and fee status" actions={<Link to="/exams"><Button size="sm">All exams</Button></Link>} />
             <CardBody>
               <DataTable caption="Applications per exam" rows={d.perExam} rowKey={(r) => r.code} empty="No published exams" columns={[
-                { key: 'c', header: 'Exam', cell: (r) => <span className="font-semibold">{r.code}</span> },
+                { key: 'c', header: 'Exam', cell: (r) => <span className="whitespace-nowrap font-semibold">{r.code}</span> },
                 { key: 't', header: 'Title', cell: (r) => r.title },
                 { key: 'n', header: 'Applications', numeric: true, cell: (r) => fmt.n(r.total) },
                 { key: 'p', header: 'Paid / exempt', numeric: true, cell: (r) => fmt.n(r.paid) },

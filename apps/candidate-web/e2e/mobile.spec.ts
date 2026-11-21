@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 /** Candidate pages must be usable on a 360px Android phone without horizontal scrolling. */
-for (const path of ['/', '/register', '/login', '/helpdesk', '/styleguide']) {
+for (const path of ['/', '/register', '/login', '/helpdesk', '/styleguide', '/helpline']) {
   test(`no horizontal scroll at 360px: ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.locator('main h1').first().waitFor();

@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 /** WCAG 2.1 AA automated checks on public pages (axe-core). */
-for (const path of ['/', '/register', '/login', '/helpdesk', '/forgot-otr', '/legal/privacy']) {
+for (const path of ['/', '/register', '/login', '/helpdesk', '/forgot-otr', '/legal/privacy', '/helpline']) {
   test(`no serious a11y violations on ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.locator('main h1').first().waitFor();

@@ -21,10 +21,13 @@ export default function Dashboard() {
   const corr = useQuery({ queryKey: ['corrections'], queryFn: () => api.get<Array<{ id: string; field: string; status: string }>>('/me/corrections'), enabled: profile.data?.status === 'SUBMITTED' });
   const p = profile.data;
   const rejectedDocs = p?.documents.filter((d) => d.verificationStatus === 'REJECTED') ?? [];
+  const debar = useQuery({ queryKey: ['debarments'], queryFn: () => api.get<Array<{ id: string; reason: string; untilDate: string | null; status: string }>>('/me/debarments'), enabled: p?.status === 'SUBMITTED' });
+  const active = debar.data?.find((d) => d.status === 'ACTIVE');
   return (
     <>
       <PageHeader title={t('dashboard.welcome', { name: p?.personal.fullName ?? '' })} description={p?.otrId ? t('dashboard.otrIs', { otr: p.otrId }) : t('dashboard.completeFirst')} />
       <Page>
+        {active && <Alert tone="danger" className="mb-4">{t('dashboard.debarred', { until: active.untilDate ? fmtDateTime(active.untilDate, lang) : t('dashboard.debarredPermanent'), reason: active.reason })}</Alert>}
         {rejectedDocs.length > 0 && <Alert tone="danger" className="mb-4" title={t('dashboard.docsRejected')}>{rejectedDocs.map((d) => `${t(`docs.kind.${d.kind}`)}: ${d.rejectionReason}`).join(' · ')}</Alert>}
         <div className="grid gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-1">

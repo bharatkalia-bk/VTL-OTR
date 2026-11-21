@@ -14,8 +14,8 @@ export function LanguageToggle({ onNavy }: { onNavy?: boolean }) {
   return (
     <button type="button" lang={next} onClick={() => { void i18n.changeLanguage(next); if (user) void api.post('/me/language', { language: next }).catch(() => undefined); }}
       className={cn('inline-flex min-h-10 items-center gap-1.5 rounded px-3 text-sm font-medium', onNavy ? 'text-white hover:bg-navy-700' : 'text-navy hover:bg-navy-50')}
-      aria-label={t('app.switchLanguage')} data-testid="lang-toggle">
-      <Globe className="h-4 w-4" aria-hidden />{next === 'hi' ? 'हिंदी' : 'English'}
+      data-testid="lang-toggle">
+      <Globe className="h-4 w-4" aria-hidden />{next === 'hi' ? 'हिंदी' : 'English'}<span className="sr-only"> ({t('app.switchLanguage')})</span>
     </button>
   );
 }
@@ -27,8 +27,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ demoMode?: boolean }>('/public/config'), staleTime: Infinity });
   const links = user
-    ? [{ to: '/dashboard', label: t('nav.dashboard') }, { to: '/profile', label: t('nav.profile') }, { to: '/exams', label: t('nav.exams') }, { to: '/applications', label: t('nav.applications') }, { to: '/helpdesk', label: t('nav.helpdesk') }]
-    : [{ to: '/', label: t('nav.home') }, { to: '/helpdesk', label: t('nav.helpdesk') }];
+    ? [{ to: '/dashboard', label: t('nav.dashboard') }, { to: '/profile', label: t('nav.profile') }, { to: '/exams', label: t('nav.exams') }, { to: '/applications', label: t('nav.applications') }, { to: '/results', label: t('nav.results') }, { to: '/helpdesk', label: t('nav.helpdesk') }]
+    : [{ to: '/', label: t('nav.home') }, { to: '/helpline', label: t('nav.helpline') }, { to: '/helpdesk', label: t('nav.helpdesk') }];
   const doLogout = async () => { await logout(); setOpen(false); nav('/login'); };
 
   return (
@@ -58,16 +58,16 @@ export function Layout({ children }: { children: ReactNode }) {
               <span className="hidden text-[11px] text-white/70 md:block">{t('app.fullName')}</span>
             </span>
           </Link>
-          <nav aria-label={t('nav.main')} className="ml-auto hidden items-center gap-1 lg:flex">
+          <nav aria-label={t('nav.main')} className="ml-auto hidden items-center gap-0.5 lg:flex">
             {links.map((l) => (
-              <NavLink key={l.to} to={l.to} end={l.to === '/'} className={({ isActive }) => cn('rounded px-3 py-2 text-sm font-medium hover:bg-navy-700', isActive && 'bg-navy-700 shadow-[inset_0_-3px_0_rgb(var(--vtl-orange-rgb))]')}>{l.label}</NavLink>
+              <NavLink key={l.to} to={l.to} end={l.to === '/'} className={({ isActive }) => cn('whitespace-nowrap rounded px-3 py-2 text-sm font-medium hover:bg-navy-700', isActive && 'bg-navy-700 shadow-[inset_0_-3px_0_rgb(var(--vtl-orange-rgb))]')}>{l.label}</NavLink>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2 lg:ml-2">
             {user ? (
               <div className="hidden items-center gap-2 sm:flex">
-                <span className="flex items-center gap-1.5 text-sm"><UserRound className="h-4 w-4" aria-hidden /><span className="max-w-[140px] truncate">{user.name}</span></span>
-                <Button variant="onNavy" size="sm" onClick={() => void doLogout()}><LogOut className="h-4 w-4" aria-hidden />{t('app.logout')}</Button>
+                <span className="hidden items-center gap-1.5 text-sm xl:flex"><UserRound className="h-4 w-4" aria-hidden /><span className="max-w-[140px] truncate">{user.name}</span></span>
+                <Button variant="onNavy" size="sm" className="whitespace-nowrap" onClick={() => void doLogout()}><LogOut className="h-4 w-4" aria-hidden />{t('app.logout')}</Button>
               </div>
             ) : (
               <div className="hidden gap-2 sm:flex">

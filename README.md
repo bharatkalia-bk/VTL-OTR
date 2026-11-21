@@ -2,15 +2,26 @@
 
 **VTL One Time Registration Platform**, a product of **Vensysco Technologies Limited**.
 
-Candidates register once, verify mobile and email with OTP, complete a profile with a **live camera photograph**, signature and certificates, and get a permanent **OTR ID** (for example `VTL-OTR-2026-00001236`, with a Verhoeff check digit). They then apply for any exam: eligibility, age relaxation and fees are calculated automatically. Admins manage exams, verification, corrections, payments, admit cards, communication, reports and audit.
+Candidates register once, verify mobile and email with OTP, complete a profile with a **live camera photograph**, signature and certificates, and get a permanent **OTR ID** (for example `VTL-OTR-2026-00001236`, with a Verhoeff check digit). They then apply for any exam: eligibility, age relaxation and fees are calculated automatically.
+
+The platform then runs the rest of the recruitment cycle:
+
+- **Exam day:** shifts, centre-desk QR entry and roll sheets, observers, biometric alerts and technical exceptions.
+- **Conducting agencies:** a data gateway (file upload or API key) for CBT responses, OMR reads, attendance and biometric alerts.
+- **Assessment:** answer keys with paid objections and an item-analysis pre-review, scoring with negative marking, normalisation across shifts, and cut-offs.
+- **Results:** anomaly flags, maker-checker approval and publishing.
+- **Selection:** debarment, interview panels and 80:20 final merit, then preference-based allotment and document verification.
+- **Helpdesk:** web tickets, a chat assistant, an IVR menu and logged phone calls, plus a full journey trace for every candidate.
 
 | Part | Path | Stack |
 |---|---|---|
 | Candidate portal (mobile-first, EN/HI) | `apps/candidate-web` | React 18, Vite, Tailwind, TanStack Query, RHF + Zod, i18next |
-| Admin console (desktop-first, RBAC + TOTP) | `apps/admin-web` | React 18, Vite, Recharts |
+| Staff console (RBAC + TOTP; field workspaces are mobile-friendly) | `apps/admin-web` | React 18, Vite, Recharts, jsQR |
 | API + worker | `apps/api` | NestJS 11, Prisma 6, PostgreSQL 16, Redis 7, BullMQ, MinIO/S3, Chromium PDFs |
 | Design system | `packages/ui` | VTL tokens, components, `LivePhotoCapture` (MediaPipe), `SignaturePad` |
 | Shared rules | `packages/shared` | Zod schemas, eligibility, age relaxation, fee matrix, OTR ID |
+
+Screenshots of the lifecycle screens: [`docs/screenshots/lifecycle`](docs/screenshots/lifecycle).
 
 Docs: **[Try it in GitHub Codespaces](docs/CODESPACES.md)** · **[Deploy on a server](docs/DEPLOYMENT.md)** · [Plan](docs/PLAN.md) · [Architecture and data model](docs/ARCHITECTURE.md) · [API](docs/API.md) (live OpenAPI at `/api/docs`) · [Assumptions](docs/ASSUMPTIONS.md) · [Brief](docs/BRIEF.md)
 
@@ -68,12 +79,27 @@ Without MinIO, `STORAGE_DRIVER=fs` stores files under `apps/api/.storage` and se
 |---|---|---|---|
 | Super Admin | `superadmin@vtl-otr.local` | `Admin@12345` | TOTP secret `KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD` |
 | Exam Admin / Verifier / Helpdesk / Auditor | `examadmin@` `verifier@` `helpdesk@` `auditor@` (`vtl-otr.local`) | `Admin@12345` | same secret |
+| Second Exam Admin (approves results: maker-checker) | `examadmin2@vtl-otr.local` | `Admin@12345` | same secret |
+| Centre Superintendent (CHSL centres in Patna) | `centre@vtl-otr.local` | `Admin@12345` | same secret |
+| Observer (CHSL, one centre declared, one pending) | `observer@vtl-otr.local` | `Admin@12345` | same secret |
+| Conducting Agency | `agency@vtl-otr.local` | `Admin@12345` | same secret |
+| Interview Panel members | `panel@vtl-otr.local`, `panel2@vtl-otr.local` | `Admin@12345` | same secret |
 | New verifier (shows mandatory TOTP enrolment) | `newverifier@vtl-otr.local` | `Admin@12345` | enrols on first login |
 | Candidates 01 to 50 | `candidate01@example.in` … `candidate50@example.in` | `Candidate@123` | n/a |
 
 Add the TOTP secret to any authenticator app, or print the current code with `node -e "console.log(require('otplib').authenticator.generate('KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD'))"` (run it from `apps/api`).
 
-The seed creates 3 exams (CGL open, CHSL closed with admit cards released, a women-only UP-domicile exam open), 50 candidates in different states (drafts at each wizard step, submitted, blocked, one duplicate-photo pair), applications with paid, failed and pending payments, correction requests and helpdesk tickets.
+The seed creates 5 exams:
+
+| Exam | State |
+|---|---|
+| CGL | Open |
+| Women-only UP-domicile exam | Open |
+| CHSL | Exam held, provisional answer key published, objection window open (one question has a planted wrong key that the pre-review flags) |
+| Junior Engineer 2025 | Complete: Tier 1, interview and 80:20 final merit published, allotment done, DV in progress |
+| Section Officer 2026 | Tier 1 published, today's interviews waiting for panel marks |
+
+The seed also creates 50 candidates in different states (drafts at each wizard step, submitted, blocked, one duplicate-photo pair), applications with paid, failed and pending payments, correction requests and helpdesk tickets.
 
 In development, `DEV_EXPOSE_SECRETS=true` lets you read OTPs, captcha answers and mock messages at `/api/v1/dev/*`. The API refuses to boot with this flag in production.
 
@@ -81,12 +107,41 @@ In development, `DEV_EXPOSE_SECRETS=true` lets you read OTPs, captcha answers an
 
 | Command | What |
 |---|---|
-| `pnpm test` | Unit tests (shared rules, image pipeline, face checks, JPEG handling) and API integration tests against real Postgres and Redis (`vtl_otr_test` database; queues run inline) |
+| `pnpm test` | Unit tests (shared rules including scoring, normalisation, merit, allotment, anomaly detection; image pipeline; face checks; JPEG handling) and API integration tests against real Postgres and Redis, including the whole exam lifecycle end to end (`vtl_otr_test` database; queues run inline) |
 | `pnpm test:e2e` | Playwright: full journey register → OTP → profile → **live photo via fake camera** → submit → apply → pay → admin releases → download admit card; axe WCAG 2.1 AA scans; 360px layout; Hindi toggle |
 | `pnpm lint` / `pnpm typecheck` | ESLint (no `any`), strict TypeScript |
 | `node scripts/check-i18n.mjs apps/candidate-web` | EN/HI key parity and no undefined keys |
 
 The camera E2E test runs Chromium with `--use-fake-device-for-media-stream --use-file-for-fake-video-capture=face.y4m`. The clip is generated by `scripts/make_face_video.py` from a public-domain NASA portrait and simulates a slight head turn, so the real MediaPipe face checks and head-turn liveness run end to end. The E2E environment restricts liveness to `HEAD_TURN` because the synthetic clip cannot blink.
+
+## Roles and where they sign in
+
+The homepage has a **Sign in to your portal** section. Candidates use the candidate portal. Every staff role signs in to the staff console and lands on its own workspace:
+
+| Role | Lands on | Can do |
+|---|---|---|
+| Super Admin, Exam Admin, Auditor | Dashboard | Everything in the console (Auditor read-only); results need a second officer to approve |
+| Verifier | Dashboard | Documents, corrections, duplicates, debarment proposals, DV desk |
+| Helpdesk Agent | Dashboard | Tickets (web, chat, IVR, phone), IVR log, journey trace |
+| Centre Superintendent | Centre desk | Scan admit-card QR, compare photo, mark attendance, roll sheet PDF, close gate, report exceptions (only their centres) |
+| Observer | Observer app | Conflict-of-interest declaration, checklist and incident reports that queue offline and sync later |
+| Conducting Agency | Agency gateway | Upload CSVs, manage API keys, see submission results (only their exams) |
+| Interview Panel | Interview panel | Their candidates only, with no category data; award marks, AI brief |
+
+Field staff scopes (centres, exams, home district) are set by a Super Admin under *Staff users → Scope*.
+
+## AI assist
+
+`AI_PROVIDER=mock` (default) gives deterministic, rule-based results with no network calls:
+
+| Feature | Rule-based result |
+|---|---|
+| Chat assistant | Answers from the helpdesk knowledge base |
+| Objection pre-review | Classical item analysis: top vs bottom scorers, difficulty, discrimination |
+| DV checks | Discrepancy checks |
+| Interview brief | Neutral brief from the education record |
+
+`AI_PROVIDER=claude` with `ANTHROPIC_API_KEY` adds Claude-written summaries on top, through the official Anthropic SDK. The model is set by `AI_MODEL` and defaults to `claude-opus-5-5`. If a request fails, the rule-based result is used. AI output is always advisory: a person makes every decision.
 
 ## Live photo capture (non-negotiable rule)
 

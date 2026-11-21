@@ -7,12 +7,14 @@ export interface DocInfo { id: string; kind: string; fileName: string; sizeBytes
 export interface Profile {
   id: string; otrId: string | null; status: 'DRAFT' | 'SUBMITTED' | 'BLOCKED'; mobile: string; email: string; submittedAt: string | null;
   personal: { fullName: string | null; fatherName: string | null; motherName: string | null; dob: string | null; gender: string | null; nationality: string | null; maritalStatus: string | null; identificationMark1: string | null; identificationMark2: string | null };
-  category: { category: string | null; pwd: boolean; pwdType: string | null; pwdPercent: number | null; exServiceman: boolean; serviceYears: number | null; domicileStateCode: string | null; categoryCertDocId: string | null; pwdCertDocId: string | null; exsmCertDocId: string | null };
+  category: { category: string | null; pwd: boolean; pwdType: string | null; pwdPercent: number | null; exServiceman: boolean; serviceYears: number | null; domicileStateCode: string | null; categoryCertDocId: string | null; pwdCertDocId: string | null; exsmCertDocId: string | null; languages: string[] };
   address: AddressInput | null;
   education: Array<{ id: string; level: string; qualificationName: string; boardOrUniversity: string; yearOfPassing: number; status: string; resultType: string; marks: number; maxMarks: number | null; cgpaScale: number | null; rollNo: string | null; documentId: string | null }>;
   documents: DocInfo[];
   photo: { id: string; width: number; height: number; sizeBytes: number; capturedAt: string; url: string } | null;
   signature: { id: string; width: number; height: number; sizeBytes: number; method: string; url: string } | null;
+  thumb: { id: string; sizeBytes: number; url: string } | null;
+  declarationImage: { id: string; sizeBytes: number; url: string } | null;
   identity: { aadhaarMasked: string | null; aadhaarVerifiedAt: string | null; apaarId: string | null; digilockerLinkedAt: string | null };
   declaration: { at: string | null; place: string | null };
   completedSteps: WizardStep[];

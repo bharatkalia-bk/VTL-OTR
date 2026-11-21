@@ -1,6 +1,6 @@
 import { Alert, Badge, Button, Card, CardBody, CardHeader, Spinner, Timeline, buttonVariants } from '@vtl/ui';
 import { useQuery } from '@tanstack/react-query';
-import { CreditCard, Download, FileText, Ticket } from 'lucide-react';
+import { CreditCard, Download, FileText, MapPin, Ticket } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -16,7 +16,7 @@ interface Detail {
   posts: Array<{ id: string; code: string; titleEn: string; titleHi: string }>; centreCities: Array<{ id: string; cityName: string }>;
   events: Array<{ id: string; status: string; note: string | null; at: string }>;
   payments: Array<{ id: string; merchantTxnId: string; gatewayTxnId: string | null; amount: number; status: string; createdAt: string }>;
-  admitCard: { rollNo: string; releasedAt: string; centre: { name: string; city: string; address: string; reportingTime: string } | null } | null;
+  admitCard: { rollNo: string; releasedAt: string; shift: { code: string; date: string; startTime: string; endTime: string; mode: string } | null; centre: { name: string; city: string; address: string; reportingTime: string; gateClosingTime: string; mapUrl: string } | null } | null;
   result: { status: string; score: number | null; rank: number | null } | null;
 }
 
@@ -56,6 +56,11 @@ export default function ApplicationDetail() {
                   <p><span className="text-ink-muted">{t('dashboard.rollNo')}:</span> <span className="font-heading text-lg font-bold tabular-nums">{a.admitCard.rollNo}</span></p>
                   {a.admitCard.centre && <p><span className="text-ink-muted">{t('applications.centre')}:</span> {a.admitCard.centre.name}, {a.admitCard.centre.address}, {a.admitCard.centre.city}</p>}
                   {a.exam.dates.examDate && <p className="tabular-nums"><span className="text-ink-muted">{t('applications.examDate')}:</span> {fmtDate(a.exam.dates.examDate, lang)} · {t('applications.reporting')} {a.admitCard.centre?.reportingTime}</p>}
+                  {a.admitCard.shift && <p className="tabular-nums"><span className="text-ink-muted">{t('route.shift', { code: a.admitCard.shift.code, time: `${fmtDate(a.admitCard.shift.date, lang)} ${a.admitCard.shift.startTime} to ${a.admitCard.shift.endTime}` })}</span> · {a.admitCard.shift.mode === 'OMR' ? t('route.omr') : t('route.cbt')}{a.admitCard.centre && ` · ${t('route.gate', { time: a.admitCard.centre.gateClosingTime })}`}</p>}
+                  <div className="flex flex-wrap gap-2">
+                  {a.admitCard.centre && <a href={a.admitCard.centre.mapUrl} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center gap-2 rounded border border-border px-4 text-sm font-medium hover:bg-navy-50"><MapPin className="h-4 w-4 text-orange" aria-hidden />{t('route.directions')}</a>}
+                  <Link to={`/results/${a.id}`} className="inline-flex h-11 items-center gap-2 rounded border border-border px-4 text-sm font-medium hover:bg-navy-50">{t('dashboard.resultsCta')}</Link>
+                  </div>
                   <Button variant="primary" onClick={() => dl(`/applications/${a.id}/admit-card.pdf`, `AdmitCard-${a.admitCard!.rollNo}.pdf`)} data-testid="download-admit"><Download className="h-4 w-4" aria-hidden />{t('applications.downloadAdmit')}</Button>
                 </CardBody>
               </Card>

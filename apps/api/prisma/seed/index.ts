@@ -8,6 +8,7 @@ import { createStorage } from '../../src/infra/storage';
 import { buildSimplePdf } from '../../src/modules/pdf/simple-pdf';
 import { FieldCrypto } from '../../src/security/field-crypto';
 import { hashPassword } from '../../src/security/password';
+import { seedLifecycle } from './lifecycle';
 import { BOARDS, FAQS, QUALIFICATIONS, STATES, UNIVERSITIES } from './masters';
 
 const env = loadEnv();
@@ -101,10 +102,16 @@ async function seedAdmins() {
     ['Verifier', 'verifier@vtl-otr.local', ['VERIFIER']],
     ['Helpdesk Agent', 'helpdesk@vtl-otr.local', ['HELPDESK_AGENT']],
     ['Auditor', 'auditor@vtl-otr.local', ['AUDITOR']],
+    ['Meera Iyer (Exam Admin 2)', 'examadmin2@vtl-otr.local', ['EXAM_ADMIN']],
+    ['Rajesh Khanna (Centre Superintendent)', 'centre@vtl-otr.local', ['CENTRE_SUPERINTENDENT']],
+    ['Rakesh Verma (Observer)', 'observer@vtl-otr.local', ['OBSERVER']],
+    ['Demo Testing Services (Agency)', 'agency@vtl-otr.local', ['AGENCY']],
+    ['Dr. Anita Rao (Interview Panel)', 'panel@vtl-otr.local', ['INTERVIEW_PANEL']],
+    ['Prof. S. K. Mehta (Interview Panel)', 'panel2@vtl-otr.local', ['INTERVIEW_PANEL']],
   ];
   const created = [];
   for (const [name, email, roles] of users) {
-    created.push(await prisma.adminUser.create({ data: { name, email, roles, passwordHash: pw, totpSecretEnc: totp, totpEnrolledAt: new Date(), recoveryCodes: [] } }));
+    created.push(await prisma.adminUser.create({ data: { name, email, roles, passwordHash: pw, totpSecretEnc: totp, totpEnrolledAt: new Date(), recoveryCodes: [], ...(email.startsWith('observer@') && { scope: { homeDistrict: 'Lucknow' } }) } }));
   }
   // One admin without TOTP to demonstrate mandatory enrolment on first login.
   await prisma.adminUser.create({ data: { name: 'New Verifier', email: 'newverifier@vtl-otr.local', roles: ['VERIFIER'], passwordHash: pw } });
@@ -174,7 +181,19 @@ async function seedExams() {
       centreCities: { create: mkCities('UPW', [['Lucknow', 'UP'], ['Prayagraj', 'UP'], ['Agra', 'UP']], 400) },
     },
   });
-  return { cgl, chsl, upw };
+  const lifecycleExam = (code: string, prefix: string, titleEn: string, titleHi: string, postEn: string, postHi: string, examDate: string, cities: Array<[string, string]>) => prisma.exam.create({
+    data: {
+      code, titleEn, titleHi, notificationNo: `VTL/${prefix}/${examDate.slice(0, 4)}/01`, conductingBody: 'Staff Selection Board (demo)', status: 'CLOSED', ageCutoffDate: `${examDate.slice(0, 4)}-01-01`, rollNoPrefix: prefix,
+      stages: ['TIER1', 'INTERVIEW'], writtenWeight: 80, interviewWeight: 20, objectionFee: 100,
+      dates: { notification: '2025-04-01', applyStart: '2025-04-01', applyEnd: '2025-05-15', feeLastDate: '2025-05-17', examDate },
+      posts: { create: [{ code: 'P1', titleEn: postEn, titleHi: postHi, vacancies: { GEN: 4, OBC_NCL: 1, SC: 1 }, eligibility: { age: { min: 18, max: 32, ...commonAge }, qualification: { minLevel: 'CLASS_12' } } satisfies EligibilityRuleInput }] },
+      feeRules: { create: DEFAULT_FEE_RULES.map((r) => ({ priority: r.priority, label: r.label, amount: r.amount, conditions: r.conditions })) },
+      centreCities: { create: mkCities(prefix, cities, 200) },
+    },
+  });
+  const je = await lifecycleExam('VTL-JE-2025', 'JE25', 'Junior Engineer Examination 2025', 'कनिष्ठ अभियंता परीक्षा 2025', 'Junior Engineer (Civil)', 'कनिष्ठ अभियंता (सिविल)', '2025-09-20', [['Delhi', 'DL'], ['Jaipur', 'RJ']]);
+  const so = await lifecycleExam('VTL-SO-2026', 'SO26', 'Section Officer Examination 2026', 'अनुभाग अधिकारी परीक्षा 2026', 'Section Officer', 'अनुभाग अधिकारी', '2026-10-12', [['Lucknow', 'UP'], ['Bhopal', 'MP']]);
+  return { cgl, chsl, upw, je, so };
 }
 
 /**
@@ -346,9 +365,30 @@ async function main() {
   }
   await prisma.exam.update({ where: { id: chslFull.id }, data: { admitCardsReleasedAt: new Date() } });
 
+  // Past exams for the selection lifecycle: applications from submitted candidates.
+  const submitted = await prisma.candidate.findMany({ where: { status: 'SUBMITTED' }, include: { media: true }, orderBy: { otrId: 'asc' } });
+  const mkApps = async (examId: string, prefix: string, list: typeof submitted) => {
+    const full = await prisma.exam.findUniqueOrThrow({ where: { id: examId }, include: { posts: true, centreCities: true } });
+    const ids: string[] = [];
+    for (const [k, c] of list.entries()) {
+      const seqA = Number((await prisma.$queryRawUnsafe<Array<{ v: bigint }>>(`SELECT nextval('application_seq') AS v`))[0]!.v);
+      const a = await prisma.application.create({ data: { applicationNo: `${prefix}${String(seqA).padStart(8, '0')}`, candidateId: c.id, examId, postIds: [full.posts[0]!.id], centreCityIds: [full.centreCities[k % full.centreCities.length]!.id], feeAmount: 0, feeRuleLabel: 'Exempt', status: 'FEE_EXEMPT', submittedAt: new Date('2025-05-01T10:00:00Z'), photoKey: c.media.find((m) => m.kind === 'PHOTO' && m.isCurrent)?.objectKey, signatureKey: c.media.find((m) => m.kind === 'SIGNATURE' && m.isCurrent)?.objectKey, events: { create: [{ status: 'SUBMITTED', at: new Date('2025-05-01T10:00:00Z') }, { status: 'FEE_EXEMPT', at: new Date('2025-05-01T10:00:00Z') }] } } });
+      ids.push(a.id);
+    }
+    return ids;
+  };
+  const jeAppIds = await mkApps(exams.je.id, 'JE25', submitted.slice(0, 16));
+  const soAppIds = await mkApps(exams.so.id, 'SO26', submitted.slice(4, 18));
+  const staffRows = await prisma.adminUser.findMany();
+  const byEmail = (e: string) => staffRows.find((a) => a.email === `${e}@vtl-otr.local`)!;
+  const staff = Object.fromEntries(['examadmin', 'examadmin2', 'verifier', 'centre', 'observer', 'agency', 'panel', 'panel2'].map((k) => [k, byEmail(k)]));
+  const lc = await seedLifecycle({ prisma, crypto, staff }, { chslId: chslFull.id, jeAppIds, soAppIds, jeExamId: exams.je.id, soExamId: exams.so.id });
+  console.log(`\n  Lifecycle: CHSL ${lc.chslCandidates} sat the exam (answer key open), JE 2025 final merit ${lc.jeFinal} with allotment, SO 2026 ${lc.soShortlist} interviews pending`);
+
   console.log('\nSeed complete.');
   console.log(`  Admin logins (password ${DEV_ADMIN_PASSWORD}, TOTP secret ${DEV_TOTP_SECRET}, current code ${authenticator.generate(DEV_TOTP_SECRET)}):`);
-  console.log('    superadmin@ examadmin@ verifier@ helpdesk@ auditor@ (vtl-otr.local); newverifier@ must enrol TOTP');
+  console.log('    superadmin@ examadmin@ examadmin2@ verifier@ helpdesk@ auditor@ (vtl-otr.local); newverifier@ must enrol TOTP');
+  console.log('    field roles: centre@ observer@ agency@ panel@ panel2@ (vtl-otr.local)');
   console.log(`  Candidates: candidate01@example.in … candidate50@example.in (password ${DEV_CANDIDATE_PASSWORD})`);
 }
 

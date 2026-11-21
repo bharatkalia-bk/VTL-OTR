@@ -105,7 +105,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [term, setTerm] = useState('');
   const nav = useNavigate();
   const loc = useLocation();
-  useEffect(() => setOpen(false), [loc.pathname]);
+  useEffect(() => { setOpen(false); }, [loc.pathname]);
   const staff = can(...STAFF);
   const pending = useQuery({ queryKey: ['dashboard'], queryFn: () => api.get<{ pending: Record<string, number>; lifecycle?: Record<string, number> }>('/admin/dashboard'), enabled: staff, staleTime: 60000 });
   const alerts = pending.data ? Object.values(pending.data.pending).reduce((a, b) => a + b, 0) + (pending.data.lifecycle?.biometricOpen ?? 0) + (pending.data.lifecycle?.resultsAwaitingApproval ?? 0) : 0;

@@ -1,3 +1,4 @@
+import { mapsUrl } from '../pdf/pdf-docs.service';
 import { DebarmentService } from '../lifecycle/debarment.service';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
@@ -119,7 +120,7 @@ export class ApplicationsService {
   async get(candidateId: string, id: string) {
     const a = await this.prisma.application.findFirst({
       where: { id, candidateId },
-      include: { exam: { include: { posts: true, centreCities: true } }, events: { orderBy: { at: 'asc' } }, payments: { orderBy: { createdAt: 'desc' } }, admitCard: { include: { centre: { include: { city: true } } } }, result: true },
+      include: { exam: { include: { posts: true, centreCities: true } }, events: { orderBy: { at: 'asc' } }, payments: { orderBy: { createdAt: 'desc' } }, admitCard: { include: { centre: { include: { city: true } }, shift: true } }, result: true },
     });
     if (!a) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Application not found.' });
     const w = applyWindow(a.exam);
@@ -130,7 +131,11 @@ export class ApplicationsService {
       centreCities: a.centreCityIds.map((cid) => a.exam.centreCities.find((c) => c.id === cid)).filter(Boolean).map((c) => ({ id: c!.id, cityName: c!.cityName })),
       customFieldValues: a.customFieldValues, eligibilitySnapshot: a.eligibilitySnapshot, events: a.events,
       payments: a.payments.map((p) => ({ id: p.id, merchantTxnId: p.merchantTxnId, gatewayTxnId: p.gatewayTxnId, amount: p.amount, status: p.status, createdAt: p.createdAt, updatedAt: p.updatedAt })),
-      admitCard: a.admitCard?.releasedAt ? { rollNo: a.admitCard.rollNo, releasedAt: a.admitCard.releasedAt, centre: a.admitCard.centre ? { name: a.admitCard.centre.name, city: a.admitCard.centre.city.cityName, address: a.admitCard.centre.address, reportingTime: a.admitCard.centre.reportingTime } : null } : null,
+      admitCard: a.admitCard?.releasedAt ? {
+        rollNo: a.admitCard.rollNo, releasedAt: a.admitCard.releasedAt,
+        shift: a.admitCard.shift ? { code: a.admitCard.shift.code, date: a.admitCard.shift.date, startTime: a.admitCard.shift.startTime, endTime: a.admitCard.shift.endTime, mode: a.admitCard.shift.mode } : null,
+        centre: a.admitCard.centre ? { name: a.admitCard.centre.name, city: a.admitCard.centre.city.cityName, address: a.admitCard.centre.address, reportingTime: a.admitCard.centre.reportingTime, gateClosingTime: a.admitCard.centre.gateClosingTime, mapUrl: mapsUrl(a.admitCard.centre) } : null,
+      } : null,
       result: a.result,
     };
   }

@@ -133,7 +133,8 @@ export class SelectionService {
           myMarks: mine.get(c.id) ?? null,
         };
       }));
-      return { ...p, exam: exams.get(p.examId) ?? null, candidates };
+      const run = await this.prisma.resultRun.findUnique({ where: { examId_stage: { examId: p.examId, stage: 'INTERVIEW' } } });
+      return { ...p, exam: exams.get(p.examId) ?? null, candidates, locked: !!run && run.status !== 'DRAFT' };
     }));
   }
 

@@ -49,6 +49,15 @@ SMS_HTTP_URL=https://api.provider.example/send?apikey=YOUR_KEY&sender=VTLOTR&to=
 
 Optional: `SMS_HTTP_METHOD=POST` with `SMS_HTTP_BODY='{"to":"91{to}","text":"{text}"}'`, and `SMS_HTTP_SUCCESS_REGEX` if the provider returns HTTP 200 on failure. Register the DLT templates listed in `apps/api/templates/messages.ts` (OTP, OTR ID, payment, admit card, correction); admins can edit texts and DLT IDs under *Communication*.
 
+## Optional: AI assist
+
+The chat assistant, objection pre-review, DV discrepancy notes and interview briefs work without AI (rule-based). To add Claude-written summaries, set these in `deploy/.env` and re-run the installer:
+
+```
+AI_PROVIDER=claude
+ANTHROPIC_API_KEY=<your key>
+```
+
 ## Operations
 
 | Task | Command (run in `deploy/`) |

@@ -94,6 +94,23 @@ export function PhotoStep({ profile, onNext, onBack, readOnly }: StepProps) {
           )}
         </CardBody>
       </Card>
+      {([['THUMB', 'thumb', 'thumbTitle', 'thumbDesc'], ['DECLARATION', 'declarationImage', 'declTitle', 'declDesc']] as const).map(([kind, key, title, desc]) => {
+        const cur = profile[key];
+        return (
+          <Card key={kind}>
+            <CardHeader title={t(`aux.${title}`)} description={t(`aux.${desc}`)} />
+            <CardBody className="flex flex-wrap items-center gap-4">
+              {cur && <><img src={cur.url} alt={t(`aux.${title}`)} className="h-24 rounded border border-border bg-white object-contain" /><p className="text-sm text-success">{t('aux.saved', { kb: (cur.sizeBytes / 1024).toFixed(1) })}</p></>}
+              {!(readOnly && cur) && (
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-border px-4 py-2 text-sm font-medium hover:bg-navy-50">
+                  {cur ? t('aux.replace') : t('aux.upload')}
+                  <input type="file" accept="image/jpeg" className="sr-only" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; const fd = new FormData(); fd.append('file', f); setError(null); void api.upload(`/me/media/${kind === 'THUMB' ? 'thumb' : 'declaration'}`, fd).then(refresh).catch((err: unknown) => setError(errorMessage(err, t))); }} />
+                </label>
+              )}
+            </CardBody>
+          </Card>
+        );
+      })}
       {!readOnly && (
         <div className="flex justify-between">
           <Button onClick={onBack}>{t('app.back')}</Button>

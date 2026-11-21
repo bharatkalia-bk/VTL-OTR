@@ -5,6 +5,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { RequireAuth } from './lib/auth';
 import { Landing } from './routes/Landing';
+import { ChatWidget } from './components/ChatWidget';
 
 const Register = lazy(() => import('./routes/auth/Register'));
 const Login = lazy(() => import('./routes/auth/Login'));
@@ -25,6 +26,10 @@ const Styleguide = lazy(() => import('./routes/Styleguide'));
 const Legal = lazy(() => import('./routes/Legal'));
 const NotFound = lazy(() => import('./routes/NotFound'));
 const DemoInbox = lazy(() => import('./routes/DemoInbox'));
+const Results = lazy(() => import('./routes/results/Results'));
+const ResultDetail = lazy(() => import('./routes/results/ResultDetail'));
+const SelectionPage = lazy(() => import('./routes/results/Selection'));
+const Helpline = lazy(() => import('./routes/Helpline'));
 
 function ScrollTop() {
   const { pathname } = useLocation();
@@ -55,6 +60,10 @@ export function App() {
           <Route path="/applications/:id" element={authed(<ApplicationDetail />)} />
           <Route path="/applications/:id/payment" element={authed(<PaymentReturn />)} />
           <Route path="/corrections" element={authed(<Corrections />)} />
+          <Route path="/results" element={authed(<Results />)} />
+          <Route path="/results/:id" element={authed(<ResultDetail />)} />
+          <Route path="/selection/:id" element={authed(<SelectionPage />)} />
+          <Route path="/helpline" element={<Helpline />} />
           <Route path="/helpdesk" element={<Helpdesk />} />
           <Route path="/verify/:token" element={<Verify />} />
           <Route path="/styleguide" element={<Styleguide />} />
@@ -63,6 +72,7 @@ export function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <ChatWidget />
     </Layout>
   );
 }

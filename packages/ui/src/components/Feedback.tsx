@@ -38,7 +38,7 @@ const badgeTone: Record<Tone | 'neutral' | 'brand', string> = {
   danger: 'bg-danger-50 text-danger-700',
 };
 export function Badge({ tone = 'neutral', children, className }: { tone?: keyof typeof badgeTone; children: ReactNode; className?: string }) {
-  return <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold', badgeTone[tone], className)}>{children}</span>;
+  return <span className={cn('inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', badgeTone[tone], className)}>{children}</span>;
 }
 
 export function Spinner({ label, className }: { label: string; className?: string }) {

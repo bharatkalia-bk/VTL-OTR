@@ -1,4 +1,4 @@
-import { CATEGORIES, PWD_TYPES } from '@vtl/shared';
+import { CATEGORIES, LANGUAGES, PWD_TYPES } from '@vtl/shared';
 import { Alert, Checkbox, Field, Input, RadioGroup, Select } from '@vtl/ui';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -9,7 +9,7 @@ import { api } from '../../../lib/api';
 import { applyServerErrors } from '../../../lib/forms';
 import { StepCard, StepNav, type StepProps } from '../Wizard';
 
-interface Form { category: string; pwd: boolean; pwdType: string | null; pwdPercent: number | null; exServiceman: boolean; serviceYears: number | null; domicileStateCode: string; categoryCertDocId: string | null; pwdCertDocId: string | null; exsmCertDocId: string | null }
+interface Form { category: string; pwd: boolean; pwdType: string | null; pwdPercent: number | null; exServiceman: boolean; serviceYears: number | null; domicileStateCode: string; categoryCertDocId: string | null; pwdCertDocId: string | null; exsmCertDocId: string | null; languages: string[] }
 
 export function CategoryStep({ profile, onNext, onBack, readOnly }: StepProps) {
   const { t, i18n } = useTranslation();
@@ -18,7 +18,7 @@ export function CategoryStep({ profile, onNext, onBack, readOnly }: StepProps) {
   const [formError, setFormError] = useState<string | null>(null);
   const c = profile.category;
   const { register, control, watch, handleSubmit, setValue, setError, formState: { errors, isSubmitting } } = useForm<Form>({
-    defaultValues: { category: c.category ?? '', pwd: c.pwd, pwdType: c.pwdType, pwdPercent: c.pwdPercent, exServiceman: c.exServiceman, serviceYears: c.serviceYears, domicileStateCode: c.domicileStateCode ?? '', categoryCertDocId: c.categoryCertDocId, pwdCertDocId: c.pwdCertDocId, exsmCertDocId: c.exsmCertDocId },
+    defaultValues: { category: c.category ?? '', pwd: c.pwd, pwdType: c.pwdType, pwdPercent: c.pwdPercent, exServiceman: c.exServiceman, serviceYears: c.serviceYears, domicileStateCode: c.domicileStateCode ?? '', categoryCertDocId: c.categoryCertDocId, pwdCertDocId: c.pwdCertDocId, exsmCertDocId: c.exsmCertDocId, languages: c.languages ?? [] },
     disabled: readOnly,
   });
   const v = watch();
@@ -53,6 +53,13 @@ export function CategoryStep({ profile, onNext, onBack, readOnly }: StepProps) {
           <Field label={t('fields.domicile')} hint={t('fields.domicileHint')} error={fe('domicileStateCode')} required>
             {(f) => <Select id={f.id} {...register('domicileStateCode')} data-testid="cat-domicile"><option value="">{t('app.select')}</option>{states.data?.map((s) => <option key={s.code} value={s.code}>{i18n.language === 'hi' ? s.nameHi : s.nameEn}</option>)}</Select>}
           </Field>
+          <fieldset className="rounded border border-border p-4">
+            <legend className="px-1 text-sm font-medium">{t('languages.label')}</legend>
+            <p className="mb-2 text-xs text-ink-muted">{t('languages.hint')}</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {LANGUAGES.map((l) => <Checkbox key={l} label={l} checked={(v.languages ?? []).includes(l)} disabled={readOnly} onChange={(e) => setValue('languages', e.target.checked ? [...(v.languages ?? []), l] : (v.languages ?? []).filter((x) => x !== l))} />)}
+            </div>
+          </fieldset>
           <fieldset className="rounded border border-border p-4">
             <legend className="px-1 text-sm font-medium">{t('fields.pwdSection')}</legend>
             <Checkbox label={t('fields.pwd')} description={t('fields.pwdHint')} {...register('pwd')} onChange={(e) => setValue('pwd', e.target.checked)} checked={v.pwd} />

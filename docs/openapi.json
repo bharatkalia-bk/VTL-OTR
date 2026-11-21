@@ -1,2436 +1,4477 @@
 {
- "openapi": "3.0.0",
- "paths": {
-  "/api/v1/health/live": {
-   "get": {
-    "operationId": "HealthController_live",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Health"
-    ]
-   }
-  },
-  "/api/v1/health/ready": {
-   "get": {
-    "operationId": "HealthController_ready",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Health"
-    ]
-   }
-  },
-  "/api/v1/captcha": {
-   "get": {
-    "operationId": "PublicController_newCaptcha",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/public/config": {
-   "get": {
-    "operationId": "PublicController_config",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/public/exams": {
-   "get": {
-    "operationId": "PublicController_exams",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/public/masters/{type}": {
-   "get": {
-    "operationId": "PublicController_masters",
-    "parameters": [
-     {
-      "name": "type",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health/live": {
+      "get": {
+        "operationId": "HealthController_live",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
       }
-     },
-     {
-      "name": "state",
-      "required": true,
-      "in": "query",
-      "schema": {
-       "type": "string"
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/verify/admit/{token}": {
-   "get": {
-    "operationId": "PublicController_verifyAdmit",
-    "parameters": [
-     {
-      "name": "token",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/captcha": {
+      "get": {
+        "operationId": "PublicController_newCaptcha",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/verify/public-key": {
-   "get": {
-    "operationId": "PublicController_publicKey",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/files": {
-   "get": {
-    "operationId": "PublicController_file",
-    "parameters": [
-     {
-      "name": "key",
-      "required": true,
-      "in": "query",
-      "schema": {
-       "type": "string"
+    "/api/v1/public/config": {
+      "get": {
+        "operationId": "PublicController_config",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     },
-     {
-      "name": "exp",
-      "required": true,
-      "in": "query",
-      "schema": {
-       "type": "string"
+    },
+    "/api/v1/public/exams": {
+      "get": {
+        "operationId": "PublicController_exams",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     },
-     {
-      "name": "sig",
-      "required": true,
-      "in": "query",
-      "schema": {
-       "type": "string"
+    },
+    "/api/v1/public/masters/{type}": {
+      "get": {
+        "operationId": "PublicController_masters",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Public"
-    ]
-   }
-  },
-  "/api/v1/auth/csrf": {
-   "get": {
-    "operationId": "CandidateAuthController_csrf",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/register/start": {
-   "post": {
-    "operationId": "CandidateAuthController_start",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/register/resend": {
-   "post": {
-    "operationId": "CandidateAuthController_resend",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/register/verify": {
-   "post": {
-    "operationId": "CandidateAuthController_verify",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/register/password": {
-   "post": {
-    "operationId": "CandidateAuthController_password",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/login": {
-   "post": {
-    "operationId": "CandidateAuthController_login",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/login/otp/request": {
-   "post": {
-    "operationId": "CandidateAuthController_otpRequest",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/login/otp/verify": {
-   "post": {
-    "operationId": "CandidateAuthController_otpVerify",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/forgot/otr-id": {
-   "post": {
-    "operationId": "CandidateAuthController_forgotOtr",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/forgot/password/request": {
-   "post": {
-    "operationId": "CandidateAuthController_forgotPw",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/forgot/password/reset": {
-   "post": {
-    "operationId": "CandidateAuthController_reset",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/refresh": {
-   "post": {
-    "operationId": "CandidateAuthController_refresh",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/logout": {
-   "post": {
-    "operationId": "CandidateAuthController_logout",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/auth/me": {
-   "get": {
-    "operationId": "CandidateAuthController_me",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate auth"
-    ]
-   }
-  },
-  "/api/v1/me/profile": {
-   "get": {
-    "operationId": "MeController_get",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/profile/personal": {
-   "put": {
-    "operationId": "MeController_personal",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/profile/category": {
-   "put": {
-    "operationId": "MeController_category",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/profile/address": {
-   "put": {
-    "operationId": "MeController_address",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/profile/education": {
-   "put": {
-    "operationId": "MeController_education",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/profile/declaration": {
-   "put": {
-    "operationId": "MeController_declaration",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/documents": {
-   "post": {
-    "operationId": "MeController_uploadDoc",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/documents/{id}/url": {
-   "get": {
-    "operationId": "MeController_docUrl",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/verify/admit/{token}": {
+      "get": {
+        "operationId": "PublicController_verifyAdmit",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/documents/{id}": {
-   "delete": {
-    "operationId": "MeController_delDoc",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/verify/public-key": {
+      "get": {
+        "operationId": "PublicController_publicKey",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/photo/session": {
-   "post": {
-    "operationId": "MeController_photoSession",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/photo/attempts": {
-   "post": {
-    "operationId": "MeController_attempt",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/photo": {
-   "post": {
-    "operationId": "MeController_photo",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/signature": {
-   "post": {
-    "operationId": "MeController_signature",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/identity/aadhaar/initiate": {
-   "post": {
-    "operationId": "MeController_aadhaarInit",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/identity/aadhaar/verify": {
-   "post": {
-    "operationId": "MeController_aadhaarVerify",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/identity/digilocker/connect": {
-   "post": {
-    "operationId": "MeController_dlConnect",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/identity/apaar": {
-   "post": {
-    "operationId": "MeController_apaar",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/submit": {
-   "post": {
-    "operationId": "MeController_submit",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/otr-slip.pdf": {
-   "get": {
-    "operationId": "MeController_slip",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/contact/change/request": {
-   "post": {
-    "operationId": "MeController_contactReq",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/contact/change/verify": {
-   "post": {
-    "operationId": "MeController_contactVerify",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/corrections": {
-   "get": {
-    "operationId": "MeController_myCorrections",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   },
-   "post": {
-    "operationId": "MeController_createCorrection",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/notifications": {
-   "get": {
-    "operationId": "MeController_notifications",
-    "parameters": [
-     {
-      "name": "limit",
-      "required": true,
-      "in": "query",
-      "schema": {
-       "type": "string"
+    "/api/v1/files": {
+      "get": {
+        "operationId": "PublicController_file",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exp",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sig",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Public"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/notifications/read-all": {
-   "post": {
-    "operationId": "MeController_readAll",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/me/language": {
-   "post": {
-    "operationId": "MeController_language",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Candidate profile"
-    ]
-   }
-  },
-  "/api/v1/exams": {
-   "get": {
-    "operationId": "ApplicationsController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/exams/{id}": {
-   "get": {
-    "operationId": "ApplicationsController_exam",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/csrf": {
+      "get": {
+        "operationId": "CandidateAuthController_csrf",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/applications": {
-   "get": {
-    "operationId": "ApplicationsController_apps_",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Exams & applications"
-    ]
-   },
-   "post": {
-    "operationId": "ApplicationsController_draft",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/applications/{id}": {
-   "get": {
-    "operationId": "ApplicationsController_get",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/register/start": {
+      "post": {
+        "operationId": "CandidateAuthController_start",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Exams & applications"
-    ]
-   },
-   "delete": {
-    "operationId": "ApplicationsController_discard",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/register/resend": {
+      "post": {
+        "operationId": "CandidateAuthController_resend",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/applications/{id}/submit": {
-   "post": {
-    "operationId": "ApplicationsController_submit",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/register/verify": {
+      "post": {
+        "operationId": "CandidateAuthController_verify",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/applications/{id}/form.pdf": {
-   "get": {
-    "operationId": "ApplicationsController_form",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/register/password": {
+      "post": {
+        "operationId": "CandidateAuthController_password",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/applications/{id}/admit-card.pdf": {
-   "get": {
-    "operationId": "ApplicationsController_admit",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "CandidateAuthController_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Exams & applications"
-    ]
-   }
-  },
-  "/api/v1/applications/{id}/payments": {
-   "post": {
-    "operationId": "PaymentsController_initiate",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/login/otp/request": {
+      "post": {
+        "operationId": "CandidateAuthController_otpRequest",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Payments"
-    ]
-   }
-  },
-  "/api/v1/payments/by-txn/{txn}": {
-   "get": {
-    "operationId": "PaymentsController_status",
-    "parameters": [
-     {
-      "name": "txn",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/login/otp/verify": {
+      "post": {
+        "operationId": "CandidateAuthController_otpVerify",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Payments"
-    ]
-   }
-  },
-  "/api/v1/payments/{id}/receipt.pdf": {
-   "get": {
-    "operationId": "PaymentsController_receipt",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/forgot/otr-id": {
+      "post": {
+        "operationId": "CandidateAuthController_forgotOtr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Payments"
-    ]
-   }
-  },
-  "/api/v1/payments/callback/{gateway}": {
-   "post": {
-    "operationId": "PaymentsController_callback",
-    "parameters": [
-     {
-      "name": "gateway",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/forgot/password/request": {
+      "post": {
+        "operationId": "CandidateAuthController_forgotPw",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Payments"
-    ]
-   }
-  },
-  "/api/v1/helpdesk/public-tickets": {
-   "post": {
-    "operationId": "HelpdeskController_createPublic",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Helpdesk"
-    ]
-   }
-  },
-  "/api/v1/helpdesk/attachments": {
-   "post": {
-    "operationId": "HelpdeskController_attach",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Helpdesk"
-    ]
-   }
-  },
-  "/api/v1/helpdesk/tickets": {
-   "get": {
-    "operationId": "HelpdeskController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Helpdesk"
-    ]
-   },
-   "post": {
-    "operationId": "HelpdeskController_create",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Helpdesk"
-    ]
-   }
-  },
-  "/api/v1/helpdesk/tickets/{id}": {
-   "get": {
-    "operationId": "HelpdeskController_get",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/forgot/password/reset": {
+      "post": {
+        "operationId": "CandidateAuthController_reset",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Helpdesk"
-    ]
-   }
-  },
-  "/api/v1/helpdesk/tickets/{id}/messages": {
-   "post": {
-    "operationId": "HelpdeskController_reply",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "CandidateAuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "201": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Helpdesk"
-    ]
-   }
-  },
-  "/api/v1/admin/auth/login": {
-   "post": {
-    "operationId": "AdminAuthController_login",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin auth"
-    ]
-   }
-  },
-  "/api/v1/admin/auth/totp/enrol": {
-   "post": {
-    "operationId": "AdminAuthController_enrol",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin auth"
-    ]
-   }
-  },
-  "/api/v1/admin/auth/totp/verify": {
-   "post": {
-    "operationId": "AdminAuthController_verify",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin auth"
-    ]
-   }
-  },
-  "/api/v1/admin/auth/refresh": {
-   "post": {
-    "operationId": "AdminAuthController_refresh",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin auth"
-    ]
-   }
-  },
-  "/api/v1/admin/auth/logout": {
-   "post": {
-    "operationId": "AdminAuthController_logout",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin auth"
-    ]
-   }
-  },
-  "/api/v1/admin/auth/me": {
-   "get": {
-    "operationId": "AdminAuthController_me",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin auth"
-    ]
-   }
-  },
-  "/api/v1/admin/users": {
-   "get": {
-    "operationId": "AdminUsersController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin users"
-    ]
-   },
-   "post": {
-    "operationId": "AdminUsersController_create",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin users"
-    ]
-   }
-  },
-  "/api/v1/admin/users/{id}": {
-   "put": {
-    "operationId": "AdminUsersController_update",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "CandidateAuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin users"
-    ]
-   }
-  },
-  "/api/v1/admin/users/{id}/reset-totp": {
-   "post": {
-    "operationId": "AdminUsersController_resetTotp",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "CandidateAuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate auth"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin users"
-    ]
-   }
-  },
-  "/api/v1/admin/dashboard": {
-   "get": {
-    "operationId": "AdminDashboardController_summary",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin dashboard"
-    ]
-   }
-  },
-  "/api/v1/admin/exams": {
-   "get": {
-    "operationId": "AdminExamsController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin exams"
-    ]
-   },
-   "post": {
-    "operationId": "AdminExamsController_create",
-    "parameters": [],
-    "responses": {
-     "201": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}": {
-   "get": {
-    "operationId": "AdminExamsController_get",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/profile": {
+      "get": {
+        "operationId": "MeController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   },
-   "put": {
-    "operationId": "AdminExamsController_update",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/profile/personal": {
+      "put": {
+        "operationId": "MeController_personal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/status": {
-   "post": {
-    "operationId": "AdminExamsController_status",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/profile/category": {
+      "put": {
+        "operationId": "MeController_category",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/posts": {
-   "post": {
-    "operationId": "AdminExamsController_addPost",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/profile/address": {
+      "put": {
+        "operationId": "MeController_address",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "201": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/posts/{postId}": {
-   "put": {
-    "operationId": "AdminExamsController_updPost",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/profile/education": {
+      "put": {
+        "operationId": "MeController_education",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     },
-     {
-      "name": "postId",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    },
+    "/api/v1/me/profile/declaration": {
+      "put": {
+        "operationId": "MeController_declaration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   },
-   "delete": {
-    "operationId": "AdminExamsController_delPost",
-    "parameters": [
-     {
-      "name": "postId",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/documents": {
+      "post": {
+        "operationId": "MeController_uploadDoc",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/fee-rules": {
-   "put": {
-    "operationId": "AdminExamsController_fees",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/documents/{id}/url": {
+      "get": {
+        "operationId": "MeController_docUrl",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/centre-cities": {
-   "post": {
-    "operationId": "AdminExamsController_addCity",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/documents/{id}": {
+      "delete": {
+        "operationId": "MeController_delDoc",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "201": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/centre-cities/{cityId}": {
-   "put": {
-    "operationId": "AdminExamsController_updCity",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/photo/session": {
+      "post": {
+        "operationId": "MeController_photoSession",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     },
-     {
-      "name": "cityId",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    },
+    "/api/v1/me/photo/attempts": {
+      "post": {
+        "operationId": "MeController_attempt",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/admit-cards/summary": {
-   "get": {
-    "operationId": "AdminExamsController_acSummary",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/photo": {
+      "post": {
+        "operationId": "MeController_photo",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/admit-cards": {
-   "get": {
-    "operationId": "AdminExamsController_acList",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/signature": {
+      "post": {
+        "operationId": "MeController_signature",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/admit-cards/allocate": {
-   "post": {
-    "operationId": "AdminExamsController_allocate",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/identity/aadhaar/initiate": {
+      "post": {
+        "operationId": "MeController_aadhaarInit",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/admit-cards/generate": {
-   "post": {
-    "operationId": "AdminExamsController_generate",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/identity/aadhaar/verify": {
+      "post": {
+        "operationId": "MeController_aadhaarVerify",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/admit-cards/release": {
-   "post": {
-    "operationId": "AdminExamsController_release",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/identity/digilocker/connect": {
+      "post": {
+        "operationId": "MeController_dlConnect",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin exams"
-    ]
-   }
-  },
-  "/api/v1/admin/admit-cards/{id}/centre": {
-   "put": {
-    "operationId": "AdminAdmitCardController_override",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/identity/apaar": {
+      "post": {
+        "operationId": "MeController_apaar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin admit cards"
-    ]
-   }
-  },
-  "/api/v1/admin/candidates": {
-   "get": {
-    "operationId": "AdminCandidatesController_search",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/candidates/{id}": {
-   "get": {
-    "operationId": "AdminCandidatesController_detail",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/submit": {
+      "post": {
+        "operationId": "MeController_submit",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/candidates/{id}/block": {
-   "post": {
-    "operationId": "AdminCandidatesController_block",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/otr-slip.pdf": {
+      "get": {
+        "operationId": "MeController_slip",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/candidates/{id}/unblock": {
-   "post": {
-    "operationId": "AdminCandidatesController_unblock",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/contact/change/request": {
+      "post": {
+        "operationId": "MeController_contactReq",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/documents": {
-   "get": {
-    "operationId": "AdminCandidatesController_docs",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/documents/{id}/url": {
-   "get": {
-    "operationId": "AdminCandidatesController_docUrl",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/contact/change/verify": {
+      "post": {
+        "operationId": "MeController_contactVerify",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/documents/{id}/approve": {
-   "post": {
-    "operationId": "AdminCandidatesController_approve",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/corrections": {
+      "get": {
+        "operationId": "MeController_myCorrections",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
+      },
+      "post": {
+        "operationId": "MeController_createCorrection",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/documents/{id}/reject": {
-   "post": {
-    "operationId": "AdminCandidatesController_reject",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/notifications": {
+      "get": {
+        "operationId": "MeController_notifications",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/duplicates": {
-   "get": {
-    "operationId": "AdminCandidatesController_dups",
-    "parameters": [
-     {
-      "name": "status",
-      "required": true,
-      "in": "query",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/notifications/read-all": {
+      "post": {
+        "operationId": "MeController_readAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/duplicates/{id}/resolve": {
-   "post": {
-    "operationId": "AdminCandidatesController_resolve",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/me/language": {
+      "post": {
+        "operationId": "MeController_language",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate profile"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/corrections": {
-   "get": {
-    "operationId": "AdminCandidatesController_correctionList",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/corrections/{id}/approve": {
-   "post": {
-    "operationId": "AdminCandidatesController_cApprove",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/exams": {
+      "get": {
+        "operationId": "ApplicationsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/corrections/{id}/reject": {
-   "post": {
-    "operationId": "AdminCandidatesController_cReject",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/exams/{id}": {
+      "get": {
+        "operationId": "ApplicationsController_exam",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin candidates"
-    ]
-   }
-  },
-  "/api/v1/admin/payments": {
-   "get": {
-    "operationId": "AdminPaymentsController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin payments"
-    ]
-   }
-  },
-  "/api/v1/admin/payments/{id}": {
-   "get": {
-    "operationId": "AdminPaymentsController_get",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/applications": {
+      "get": {
+        "operationId": "ApplicationsController_apps_",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
+      },
+      "post": {
+        "operationId": "ApplicationsController_draft",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin payments"
-    ]
-   }
-  },
-  "/api/v1/admin/payments/reconcile": {
-   "post": {
-    "operationId": "AdminPaymentsController_reconcile",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin payments"
-    ]
-   }
-  },
-  "/api/v1/admin/payments/{id}/verify": {
-   "post": {
-    "operationId": "AdminPaymentsController_verify",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/applications/{id}": {
+      "get": {
+        "operationId": "ApplicationsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
+      },
+      "delete": {
+        "operationId": "ApplicationsController_discard",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin payments"
-    ]
-   }
-  },
-  "/api/v1/admin/payments/{id}/refund-marker": {
-   "post": {
-    "operationId": "AdminPaymentsController_refund",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/applications/{id}/submit": {
+      "post": {
+        "operationId": "ApplicationsController_submit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin payments"
-    ]
-   }
-  },
-  "/api/v1/admin/comms/templates": {
-   "get": {
-    "operationId": "AdminCommsController_templates",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin communication"
-    ]
-   },
-   "put": {
-    "operationId": "AdminCommsController_saveTemplate",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin communication"
-    ]
-   }
-  },
-  "/api/v1/admin/comms/campaigns": {
-   "get": {
-    "operationId": "AdminCommsController_campaigns",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin communication"
-    ]
-   },
-   "post": {
-    "operationId": "AdminCommsController_create",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin communication"
-    ]
-   }
-  },
-  "/api/v1/admin/comms/campaigns/preview": {
-   "post": {
-    "operationId": "AdminCommsController_preview",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin communication"
-    ]
-   }
-  },
-  "/api/v1/admin/reports": {
-   "get": {
-    "operationId": "AdminReportsController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin reports"
-    ]
-   },
-   "post": {
-    "operationId": "AdminReportsController_create",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin reports"
-    ]
-   }
-  },
-  "/api/v1/admin/reports/{id}/download": {
-   "get": {
-    "operationId": "AdminReportsController_download",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/applications/{id}/form.pdf": {
+      "get": {
+        "operationId": "ApplicationsController_form",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin reports"
-    ]
-   }
-  },
-  "/api/v1/admin/audit-logs": {
-   "get": {
-    "operationId": "AdminAuditController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin audit"
-    ]
-   }
-  },
-  "/api/v1/admin/audit-logs/{id}": {
-   "get": {
-    "operationId": "AdminAuditController_get",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/applications/{id}/admit-card.pdf": {
+      "get": {
+        "operationId": "ApplicationsController_admit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exams & applications"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin audit"
-    ]
-   }
-  },
-  "/api/v1/admin/masters/{type}": {
-   "post": {
-    "operationId": "AdminMastersController_create",
-    "parameters": [
-     {
-      "name": "type",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/applications/{id}/payments": {
+      "post": {
+        "operationId": "PaymentsController_initiate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "201": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin masters"
-    ]
-   }
-  },
-  "/api/v1/admin/masters/{type}/{id}": {
-   "delete": {
-    "operationId": "AdminMastersController_remove",
-    "parameters": [
-     {
-      "name": "type",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/payments/by-txn/{txn}": {
+      "get": {
+        "operationId": "PaymentsController_status",
+        "parameters": [
+          {
+            "name": "txn",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
       }
-     },
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    },
+    "/api/v1/payments/{id}/receipt.pdf": {
+      "get": {
+        "operationId": "PaymentsController_receipt",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin masters"
-    ]
-   }
-  },
-  "/api/v1/admin/settings": {
-   "get": {
-    "operationId": "AdminSettingsController_get",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin settings"
-    ]
-   },
-   "put": {
-    "operationId": "AdminSettingsController_update",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin settings"
-    ]
-   }
-  },
-  "/api/v1/admin/tickets": {
-   "get": {
-    "operationId": "AdminTicketsController_list",
-    "parameters": [],
-    "responses": {
-     "200": {
-      "description": ""
-     }
-    },
-    "tags": [
-     "Admin helpdesk"
-    ]
-   }
-  },
-  "/api/v1/admin/tickets/{id}": {
-   "get": {
-    "operationId": "AdminTicketsController_get",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/payments/callback/{gateway}": {
+      "post": {
+        "operationId": "PaymentsController_callback",
+        "parameters": [
+          {
+            "name": "gateway",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin helpdesk"
-    ]
-   }
-  },
-  "/api/v1/admin/tickets/{id}/reply": {
-   "post": {
-    "operationId": "AdminTicketsController_reply",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/helpdesk/public-tickets": {
+      "post": {
+        "operationId": "HelpdeskController_createPublic",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin helpdesk"
-    ]
-   }
-  },
-  "/api/v1/admin/tickets/{id}/status": {
-   "post": {
-    "operationId": "AdminTicketsController_status",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/helpdesk/attachments": {
+      "post": {
+        "operationId": "HelpdeskController_attach",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin helpdesk"
-    ]
-   }
-  },
-  "/api/v1/admin/tickets/{id}/assign": {
-   "post": {
-    "operationId": "AdminTicketsController_assign",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/helpdesk/tickets": {
+      "get": {
+        "operationId": "HelpdeskController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk"
+        ]
+      },
+      "post": {
+        "operationId": "HelpdeskController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin helpdesk"
-    ]
-   }
-  },
-  "/api/v1/admin/exams/{id}/results": {
-   "post": {
-    "operationId": "AdminResultsController_publish",
-    "parameters": [
-     {
-      "name": "id",
-      "required": true,
-      "in": "path",
-      "schema": {
-       "type": "string"
+    "/api/v1/helpdesk/tickets/{id}": {
+      "get": {
+        "operationId": "HelpdeskController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk"
+        ]
       }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": ""
-     }
     },
-    "tags": [
-     "Admin results"
-    ]
-   }
+    "/api/v1/helpdesk/tickets/{id}/messages": {
+      "post": {
+        "operationId": "HelpdeskController_reply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/login": {
+      "post": {
+        "operationId": "AdminAuthController_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/totp/enrol": {
+      "post": {
+        "operationId": "AdminAuthController_enrol",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/totp/verify": {
+      "post": {
+        "operationId": "AdminAuthController_verify",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/refresh": {
+      "post": {
+        "operationId": "AdminAuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/logout": {
+      "post": {
+        "operationId": "AdminAuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/password": {
+      "post": {
+        "operationId": "AdminAuthController_changePassword",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/auth/me": {
+      "get": {
+        "operationId": "AdminAuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin auth"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "AdminUsersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin users"
+        ]
+      },
+      "post": {
+        "operationId": "AdminUsersController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}": {
+      "put": {
+        "operationId": "AdminUsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/reset-totp": {
+      "post": {
+        "operationId": "AdminUsersController_resetTotp",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/v1/admin/dashboard": {
+      "get": {
+        "operationId": "AdminDashboardController_summary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin dashboard"
+        ]
+      }
+    },
+    "/api/v1/admin/exams": {
+      "get": {
+        "operationId": "AdminExamsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      },
+      "post": {
+        "operationId": "AdminExamsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}": {
+      "get": {
+        "operationId": "AdminExamsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      },
+      "put": {
+        "operationId": "AdminExamsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/status": {
+      "post": {
+        "operationId": "AdminExamsController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/posts": {
+      "post": {
+        "operationId": "AdminExamsController_addPost",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/posts/{postId}": {
+      "put": {
+        "operationId": "AdminExamsController_updPost",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminExamsController_delPost",
+        "parameters": [
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/fee-rules": {
+      "put": {
+        "operationId": "AdminExamsController_fees",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/centre-cities": {
+      "post": {
+        "operationId": "AdminExamsController_addCity",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/centre-cities/{cityId}": {
+      "put": {
+        "operationId": "AdminExamsController_updCity",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cityId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/admit-cards/summary": {
+      "get": {
+        "operationId": "AdminExamsController_acSummary",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/admit-cards": {
+      "get": {
+        "operationId": "AdminExamsController_acList",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/admit-cards/allocate": {
+      "post": {
+        "operationId": "AdminExamsController_allocate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/admit-cards/generate": {
+      "post": {
+        "operationId": "AdminExamsController_generate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/admit-cards/release": {
+      "post": {
+        "operationId": "AdminExamsController_release",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin exams"
+        ]
+      }
+    },
+    "/api/v1/admin/admit-cards/{id}/centre": {
+      "put": {
+        "operationId": "AdminAdmitCardController_override",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin admit cards"
+        ]
+      }
+    },
+    "/api/v1/admin/candidates": {
+      "get": {
+        "operationId": "AdminCandidatesController_search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/candidates/{id}": {
+      "get": {
+        "operationId": "AdminCandidatesController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/candidates/{id}/block": {
+      "post": {
+        "operationId": "AdminCandidatesController_block",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/candidates/{id}/unblock": {
+      "post": {
+        "operationId": "AdminCandidatesController_unblock",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/documents": {
+      "get": {
+        "operationId": "AdminCandidatesController_docs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/documents/{id}/url": {
+      "get": {
+        "operationId": "AdminCandidatesController_docUrl",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/documents/{id}/approve": {
+      "post": {
+        "operationId": "AdminCandidatesController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/documents/{id}/reject": {
+      "post": {
+        "operationId": "AdminCandidatesController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/duplicates": {
+      "get": {
+        "operationId": "AdminCandidatesController_dups",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/duplicates/{id}/resolve": {
+      "post": {
+        "operationId": "AdminCandidatesController_resolve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/corrections": {
+      "get": {
+        "operationId": "AdminCandidatesController_correctionList",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/corrections/{id}/approve": {
+      "post": {
+        "operationId": "AdminCandidatesController_cApprove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/corrections/{id}/reject": {
+      "post": {
+        "operationId": "AdminCandidatesController_cReject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin candidates"
+        ]
+      }
+    },
+    "/api/v1/admin/payments": {
+      "get": {
+        "operationId": "AdminPaymentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin payments"
+        ]
+      }
+    },
+    "/api/v1/admin/payments/{id}": {
+      "get": {
+        "operationId": "AdminPaymentsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin payments"
+        ]
+      }
+    },
+    "/api/v1/admin/payments/reconcile": {
+      "post": {
+        "operationId": "AdminPaymentsController_reconcile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin payments"
+        ]
+      }
+    },
+    "/api/v1/admin/payments/{id}/verify": {
+      "post": {
+        "operationId": "AdminPaymentsController_verify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin payments"
+        ]
+      }
+    },
+    "/api/v1/admin/payments/{id}/refund-marker": {
+      "post": {
+        "operationId": "AdminPaymentsController_refund",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin payments"
+        ]
+      }
+    },
+    "/api/v1/admin/comms/templates": {
+      "get": {
+        "operationId": "AdminCommsController_templates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin communication"
+        ]
+      },
+      "put": {
+        "operationId": "AdminCommsController_saveTemplate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin communication"
+        ]
+      }
+    },
+    "/api/v1/admin/comms/campaigns": {
+      "get": {
+        "operationId": "AdminCommsController_campaigns",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin communication"
+        ]
+      },
+      "post": {
+        "operationId": "AdminCommsController_create",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin communication"
+        ]
+      }
+    },
+    "/api/v1/admin/comms/campaigns/preview": {
+      "post": {
+        "operationId": "AdminCommsController_preview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin communication"
+        ]
+      }
+    },
+    "/api/v1/admin/reports": {
+      "get": {
+        "operationId": "AdminReportsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin reports"
+        ]
+      },
+      "post": {
+        "operationId": "AdminReportsController_create",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin reports"
+        ]
+      }
+    },
+    "/api/v1/admin/reports/{id}/download": {
+      "get": {
+        "operationId": "AdminReportsController_download",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin reports"
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "operationId": "AdminAuditController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin audit"
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs/{id}": {
+      "get": {
+        "operationId": "AdminAuditController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin audit"
+        ]
+      }
+    },
+    "/api/v1/admin/masters/{type}": {
+      "post": {
+        "operationId": "AdminMastersController_create",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin masters"
+        ]
+      }
+    },
+    "/api/v1/admin/masters/{type}/{id}": {
+      "delete": {
+        "operationId": "AdminMastersController_remove",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin masters"
+        ]
+      }
+    },
+    "/api/v1/admin/settings": {
+      "get": {
+        "operationId": "AdminSettingsController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin settings"
+        ]
+      },
+      "put": {
+        "operationId": "AdminSettingsController_update",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin settings"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets": {
+      "get": {
+        "operationId": "AdminTicketsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin helpdesk"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/{id}": {
+      "get": {
+        "operationId": "AdminTicketsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin helpdesk"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/{id}/reply": {
+      "post": {
+        "operationId": "AdminTicketsController_reply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin helpdesk"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/{id}/status": {
+      "post": {
+        "operationId": "AdminTicketsController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin helpdesk"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/{id}/assign": {
+      "post": {
+        "operationId": "AdminTicketsController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin helpdesk"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/results": {
+      "post": {
+        "operationId": "AdminResultsController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin results"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/shifts": {
+      "get": {
+        "operationId": "ExamDayController_shifts",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      },
+      "post": {
+        "operationId": "ExamDayController_addShift",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/shifts/{shiftId}": {
+      "put": {
+        "operationId": "ExamDayController_updShift",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shiftId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/shifts/assign": {
+      "post": {
+        "operationId": "ExamDayController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/centres": {
+      "get": {
+        "operationId": "ExamDayController_centres",
+        "parameters": [
+          {
+            "name": "examId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/lookup": {
+      "post": {
+        "operationId": "ExamDayController_lookup",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/attendance": {
+      "post": {
+        "operationId": "ExamDayController_mark",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/centres/{centreId}/roster": {
+      "get": {
+        "operationId": "ExamDayController_roster",
+        "parameters": [
+          {
+            "name": "centreId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shiftId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/centres/{centreId}/close": {
+      "post": {
+        "operationId": "ExamDayController_close",
+        "parameters": [
+          {
+            "name": "centreId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/centres/{centreId}/roll-sheet": {
+      "get": {
+        "operationId": "ExamDayController_sheet",
+        "parameters": [
+          {
+            "name": "centreId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shiftId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/centres/{centreId}/exceptions": {
+      "post": {
+        "operationId": "ExamDayController_centreException",
+        "parameters": [
+          {
+            "name": "centreId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/centre/biometric-alerts": {
+      "post": {
+        "operationId": "ExamDayController_deskAlert",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/biometric-alerts": {
+      "get": {
+        "operationId": "ExamDayController_alerts",
+        "parameters": [
+          {
+            "name": "examId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/biometric-alerts/{id}/review": {
+      "post": {
+        "operationId": "ExamDayController_review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/tech-exceptions": {
+      "get": {
+        "operationId": "ExamDayController_exceptions",
+        "parameters": [
+          {
+            "name": "examId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/tech-exceptions": {
+      "post": {
+        "operationId": "ExamDayController_addException",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/tech-exceptions/{id}/decision": {
+      "post": {
+        "operationId": "ExamDayController_decide",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam day"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/observers": {
+      "get": {
+        "operationId": "ObserversController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      },
+      "post": {
+        "operationId": "ObserversController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      }
+    },
+    "/api/v1/admin/observer-assignments/{id}/waive": {
+      "post": {
+        "operationId": "ObserversController_waive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      }
+    },
+    "/api/v1/admin/observer-assignments/{id}": {
+      "delete": {
+        "operationId": "ObserversController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      }
+    },
+    "/api/v1/admin/observer/me": {
+      "get": {
+        "operationId": "ObserversController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      }
+    },
+    "/api/v1/admin/observer/assignments/{id}/coi": {
+      "post": {
+        "operationId": "ObserversController_coi",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      }
+    },
+    "/api/v1/admin/observer/sync": {
+      "post": {
+        "operationId": "ObserversController_sync",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Observers"
+        ]
+      }
+    },
+    "/api/v1/admin/agency/exams": {
+      "get": {
+        "operationId": "AgencyConsoleController_exams",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency"
+        ]
+      }
+    },
+    "/api/v1/admin/agency/keys": {
+      "get": {
+        "operationId": "AgencyConsoleController_keys",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency"
+        ]
+      },
+      "post": {
+        "operationId": "AgencyConsoleController_createKey",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency"
+        ]
+      }
+    },
+    "/api/v1/admin/agency/keys/{id}": {
+      "delete": {
+        "operationId": "AgencyConsoleController_revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency"
+        ]
+      }
+    },
+    "/api/v1/admin/agency/exams/{id}/upload": {
+      "post": {
+        "operationId": "AgencyConsoleController_upload",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency"
+        ]
+      }
+    },
+    "/api/v1/admin/agency/submissions": {
+      "get": {
+        "operationId": "AgencyConsoleController_subs",
+        "parameters": [
+          {
+            "name": "examId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency"
+        ]
+      }
+    },
+    "/api/v1/agency/v1/ping": {
+      "get": {
+        "operationId": "AgencyGatewayController_ping",
+        "parameters": [
+          {
+            "name": "x-agency-key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency gateway (API key)"
+        ]
+      }
+    },
+    "/api/v1/agency/v1/exams/{code}/submissions": {
+      "post": {
+        "operationId": "AgencyGatewayController_submit",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Agency gateway (API key)"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/papers": {
+      "get": {
+        "operationId": "AssessmentController_papers",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/shifts/{shiftId}/paper": {
+      "put": {
+        "operationId": "AssessmentController_paper",
+        "parameters": [
+          {
+            "name": "shiftId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/papers/{id}/provisional-key": {
+      "post": {
+        "operationId": "AssessmentController_prov",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/papers/{id}/final-key": {
+      "post": {
+        "operationId": "AssessmentController_fin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/objections": {
+      "get": {
+        "operationId": "AssessmentController_objections",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/papers/{id}/questions/{qno}/pre-review": {
+      "post": {
+        "operationId": "AssessmentController_pre",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qno",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/papers/{id}/questions/{qno}/decision": {
+      "post": {
+        "operationId": "AssessmentController_dec",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qno",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer keys"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/result-runs": {
+      "get": {
+        "operationId": "ResultsController_runs",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      },
+      "post": {
+        "operationId": "ResultsController_compute",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/result-runs/{stage}": {
+      "get": {
+        "operationId": "ResultsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/result-runs/{stage}/submit": {
+      "post": {
+        "operationId": "ResultsController_submit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/result-runs/{stage}/decision": {
+      "post": {
+        "operationId": "ResultsController_decide",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/result-runs/{stage}/publish": {
+      "post": {
+        "operationId": "ResultsController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/stage-marks/TIER2": {
+      "post": {
+        "operationId": "ResultsController_marks",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/v1/admin/debarments": {
+      "get": {
+        "operationId": "DebarmentController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Debarment"
+        ]
+      },
+      "post": {
+        "operationId": "DebarmentController_propose",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Debarment"
+        ]
+      }
+    },
+    "/api/v1/admin/debarments/{id}/decision": {
+      "post": {
+        "operationId": "DebarmentController_decide",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Debarment"
+        ]
+      }
+    },
+    "/api/v1/admin/debarments/{id}/revoke": {
+      "post": {
+        "operationId": "DebarmentController_revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Debarment"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/shortlist": {
+      "post": {
+        "operationId": "SelectionController_shortlist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/stage-calls": {
+      "get": {
+        "operationId": "SelectionController_calls",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/stage-calls/{stage}/release": {
+      "post": {
+        "operationId": "SelectionController_release",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/panels": {
+      "get": {
+        "operationId": "SelectionController_panels",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      },
+      "post": {
+        "operationId": "SelectionController_panel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/panels/schedule": {
+      "post": {
+        "operationId": "SelectionController_schedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/panel/me": {
+      "get": {
+        "operationId": "SelectionController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/panel/calls/{id}/marks": {
+      "post": {
+        "operationId": "SelectionController_marks",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/panel/calls/{id}/absent": {
+      "post": {
+        "operationId": "SelectionController_absent",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/panel/calls/{id}/brief": {
+      "get": {
+        "operationId": "SelectionController_brief",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/vacancies": {
+      "get": {
+        "operationId": "SelectionController_vac",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      },
+      "put": {
+        "operationId": "SelectionController_setVac",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/allotment/run": {
+      "post": {
+        "operationId": "SelectionController_allot",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/allotments": {
+      "get": {
+        "operationId": "SelectionController_allotments",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/dv/schedule": {
+      "post": {
+        "operationId": "SelectionController_dvSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/exams/{id}/dv": {
+      "get": {
+        "operationId": "SelectionController_dv",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/dv/{id}/checks": {
+      "post": {
+        "operationId": "SelectionController_checks",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/dv/{id}": {
+      "put": {
+        "operationId": "SelectionController_dvUpdate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Selection"
+        ]
+      }
+    },
+    "/api/v1/admin/ivr-calls": {
+      "get": {
+        "operationId": "ChannelsAdminController_ivr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk channels"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/phone": {
+      "post": {
+        "operationId": "ChannelsAdminController_phone",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk channels"
+        ]
+      }
+    },
+    "/api/v1/admin/journey/{term}": {
+      "get": {
+        "operationId": "ChannelsAdminController_trace",
+        "parameters": [
+          {
+            "name": "term",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk channels"
+        ]
+      }
+    },
+    "/api/v1/chat": {
+      "post": {
+        "operationId": "ChannelsPublicController_chat",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk channels"
+        ]
+      }
+    },
+    "/api/v1/chat/{id}/escalate": {
+      "post": {
+        "operationId": "ChannelsPublicController_escalate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk channels"
+        ]
+      }
+    },
+    "/api/v1/ivr": {
+      "post": {
+        "operationId": "ChannelsPublicController_ivr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Helpdesk channels"
+        ]
+      }
+    },
+    "/api/v1/admin/staff": {
+      "get": {
+        "operationId": "StaffDirectoryController_list",
+        "parameters": [
+          {
+            "name": "role",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Staff directory"
+        ]
+      }
+    },
+    "/api/v1/me/media/thumb": {
+      "post": {
+        "operationId": "CandidateLifecycleController_thumb",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/media/declaration": {
+      "post": {
+        "operationId": "CandidateLifecycleController_decl",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/response-sheet": {
+      "get": {
+        "operationId": "CandidateLifecycleController_sheet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/omr-carbon": {
+      "post": {
+        "operationId": "CandidateLifecycleController_carbon",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/objections": {
+      "post": {
+        "operationId": "CandidateLifecycleController_objection",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/objections/{id}": {
+      "delete": {
+        "operationId": "CandidateLifecycleController_withdraw",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/objections/{id}/pay": {
+      "post": {
+        "operationId": "CandidateLifecycleController_pay",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/results": {
+      "get": {
+        "operationId": "CandidateLifecycleController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/results": {
+      "get": {
+        "operationId": "CandidateLifecycleController_one",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/selection": {
+      "get": {
+        "operationId": "CandidateLifecycleController_sel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/preferences": {
+      "get": {
+        "operationId": "CandidateLifecycleController_prefs",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      },
+      "put": {
+        "operationId": "CandidateLifecycleController_savePrefs",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/allotment/accept": {
+      "post": {
+        "operationId": "CandidateLifecycleController_accept",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/allotment/decline": {
+      "post": {
+        "operationId": "CandidateLifecycleController_decline",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/debarments": {
+      "get": {
+        "operationId": "CandidateLifecycleController_debarments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    },
+    "/api/v1/me/applications/{id}/call-letter/{stage}": {
+      "get": {
+        "operationId": "CandidateLifecycleController_letter",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stage",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Candidate: exam, results and selection"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "VTL OTR API",
+    "description": "VTL One Time Registration Platform. A product of Vensysco Technologies Limited.\n\nAuth: httpOnly cookies. Mutating requests require the `X-CSRF-Token` header matching the `vtl_csrf` cookie (GET /api/v1/auth/csrf).",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "vtl_at"
+      }
+    },
+    "schemas": {}
   }
- },
- "info": {
-  "title": "VTL OTR API",
-  "description": "VTL One Time Registration Platform. A product of Vensysco Technologies Limited.\n\nAuth: httpOnly cookies. Mutating requests require the `X-CSRF-Token` header matching the `vtl_csrf` cookie (GET /api/v1/auth/csrf).",
-  "version": "1.0.0",
-  "contact": {}
- },
- "tags": [],
- "servers": [],
- "components": {
-  "securitySchemes": {
-   "cookie": {
-    "type": "apiKey",
-    "in": "cookie",
-    "name": "vtl_at"
-   }
-  },
-  "schemas": {}
- }
 }

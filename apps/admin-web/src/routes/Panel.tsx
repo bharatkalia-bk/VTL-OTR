@@ -7,7 +7,7 @@ import { PageTitle } from '../components/Shell';
 import { api, fmt } from '../lib/api';
 
 interface Cand { stageCallId: string; rollNo: string | null; slotAt: string | null; status: string; name: string; photo: string | null; education: Array<{ level: string; name: string; year: number; board: string }>; myMarks: { marks: Record<string, number>; total: number; remarks: string | null } | null }
-interface P { id: string; name: string; date: string; venue: string; criteria: Array<{ key: string; label: string; max: number }>; exam: { code: string; titleEn: string } | null; candidates: Cand[] }
+interface P { id: string; name: string; date: string; venue: string; criteria: Array<{ key: string; label: string; max: number }>; exam: { code: string; titleEn: string } | null; candidates: Cand[]; locked: boolean }
 
 export default function Panel() {
   const q = useQuery({ queryKey: ['panel-me'], queryFn: () => api.get<P[]>('/admin/panel/me') });
@@ -25,7 +25,7 @@ export default function Panel() {
         const total = p.criteria.reduce((a, b) => a + b.max, 0);
         return (
           <div key={p.id} className="mb-6">
-            <h2 className="mb-2 font-heading text-lg font-bold">{p.name} · {p.exam?.code} · {fmt.d(p.date)} · {p.venue}</h2>
+            <h2 className="mb-2 font-heading text-lg font-bold">{p.name} · {p.exam?.code} · {fmt.d(p.date)} · {p.venue} {p.locked && <Badge tone="neutral" className="ml-2 align-middle">Marks locked: result in approval or published</Badge>}</h2>
             <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
               {p.candidates.map((c) => {
                 const open = sel === c.stageCallId;
@@ -38,7 +38,7 @@ export default function Panel() {
                         <ul className="text-xs text-ink-muted">{c.education.map((e, i) => <li key={i}>{e.name} ({e.year}), {e.board}</li>)}</ul>
                       </div>
                       {brief[c.stageCallId] && <div className="rounded bg-surface p-2 text-xs">{brief[c.stageCallId]!.map((b, i) => <p key={i}>{b}</p>)}</div>}
-                      {!open ? (
+                      {p.locked ? null : !open ? (
                         <div className="flex flex-wrap gap-2">
                           <Button size="sm" variant="primary" onClick={() => { setSel(c.stageCallId); setMarks(Object.fromEntries(Object.entries(c.myMarks?.marks ?? {}).map(([k, v]) => [k, String(v)]))); setRemarks(c.myMarks?.remarks ?? ''); }}>{c.myMarks ? 'Edit marks' : 'Award marks'}</Button>
                           <Button size="sm" onClick={() => void run(async () => { const r = await api.get<{ points: string[] }>(`/admin/panel/calls/${c.stageCallId}/brief`); setBrief({ ...brief, [c.stageCallId]: r.points }); })}><Sparkles className="h-4 w-4" aria-hidden />Brief</Button>
