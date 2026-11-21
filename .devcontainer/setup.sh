@@ -29,8 +29,9 @@ fi
 pnpm --filter @vtl/shared build
 (cd apps/api && npx prisma generate && npx prisma migrate deploy && npx tsc -p tsconfig.build.json)
 (cd apps/api && set -a && . ./.env && set +a && node dist/prisma/seed/index.js)
-# Chromium for server-side PDFs (OTR slip, receipts, admit cards)
-pnpm --filter @vtl/candidate-web exec playwright install --with-deps chromium
 pnpm --filter @vtl/candidate-web build
 pnpm --filter @vtl/admin-web build
+# Chromium for server-side PDFs (OTR slip, receipts, admit cards). Not fatal: the sites work without it.
+pnpm --filter @vtl/candidate-web exec playwright install --with-deps chromium \
+  || echo "WARNING: Chromium could not be installed; PDF downloads will fail until you run: pnpm --filter @vtl/candidate-web exec playwright install --with-deps chromium"
 echo "Setup complete."

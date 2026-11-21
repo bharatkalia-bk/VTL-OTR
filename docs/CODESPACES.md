@@ -21,6 +21,16 @@ The setup tries to make both links **public** so anyone with the link can open t
 
 Every OTP in the codespace is **`123456`**: staff sign-in codes, codes for sensitive staff actions, and candidate registration, login and recovery OTPs. Nothing is really sent; the **Demo inbox** (link in the yellow banner) shows what would have gone out.
 
+## If a link shows "HTTP ERROR 502"
+
+The site is not running yet (or stopped). In the codespace's terminal (bottom of the editor) run:
+
+```bash
+git pull && bash .devcontainer/start.sh
+```
+
+Wait for **VTL OTR is running**, then reload the page. If it prints a WARNING, run `bash .devcontainer/setup.sh` once (a few minutes, reloads the demo data), then `bash .devcontainer/start.sh` again.
+
 ## Good to know
 
 - **It sleeps when idle** (30 minutes by default) and the links stop working. Reopen the codespace from GitHub and everything restarts automatically with the same data.
