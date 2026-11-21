@@ -7,3 +7,13 @@ coverage/
 .turbo/
 playwright-report/
 test-results/
+.storage/
+apps/api/.env
+apps/candidate-web/public/mediapipe/wasm/
+apps/candidate-web/e2e/fixtures/*.y4m
+dump.rdb
+*.rdb
+apps/candidate-web/test-results/
+apps/candidate-web/playwright-report/
+deploy/.env
+deploy/.seeded

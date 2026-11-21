@@ -1,0 +1,18 @@
+# Codespaces / Dev Containers: app container + Postgres + Redis (internal only).
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    depends_on: [postgres, redis]
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment: { POSTGRES_USER: vtl, POSTGRES_PASSWORD: vtl, POSTGRES_DB: vtl_otr }
+    volumes: [pgdata:/var/lib/postgresql/data]
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+volumes:
+  pgdata:

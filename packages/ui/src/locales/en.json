@@ -1,0 +1,85 @@
+{
+  "camera": {
+    "title": "Live photograph capture",
+    "introTitle": "We need your camera to take your photograph",
+    "introBody": "Your photograph is taken live using this device's camera. Uploading a photo from your gallery is not allowed. Your browser will ask for permission next.",
+    "tip1": "Sit in a well-lit place, facing the light",
+    "tip2": "Plain, light-coloured background",
+    "tip3": "Remove cap and dark glasses; keep your face uncovered",
+    "tip4": "Only you should be visible in the frame",
+    "privacy": "The camera is used only on this screen and is switched off as soon as the photo is taken.",
+    "allow": "Allow camera and start",
+    "starting": "Starting camera…",
+    "holdStill": "Hold still",
+    "attemptsLeft_one": "{{count}} attempt left",
+    "attemptsLeft_other": "{{count}} attempts left",
+    "switch": "Switch camera",
+    "cameraN": "Camera",
+    "cancel": "Cancel",
+    "reviewTitle": "Check your photograph",
+    "previewAlt": "Your captured photograph",
+    "retake": "Retake",
+    "use": "Use this photo",
+    "doneTitle": "Photograph saved",
+    "doneBody": "Your photograph has been captured and saved securely.",
+    "limitTitle": "Retake limit reached",
+    "limitBody": "You have used all {{count}} attempts. Please raise a helpdesk ticket if you need more.",
+    "tryAgain": "Try again",
+    "howToEnable": "How to allow the camera",
+    "issue": {
+      "NO_FACE": "Position your face inside the oval",
+      "MULTIPLE_FACES": "Only one face should be visible",
+      "MOVE_CLOSER": "Move closer",
+      "MOVE_BACK": "Move back a little",
+      "CENTRE_FACE": "Centre your face in the oval",
+      "TOO_DARK": "Too dark. Move to a brighter place",
+      "TOO_BRIGHT": "Too bright. Avoid direct light behind or on you",
+      "BLURRY": "Hold still, the image is blurry"
+    },
+    "liveness": {
+      "blink": "Now blink your eyes once",
+      "turn": "Now turn your head slightly to one side and back"
+    },
+    "error": {
+      "PERMISSION_DENIED": { "title": "Camera permission was denied", "body": "We cannot take your photograph without camera access. Allow the camera for this site and try again." },
+      "NO_CAMERA": { "title": "No camera found", "body": "Connect a camera or use a phone with a front camera, then try again." },
+      "CAMERA_IN_USE": { "title": "Camera is busy", "body": "Another app (video call, camera app) is using the camera. Close it and try again." },
+      "INSECURE_CONTEXT": { "title": "Secure connection required", "body": "The camera works only on a secure (https) connection. Open the portal using its https address." },
+      "UNSUPPORTED": { "title": "Browser not supported", "body": "Please use the latest Chrome, Edge, Firefox or Safari (iOS 15 or later)." },
+      "MODEL_LOAD_FAILED": { "title": "Could not load face check", "body": "Please check your internet connection and try again." },
+      "UPLOAD_FAILED": { "title": "Could not save photograph", "body": "Your photo was not saved. Check your connection and try again." }
+    },
+    "browserSteps": {
+      "chrome": "Click the camera icon in the address bar, choose “Always allow”, then reload.",
+      "edge": "Click the lock icon in the address bar, set Camera to “Allow”, then reload.",
+      "firefox": "Click the camera icon in the address bar, remove the block, then reload and allow.",
+      "safari-ios": "Open Settings > Safari > Camera, choose “Ask” or “Allow”, then reload this page.",
+      "safari-mac": "Safari > Settings for This Website > Camera: Allow, then reload.",
+      "android-chrome": "Tap the lock icon > Permissions > Camera > Allow, then reload.",
+      "other": "Open your browser's site settings, allow the camera for this site, then reload."
+    }
+  },
+  "signature": {
+    "title": "Signature",
+    "draw": "Draw",
+    "upload": "Upload scanned",
+    "canvasLabel": "Signature drawing area",
+    "drawHint": "Sign inside the box with your finger, stylus or mouse.",
+    "clear": "Clear",
+    "save": "Save signature",
+    "choose": "Choose scanned signature (JPEG/PNG)",
+    "uploadHint": "Sign with black ink on white paper. It will be auto-cropped to 140×60 px, 10 to 20 KB.",
+    "tooLarge": "File is too large (max 2 MB before processing).",
+    "previewAlt": "Your signature"
+  },
+  "common": {
+    "close": "Close",
+    "loadMore": "Load more",
+    "choose": "Choose file",
+    "uploading": "Uploading…",
+    "remove": "Remove",
+    "tooLarge": "File is too large",
+    "wrongType": "This file type is not allowed",
+    "stepOf": "Step {{cur}} of {{total}}"
+  }
+}

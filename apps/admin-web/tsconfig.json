@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext", "moduleResolution": "Bundler", "jsx": "react-jsx", "lib": ["ES2022", "DOM", "DOM.Iterable"], "noEmit": true,
+    "types": ["vite/client"],
+    "paths": { "@vtl/shared": ["../../packages/shared/src/index.ts"], "@vtl/ui": ["../../packages/ui/src/index.ts"] }
+  },
+  "include": ["src", "../../packages/ui/src/assets.d.ts"]
+}

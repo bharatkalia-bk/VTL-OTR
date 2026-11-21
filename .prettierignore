@@ -1,0 +1,6 @@
+pnpm-lock.yaml
+**/dist
+**/coverage
+**/migrations
+docs/BRIEF.md
+apps/candidate-web/public/mediapipe

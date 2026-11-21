@@ -1,0 +1,25 @@
+/* VTL brand tokens. The ONLY place brand hex values are defined. */
+:root {
+  --vtl-navy: #07102d;        --vtl-navy-rgb: 7 16 45;
+  --vtl-orange: #ec4119;      --vtl-orange-rgb: 236 65 25;
+  --vtl-navy-700: #1a2350;    --vtl-navy-700-rgb: 26 35 80;
+  --vtl-orange-50: #fdede8;   --vtl-orange-50-rgb: 253 237 232;
+  --vtl-surface: #f6f7fb;     --vtl-surface-rgb: 246 247 251;
+  --vtl-border: #e3e6ef;      --vtl-border-rgb: 227 230 239;
+  /* derived */
+  --vtl-navy-600: #2c3566;    --vtl-navy-600-rgb: 44 53 102;
+  --vtl-navy-50: #eceef6;     --vtl-navy-50-rgb: 236 238 246;
+  /* Brand orange (#EC4119) with white text is 3.9:1, below WCAG AA for body-size text.
+     Filled CTAs therefore use orange-600 (5.3:1) and orange-700 on hover; pure brand orange is
+     used for icons, focus rings, progress bars, borders and large display elements. */
+  --vtl-orange-600: #c9330f;  --vtl-orange-600-rgb: 201 51 15;
+  --vtl-orange-700: #a82a0c;  --vtl-orange-700-rgb: 168 42 12;
+  --vtl-ink-muted: #4a5272;   --vtl-ink-muted-rgb: 74 82 114;
+  /* status */
+  --success: #16803c;  --success-rgb: 22 128 60;   --success-50-rgb: 232 245 236;
+  --warning: #b45309;  --warning-rgb: 180 83 9;    --warning-50-rgb: 254 243 226;
+  --danger: #b91c1c;   --danger-rgb: 185 28 28;    --danger-50-rgb: 253 236 236;
+  --info: #1d4ed8;     --info-rgb: 29 78 216;      --info-50-rgb: 234 240 253;
+  /* darker status text for small text on tinted backgrounds (AA >= 4.5:1) */
+  --success-700-rgb: 17 94 46;  --warning-700-rgb: 146 64 14;  --danger-700-rgb: 153 27 27;  --info-700-rgb: 30 64 175;
+}

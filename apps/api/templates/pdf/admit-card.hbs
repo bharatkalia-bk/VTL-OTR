@@ -1,0 +1,39 @@
+{{> header title="Admit Card / प्रवेश पत्र" subtitle=exam.title}}
+<div class="row" style="margin-top:10px">
+  <div class="grow">
+    <table class="kv">
+      <tr><td class="k">Roll No. / अनुक्रमांक</td><td class="v num" style="font-size:16pt">{{rollNo}}</td></tr>
+      <tr><td class="k">Candidate name</td><td class="v">{{p.fullName}}</td></tr>
+      <tr><td class="k">Father's name</td><td class="v">{{p.fatherName}}</td></tr>
+      <tr><td class="k">Date of birth · Gender</td><td class="v num">{{p.dob}} · {{p.gender}}</td></tr>
+      <tr><td class="k">Category</td><td class="v">{{c.category}}{{#if c.pwd}} · PwD{{/if}}</td></tr>
+      <tr><td class="k">OTR ID</td><td class="v num">{{otrId}}</td></tr>
+      <tr><td class="k">Application No.</td><td class="v num">{{applicationNo}}</td></tr>
+      <tr><td class="k">Post</td><td class="v">{{post}}</td></tr>
+    </table>
+  </div>
+  <div class="media"><img class="photo" src="{{photo}}" alt="Photograph"><img class="sig" src="{{signature}}" alt="Signature"><img class="qr" src="{{qr}}" alt="Verification QR code"></div>
+</div>
+<div class="band">Examination centre / परीक्षा केंद्र</div>
+<div class="box"><table class="kv">
+  <tr><td class="k">Centre</td><td class="v">{{centre.name}} ({{centre.code}})</td></tr>
+  <tr><td class="k">Address</td><td class="v">{{centre.address}}, {{centre.city}}</td></tr>
+  <tr><td class="k">Date of exam</td><td class="v num">{{examDate}}</td></tr>
+  {{#if shift}}<tr><td class="k">Shift / पाली</td><td class="v num">{{shift.code}} · {{shift.time}} IST · {{shift.mode}}</td></tr>{{/if}}
+  <tr><td class="k">Reporting time</td><td class="v num">{{centre.reportingTime}} IST</td></tr>
+  <tr><td class="k">Gate closing time</td><td class="v num">{{centre.gateClosingTime}} IST</td></tr>
+</table></div>
+{{#if mapQr}}<div class="row" style="margin-top:6px;align-items:center"><img src="{{mapQr}}" style="width:78px;height:78px" alt="Route QR"><div class="grow muted" style="padding-left:10px">Route to centre / केंद्र का मार्ग: scan this code for directions, or open <span class="num" style="word-break:break-all">{{mapUrl}}</span>. Visit the centre a day before the exam if you can.</div></div>{{/if}}
+<div class="band">Important instructions / महत्वपूर्ण निर्देश</div>
+<div class="box"><ol class="instr">
+  <li>Bring this admit card with an original photo ID (Aadhaar, Voter ID, PAN, Passport or Driving Licence).</li>
+  <li>Entry closes at the gate closing time. Late arrivals will not be allowed under any circumstances.</li>
+  <li>Mobile phones, smart watches, calculators and electronic devices are strictly prohibited.</li>
+  <li>The QR code is verified at the centre against the photograph and signature on record.</li>
+  <li>प्रवेश पत्र के साथ मूल फ़ोटो पहचान पत्र अवश्य लाएँ। गेट बंद होने के बाद प्रवेश नहीं मिलेगा।</li>
+</ol></div>
+<div class="row" style="margin-top:18px">
+  <div class="grow muted">Candidate's signature (to be signed at the centre)<br><br>________________________</div>
+  <div class="grow muted" style="text-align:right">Invigilator's signature<br><br>________________________</div>
+</div>
+{{> footer}}

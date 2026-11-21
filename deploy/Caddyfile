@@ -1,0 +1,31 @@
+{
+	email {$ACME_EMAIL}
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	request_body {
+		max_size 6MB
+	}
+	handle /api/* {
+		reverse_proxy api:4000
+	}
+}
+
+{$CANDIDATE_DOMAIN} {
+	import common
+	handle {
+		reverse_proxy candidate-web:80
+	}
+}
+
+{$ADMIN_DOMAIN} {
+	import common
+	handle {
+		reverse_proxy admin-web:80
+	}
+}

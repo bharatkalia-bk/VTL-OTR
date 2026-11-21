@@ -1,0 +1,41 @@
+{{> header title="OTR Registration Slip" subtitle="एकबारीय पंजीकरण पर्ची"}}
+<div class="watermark">VTL OTR</div>
+<div class="idbox">
+  <div><div class="label">OTR ID / ओटीआर आईडी</div><div class="value num">{{otrId}}</div></div>
+  <div style="text-align:right"><div class="label">Submitted on</div><div class="num" style="font-weight:600">{{submittedAt}}</div></div>
+</div>
+<div class="row" style="margin-top:6px">
+  <div class="grow">
+    <div class="band">Personal details / व्यक्तिगत विवरण</div>
+    <div class="box"><table class="kv">
+      <tr><td class="k">Name (as per Class 10)</td><td class="v">{{p.fullName}}</td></tr>
+      <tr><td class="k">Father's name</td><td class="v">{{p.fatherName}}</td></tr>
+      <tr><td class="k">Mother's name</td><td class="v">{{p.motherName}}</td></tr>
+      <tr><td class="k">Date of birth</td><td class="v num">{{p.dob}}</td></tr>
+      <tr><td class="k">Gender</td><td class="v">{{p.gender}}</td></tr>
+      <tr><td class="k">Category</td><td class="v">{{c.category}}{{#if c.pwd}} · PwD ({{c.pwdType}}, {{c.pwdPercent}}%){{/if}}{{#if c.exServiceman}} · Ex-serviceman{{/if}}</td></tr>
+      <tr><td class="k">Domicile state</td><td class="v">{{domicile}}</td></tr>
+      <tr><td class="k">Mobile / Email</td><td class="v num">{{mobile}} · {{email}}</td></tr>
+      {{#if aadhaar}}<tr><td class="k">Aadhaar (e-KYC)</td><td class="v num">{{aadhaar}}</td></tr>{{/if}}
+    </table></div>
+  </div>
+  <div class="media" style="padding-top:34px">
+    <img class="photo" src="{{photo}}" alt="Photograph">
+    <img class="sig" src="{{signature}}" alt="Signature">
+    <span class="muted">Live photo captured {{photoCapturedAt}}</span>
+  </div>
+</div>
+<div class="band">Address / पता</div>
+<div class="box"><table class="kv">
+  <tr><td class="k">Permanent</td><td class="v">{{addrPermanent}}</td></tr>
+  <tr><td class="k">Correspondence</td><td class="v">{{addrCorrespondence}}</td></tr>
+</table></div>
+<div class="band">Educational qualifications / शैक्षिक योग्यता</div>
+<div class="box" style="padding:0"><table class="grid">
+  <tr><th>Level</th><th>Qualification</th><th>Board / University</th><th>Year</th><th>Result</th><th>Status</th></tr>
+  {{#each education}}<tr><td>{{level}}</td><td>{{qualificationName}}</td><td>{{boardOrUniversity}}</td><td class="num">{{yearOfPassing}}</td><td class="num">{{result}}</td><td>{{status}}</td></tr>{{/each}}
+</table></div>
+<div class="band">Declaration / घोषणा</div>
+<div class="box"><p style="margin:0;font-size:9pt">I hereby declare that all the information given by me is true and correct to the best of my knowledge. I understand that my candidature may be cancelled if any information is found false. Place: <b>{{declarationPlace}}</b>, Date: <b class="num">{{declarationAt}}</b>.</p></div>
+<p class="muted" style="margin-top:8px">Keep this slip and your OTR ID safe. Use your OTR ID to apply for any examination on the VTL OTR platform. Core details (name, date of birth, photograph, category) can be changed only through an approved correction request.</p>
+{{> footer}}
