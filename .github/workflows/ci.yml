@@ -31,3 +31,10 @@ jobs:
       # numpy + Pillow build the fake-camera face clip for the live-photo E2E test
       - run: python3 -m pip install --user numpy pillow
       - run: pnpm test:e2e
+      - name: Upload Playwright results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: apps/candidate-web/test-results
+          retention-days: 7

@@ -39,6 +39,23 @@ describe('liveness', () => {
     expect(d.update(0.2)).toBe(false);
     expect(d.update(0.02)).toBe(true);
   });
+  it('detects head turn when sampling starts mid-turn (slow devices)', () => {
+    const d = new HeadTurnDetector(0.12);
+    // first sample already turned, then neutral, then turned again and back
+    expect(d.update(0.15)).toBe(false);
+    expect(d.update(0.0)).toBe(false); // swing of 0.15 seen: turned, from 0.15 back to 0 counts as out
+    expect(d.update(0.14)).toBe(true); // returned to where the swing started
+  });
+  it('detects head turn from sparse samples', () => {
+    const d = new HeadTurnDetector(0.12);
+    expect(d.update(0.01)).toBe(false);
+    expect(d.update(0.17)).toBe(false);
+    expect(d.update(0.03)).toBe(true);
+  });
+  it('ignores small jitter (no real turn)', () => {
+    const d = new HeadTurnDetector(0.12);
+    for (const y of [0, 0.04, -0.03, 0.05, -0.05, 0.02, 0.06, -0.04]) expect(d.update(y)).toBe(false);
+  });
   it('computes yaw from landmarks', () => {
     const lm = Array.from({ length: 300 }, () => ({ x: 0, y: 0 }));
     lm[33] = { x: 100, y: 0 }; lm[263] = { x: 200, y: 0 }; lm[1] = { x: 150, y: 0 };

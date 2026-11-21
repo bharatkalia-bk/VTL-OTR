@@ -69,20 +69,25 @@ export class BlinkDetector {
   }
 }
 
-/** Head turn: yaw moves by at least `delta` from the baseline (first stable samples) in either direction, then returns. */
+/**
+ * Head turn: the yaw must swing by at least `delta` (out) and then come back within `delta / 2` of where the
+ * swing started (back). Tracks the observed yaw range rather than a fixed baseline, so it still works when the
+ * first samples are taken mid-turn or the device analyses only a few frames per second.
+ */
 export class HeadTurnDetector {
-  private baseline: number | null = null;
-  private samples: number[] = [];
-  private turned = false;
+  private min = Infinity;
+  private max = -Infinity;
+  private turned: { from: number } | null = null;
   constructor(private delta = FACE_CHECK_THRESHOLDS.headTurnYaw) {}
   update(yaw: number): boolean {
-    if (this.baseline === null) {
-      this.samples.push(yaw);
-      if (this.samples.length >= 3) this.baseline = this.samples.reduce((a, b) => a + b, 0) / this.samples.length;
-      return false;
+    if (!Number.isFinite(yaw)) return false;
+    if (this.turned) return Math.abs(yaw - this.turned.from) < this.delta / 2;
+    this.min = Math.min(this.min, yaw);
+    this.max = Math.max(this.max, yaw);
+    if (this.max - this.min >= this.delta) {
+      // The extreme reached last is the turned pose; the opposite extreme is where the head started.
+      this.turned = { from: yaw === this.max ? this.min : this.max };
     }
-    const d = Math.abs(yaw - this.baseline);
-    if (!this.turned) { if (d >= this.delta) this.turned = true; return false; }
-    return d < this.delta / 2;
+    return false;
   }
 }
