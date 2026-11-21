@@ -44,6 +44,7 @@ export async function createApp(): Promise<NestExpressApplication> {
 async function bootstrap() {
   const env = loadEnv();
   const app = await createApp();
+  await app.init(); // registers queue handlers (onModuleInit) before workers start
   if (env.RUN_WORKER_IN_API) {
     app.get(QueueService).startWorkers();
     await app.get(MaintenanceService).schedule();
