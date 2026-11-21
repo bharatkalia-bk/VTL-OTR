@@ -26,8 +26,8 @@ done
   export PUBLIC_API_URL=$CANDIDATE_URL CANDIDATE_WEB_URL=$CANDIDATE_URL ADMIN_WEB_URL=$ADMIN_URL CORS_ORIGINS="$CANDIDATE_URL,$ADMIN_URL"
   setsid nohup node dist/src/main.js > $LOGS/api.log 2>&1 < /dev/null &
 )
-(cd apps/candidate-web && setsid nohup npx vite preview --port 5173 --strictPort > $LOGS/candidate.log 2>&1 < /dev/null &)
-(cd apps/admin-web && setsid nohup npx vite preview --port 5174 --strictPort > $LOGS/admin.log 2>&1 < /dev/null &)
+(cd apps/candidate-web && setsid nohup npx vite preview --host 0.0.0.0 --port 5173 --strictPort > $LOGS/candidate.log 2>&1 < /dev/null &)
+(cd apps/admin-web && setsid nohup npx vite preview --host 0.0.0.0 --port 5174 --strictPort > $LOGS/admin.log 2>&1 < /dev/null &)
 for i in $(seq 1 45); do curl -sf localhost:4000/api/v1/health/live >/dev/null && curl -sf localhost:5173 >/dev/null && break; sleep 2; done
 curl -sf localhost:4000/api/v1/health/live >/dev/null || echo "WARNING: the API did not start. See $LOGS/api.log"
 curl -sf localhost:5173 >/dev/null || { echo "WARNING: the candidate site did not start. Last lines of $LOGS/candidate.log:"; tail -15 $LOGS/candidate.log; }

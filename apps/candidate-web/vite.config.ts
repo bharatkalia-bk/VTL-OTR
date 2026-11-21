@@ -13,11 +13,11 @@ export default defineConfig({
   optimizeDeps: { exclude: ['@mediapipe/tasks-vision'] },
   server: {
     port: 5173,
-    host: true,
+    host: '0.0.0.0',
     allowedHosts: ['localhost', '.app.github.dev'],
-    proxy: { '/api': { target: process.env.API_URL ?? 'http://localhost:4000', changeOrigin: false } },
+    proxy: { '/api': { target: process.env.API_URL ?? 'http://127.0.0.1:4000', changeOrigin: false } },
   },
-  preview: { host: true, allowedHosts: ['localhost', '.app.github.dev'], port: 5173, proxy: { '/api': { target: process.env.API_URL ?? 'http://localhost:4000' } } },
+  preview: { host: '0.0.0.0', allowedHosts: ['localhost', '.app.github.dev'], port: 5173, proxy: { '/api': { target: process.env.API_URL ?? 'http://127.0.0.1:4000' } } },
   build: {
     target: 'es2020',
     sourcemap: true,
