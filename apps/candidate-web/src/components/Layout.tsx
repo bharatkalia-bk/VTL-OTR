@@ -7,16 +7,28 @@ import { Link, NavLink } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 
+/** Language switch: both options are always visible and the current one is highlighted. */
 export function LanguageToggle({ onNavy }: { onNavy?: boolean }) {
   const { i18n, t } = useTranslation();
   const { user } = useAuth();
-  const next = i18n.language === 'hi' ? 'en' : 'hi';
+  const current = i18n.language === 'hi' ? 'hi' : 'en';
+  const choose = (lang: 'en' | 'hi') => {
+    if (lang === current) return;
+    void i18n.changeLanguage(lang);
+    if (user) void api.post('/me/language', { language: lang }).catch(() => undefined);
+  };
+  const opts = [{ v: 'en' as const, label: 'English' }, { v: 'hi' as const, label: 'हिंदी' }];
   return (
-    <button type="button" lang={next} onClick={() => { void i18n.changeLanguage(next); if (user) void api.post('/me/language', { language: next }).catch(() => undefined); }}
-      className={cn('inline-flex min-h-10 items-center gap-1.5 rounded px-3 text-sm font-medium', onNavy ? 'text-white hover:bg-navy-700' : 'text-navy hover:bg-navy-50')}
-      data-testid="lang-toggle">
-      <Globe className="h-4 w-4" aria-hidden />{next === 'hi' ? 'हिंदी' : 'English'}<span className="sr-only"> ({t('app.switchLanguage')})</span>
-    </button>
+    <div role="group" aria-label={t('app.switchLanguage')} className={cn('inline-flex items-center gap-1 rounded-full p-1', onNavy ? 'bg-white/10' : 'bg-navy-50')}>
+      <Globe className={cn('ml-1.5 h-4 w-4', onNavy ? 'text-white/80' : 'text-ink-muted')} aria-hidden />
+      {opts.map((o) => (
+        <button key={o.v} type="button" lang={o.v} aria-pressed={current === o.v} onClick={() => choose(o.v)} data-testid={`lang-${o.v}`}
+          className={cn('min-h-8 rounded-full px-3 text-sm font-medium transition-colors duration-200',
+            current === o.v ? (onNavy ? 'bg-white text-navy shadow-sm' : 'bg-navy text-white shadow-sm') : (onNavy ? 'text-white hover:bg-white/15' : 'text-navy hover:bg-white'))}>
+          {o.label}
+        </button>
+      ))}
+    </div>
   );
 }
 

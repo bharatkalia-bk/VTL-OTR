@@ -12,9 +12,14 @@ for (const path of ['/', '/register', '/login', '/helpdesk', '/styleguide', '/he
 
 test('Hindi toggle switches language and persists', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('lang-toggle').click();
+  await page.getByTestId('lang-hi').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'hi');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('सत्यापित प्रोफ़ाइल');
+  await expect(page.getByTestId('lang-hi')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('lang-en')).toHaveAttribute('aria-pressed', 'false');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'hi');
+  await page.getByTestId('lang-en').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.getByTestId('lang-en')).toHaveAttribute('aria-pressed', 'true');
 });
