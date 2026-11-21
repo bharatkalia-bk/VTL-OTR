@@ -40,7 +40,7 @@ describe('full exam lifecycle: exam day → assessment → results → selection
     const ex2 = await adminLogin(app, 'exam2@t.in');
     const sup = await adminLogin(app, 'super@t.in');
     expect((await ex.post(`/api/v1/admin/exams/${exam.id}/admit-cards/allocate`)).body.placed).toBe(4);
-    const s1 = await ex.post(`/api/v1/admin/exams/${exam.id}/shifts`, { code: 'S1', date: '2099-03-01', startTime: '09:00', endTime: '11:00', mode: 'CBT' });
+    await ex.post(`/api/v1/admin/exams/${exam.id}/shifts`, { code: 'S1', date: '2099-03-01', startTime: '09:00', endTime: '11:00', mode: 'CBT' });
     const s2 = await ex.post(`/api/v1/admin/exams/${exam.id}/shifts`, { code: 'S2', date: '2099-03-01', startTime: '14:00', endTime: '16:00', mode: 'OMR' });
     expect(s2.status).toBe(201);
     expect((await ex.post(`/api/v1/admin/exams/${exam.id}/shifts/assign`, {})).body.assigned).toBe(4);
