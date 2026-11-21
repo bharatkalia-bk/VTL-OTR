@@ -1,0 +1,15 @@
+{{> header title=title subtitle=exam.title}}
+<div class="row" style="margin-top:10px">
+  <div class="grow"><table class="kv">
+    <tr><td class="k">Name</td><td class="v">{{name}}</td></tr>
+    <tr><td class="k">Father's name</td><td class="v">{{father}}</td></tr>
+    <tr><td class="k">Roll No.</td><td class="v num">{{rollNo}}</td></tr>
+    <tr><td class="k">OTR ID</td><td class="v num">{{otrId}}</td></tr>
+    <tr><td class="k">Application No.</td><td class="v num">{{applicationNo}}</td></tr>
+    {{#each rows}}<tr><td class="k">{{k}}</td><td class="v">{{v}}</td></tr>{{/each}}
+  </table></div>
+  {{#if photo}}<div class="media"><img class="photo" src="{{photo}}" alt="Photograph"></div>{{/if}}
+</div>
+<div class="band">Instructions / निर्देश</div>
+<div class="box"><ol class="instr">{{#each instructions}}<li>{{this}}</li>{{/each}}</ol></div>
+{{> footer}}

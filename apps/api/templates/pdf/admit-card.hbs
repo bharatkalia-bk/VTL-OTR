@@ -19,9 +19,11 @@
   <tr><td class="k">Centre</td><td class="v">{{centre.name}} ({{centre.code}})</td></tr>
   <tr><td class="k">Address</td><td class="v">{{centre.address}}, {{centre.city}}</td></tr>
   <tr><td class="k">Date of exam</td><td class="v num">{{examDate}}</td></tr>
+  {{#if shift}}<tr><td class="k">Shift / पाली</td><td class="v num">{{shift.code}} · {{shift.time}} IST · {{shift.mode}}</td></tr>{{/if}}
   <tr><td class="k">Reporting time</td><td class="v num">{{centre.reportingTime}} IST</td></tr>
   <tr><td class="k">Gate closing time</td><td class="v num">{{centre.gateClosingTime}} IST</td></tr>
 </table></div>
+{{#if mapQr}}<div class="row" style="margin-top:6px;align-items:center"><img src="{{mapQr}}" style="width:78px;height:78px" alt="Route QR"><div class="grow muted" style="padding-left:10px">Route to centre / केंद्र का मार्ग: scan this code for directions, or open <span class="num" style="word-break:break-all">{{mapUrl}}</span>. Visit the centre a day before the exam if you can.</div></div>{{/if}}
 <div class="band">Important instructions / महत्वपूर्ण निर्देश</div>
 <div class="box"><ol class="instr">
   <li>Bring this admit card with an original photo ID (Aadhaar, Voter ID, PAN, Passport or Driving Licence).</li>

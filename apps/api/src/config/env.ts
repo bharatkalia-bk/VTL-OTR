@@ -62,6 +62,13 @@ const envSchema = z.object({
   DEV_EXPOSE_SECRETS: bool.default(false),
   /** Public demo server: mock SMS/email, demo inbox and seeded test data, with a visible banner. Never for real candidates. */
   DEMO_MODE: bool.default(false),
+  /** AI assist (chatbot, objection pre-review, DV discrepancy notes). "mock" needs no key and is deterministic. */
+  AI_PROVIDER: z.enum(['mock', 'claude']).default('mock'),
+  /** Read by the Anthropic SDK when AI_PROVIDER=claude. */
+  ANTHROPIC_API_KEY: z.string().optional(),
+  AI_MODEL: z.string().default('claude-opus-5-5'),
+  /** Pepper for hashing agency API keys (falls back to the JWT secret). */
+  AGENCY_KEY_PEPPER: z.string().optional(),
   QUEUE_INLINE: bool.default(false),
   RUN_WORKER_IN_API: bool.default(false),
   SWAGGER_ENABLED: bool.default(true),
@@ -82,6 +89,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   if (parsed.data.NODE_ENV === 'production' && parsed.data.DEV_EXPOSE_SECRETS && !parsed.data.DEMO_MODE) {
     throw new Error('DEV_EXPOSE_SECRETS must be false in production (allowed only with DEMO_MODE=true on a demo server)');
   }
+  if (parsed.data.AI_PROVIDER === 'claude' && !parsed.data.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is required when AI_PROVIDER=claude');
   if (parsed.data.SMS_DRIVER === 'http' && !parsed.data.SMS_HTTP_URL) throw new Error('SMS_HTTP_URL is required when SMS_DRIVER=http');
   if (source === process.env) cached = parsed.data;
   return parsed.data;

@@ -100,7 +100,7 @@ export class ProfileService {
       where: { candidateId },
       data: {
         ...pick('category'), ...pick('pwd'), ...pick('pwdType'), ...pick('pwdPercent'), ...pick('exServiceman'), ...pick('serviceYears'),
-        ...pick('domicileStateCode'), ...pick('categoryCertDocId'), ...pick('pwdCertDocId'), ...pick('exsmCertDocId'),
+        ...pick('domicileStateCode'), ...pick('categoryCertDocId'), ...pick('pwdCertDocId'), ...pick('exsmCertDocId'), ...pick('languages'),
         ...(d.pwd === false && { pwdType: null, pwdPercent: null, pwdCertDocId: null }),
         ...(d.exServiceman === false && { serviceYears: null, exsmCertDocId: null }),
         ...(d.category === 'GEN' && { categoryCertDocId: null }),

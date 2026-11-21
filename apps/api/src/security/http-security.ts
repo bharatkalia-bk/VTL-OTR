@@ -47,7 +47,7 @@ export function requestContextMiddleware(req: Request, res: Response, next: Next
 }
 
 /** Paths that receive cross-site POSTs by design (gateway callbacks) and are verified by signature instead. */
-const CSRF_EXEMPT = [/^\/api\/v1\/payments\/callback\//, /^\/api\/v1\/mock-gateway\//, /^\/api\/v1\/mock-digilocker\//];
+const CSRF_EXEMPT = [/^\/api\/v1\/payments\/callback\//, /^\/api\/v1\/mock-gateway\//, /^\/api\/v1\/mock-digilocker\//, /^\/api\/v1\/agency\/v1\//];
 
 /** Double-submit CSRF: mutating requests must echo the vtl_csrf cookie in X-CSRF-Token. */
 export function csrfMiddleware(req: Request, res: Response, next: NextFunction): void {

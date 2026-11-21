@@ -32,18 +32,31 @@ import { DevController } from './modules/public/dev.controller';
 import { HealthController } from './modules/public/health.controller';
 import { PublicController } from './modules/public/public.controller';
 import { DigiLockerMockController } from './modules/profile/digilocker-mock.controller';
+import { AgencyService } from './modules/lifecycle/agency.service';
+import { AiService } from './modules/lifecycle/ai.service';
+import { AssessmentService } from './modules/lifecycle/assessment.service';
+import { CandidateLifecycleController } from './modules/lifecycle/candidate-lifecycle.controller';
+import { ChannelsService } from './modules/lifecycle/channels.service';
+import { DebarmentService } from './modules/lifecycle/debarment.service';
+import { ExamDayService } from './modules/lifecycle/examday.service';
+import { JourneyService } from './modules/lifecycle/journey.service';
+import * as LifecycleControllers from './modules/lifecycle/lifecycle.controllers';
+import { ObserverService } from './modules/lifecycle/observer.service';
+import { ResultsService } from './modules/lifecycle/results.service';
+import { SelectionService } from './modules/lifecycle/selection.service';
 
 @Module({
   imports: [CoreModule],
   controllers: [
     HealthController, PublicController, DevController, CandidateAuthController, MeController, DigiLockerMockController,
     ApplicationsController, PaymentsController, HelpdeskController,
-    ...Object.values(AdminControllers),
+    ...Object.values(AdminControllers), ...Object.values(LifecycleControllers), CandidateLifecycleController,
   ],
   providers: [
     CandidateDataService, CandidateAuthService, ProfileService, DocumentsService, MediaService, IdentityService, CorrectionsService,
     PdfService, PdfDocsService, QrSignerService, ExamsService, ApplicationsService, PaymentsService, HelpdeskService, MaintenanceService,
     AdminAuthService, AdminCandidatesService, AdminExamsService, AdmitCardsService, CampaignsService, DashboardService, ReportsService,
+    AiService, DebarmentService, ExamDayService, ObserverService, AgencyService, AssessmentService, ResultsService, SelectionService, ChannelsService, JourneyService,
   ],
 })
 export class AppModule {}

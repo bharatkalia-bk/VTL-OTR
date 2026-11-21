@@ -23,6 +23,7 @@ export interface CandidateView {
   category: {
     category: string | null; pwd: boolean; pwdType: string | null; pwdPercent: number | null; exServiceman: boolean; serviceYears: number | null;
     domicileStateCode: string | null; categoryCertDocId: string | null; pwdCertDocId: string | null; exsmCertDocId: string | null;
+    languages: string[];
   };
   address: AddressInput | null;
   education: Array<{
@@ -32,6 +33,8 @@ export interface CandidateView {
   documents: Array<{ id: string; kind: string; fileName: string; sizeBytes: number; mime: string; verificationStatus: string; rejectionReason: string | null; createdAt: Date }>;
   photo: MediaSummary | null;
   signature: MediaSummary | null;
+  thumb: MediaSummary | null;
+  declarationImage: MediaSummary | null;
   identity: { aadhaarMasked: string | null; aadhaarVerifiedAt: Date | null; apaarId: string | null; digilockerLinkedAt: Date | null };
   declaration: { at: Date | null; place: string | null };
   completedSteps: WizardStep[];
@@ -63,7 +66,7 @@ export class CandidateDataService {
     const d = (v: string | null | undefined) => this.crypto.decOpt(v);
     const perm = this.crypto.decJson<AddressInput['permanent']>(p?.permanentAddressEnc);
     const corr = this.crypto.decJson<AddressInput['permanent']>(p?.correspondenceAddressEnc);
-    const media = (k: 'PHOTO' | 'SIGNATURE'): MediaSummary | null => {
+    const media = (k: 'PHOTO' | 'SIGNATURE' | 'THUMB' | 'DECLARATION'): MediaSummary | null => {
       const m = c.media.find((x) => x.kind === k && x.isCurrent);
       return m ? { id: m.id, objectKey: m.objectKey, sha256: m.sha256, width: m.width, height: m.height, sizeBytes: m.sizeBytes, method: m.method, capturedAt: m.capturedAt, createdAt: m.createdAt, livenessMethod: m.livenessMethod, scores: m.scores, attemptNo: m.attemptNo, duplicateFlag: m.duplicateFlag } : null;
     };
@@ -78,13 +81,15 @@ export class CandidateDataService {
       category: {
         category: p?.category ?? null, pwd: p?.pwd ?? false, pwdType: p?.pwdType ?? null, pwdPercent: p?.pwdPercent ?? null, exServiceman: p?.exServiceman ?? false,
         serviceYears: p?.serviceYears ?? null, domicileStateCode: p?.domicileStateCode ?? null, categoryCertDocId: p?.categoryCertDocId ?? null,
-        pwdCertDocId: p?.pwdCertDocId ?? null, exsmCertDocId: p?.exsmCertDocId ?? null,
+        pwdCertDocId: p?.pwdCertDocId ?? null, exsmCertDocId: p?.exsmCertDocId ?? null, languages: p?.languages ?? [],
       },
       address: perm ? { permanent: perm, correspondenceSameAsPermanent: p?.sameAddress ?? true, correspondence: corr ?? undefined } : null,
       education: c.education.map((e) => ({ id: e.id, level: e.level, qualificationName: e.qualificationName, boardOrUniversity: e.boardOrUniversity, yearOfPassing: e.yearOfPassing, status: e.status, resultType: e.resultType, marks: e.marks, maxMarks: e.maxMarks, cgpaScale: e.cgpaScale, rollNo: d(e.rollNoEnc), documentId: e.documentId })),
       documents: c.documents.map((x) => ({ id: x.id, kind: x.kind, fileName: x.fileName, sizeBytes: x.sizeBytes, mime: x.mime, verificationStatus: x.verificationStatus, rejectionReason: x.rejectionReason, createdAt: x.createdAt })),
       photo: media('PHOTO'),
       signature: media('SIGNATURE'),
+      thumb: media('THUMB'),
+      declarationImage: media('DECLARATION'),
       identity: { aadhaarMasked: p?.aadhaarMasked ?? null, aadhaarVerifiedAt: p?.aadhaarVerifiedAt ?? null, apaarId: d(p?.apaarIdEnc), digilockerLinkedAt: p?.digilockerLinkedAt ?? null },
       declaration: { at: p?.declarationAt ?? null, place: p?.declarationPlace ?? null },
       completedSteps: completed,
@@ -95,14 +100,14 @@ export class CandidateDataService {
   /** Public JSON for the candidate (no storage keys). */
   async publicView(candidateId: string): Promise<Record<string, unknown>> {
     const v = await this.view(candidateId);
-    const [photoUrl, sigUrl] = await Promise.all([
-      v.photo ? this.storage.signedUrl(v.photo.objectKey, 600) : Promise.resolve(null),
-      v.signature ? this.storage.signedUrl(v.signature.objectKey, 600) : Promise.resolve(null),
-    ]);
+    const url = (m: MediaSummary | null) => (m ? this.storage.signedUrl(m.objectKey, 600) : Promise.resolve(null));
+    const [photoUrl, sigUrl, thumbUrl, declUrl] = await Promise.all([url(v.photo), url(v.signature), url(v.thumb), url(v.declarationImage)]);
     return {
       ...v,
       photo: v.photo ? { id: v.photo.id, width: v.photo.width, height: v.photo.height, sizeBytes: v.photo.sizeBytes, capturedAt: v.photo.capturedAt, url: photoUrl } : null,
       signature: v.signature ? { id: v.signature.id, width: v.signature.width, height: v.signature.height, sizeBytes: v.signature.sizeBytes, method: v.signature.method, url: sigUrl } : null,
+      thumb: v.thumb ? { id: v.thumb.id, sizeBytes: v.thumb.sizeBytes, url: thumbUrl } : null,
+      declarationImage: v.declarationImage ? { id: v.declarationImage.id, sizeBytes: v.declarationImage.sizeBytes, url: declUrl } : null,
     };
   }
 
@@ -117,6 +122,7 @@ export class CandidateDataService {
       serviceYears: v.category.serviceYears ?? undefined,
       domicileStateCode: v.category.domicileStateCode,
       nationality: v.personal.nationality ?? 'INDIAN',
+      languages: v.category.languages ?? [],
       education: v.education.map((e) => ({ level: e.level as EligibilityProfile['education'][number]['level'], status: e.status as 'PASSED' | 'APPEARING', resultType: e.resultType as 'PERCENT' | 'CGPA', marks: e.marks, maxMarks: e.maxMarks, cgpaScale: e.cgpaScale })),
     };
   }

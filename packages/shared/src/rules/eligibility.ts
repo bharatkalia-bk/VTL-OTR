@@ -36,6 +36,14 @@ export const eligibilityRuleSchema = z.object({
     .optional(),
   genders: z.array(z.enum(GENDERS)).optional(),
   nationalities: z.array(z.string()).default(['INDIAN']),
+  /** Local-language requirement (state recruitment): candidate must read, write and speak one of these. */
+  localLanguage: z
+    .object({
+      languages: z.array(z.string().min(2).max(40)).min(1),
+      /** Candidates domiciled in these states are deemed to know the language (optional). */
+      exemptStateCodes: z.array(z.string().min(2).max(3)).default([]),
+    })
+    .optional(),
 });
 export type EligibilityRule = z.infer<typeof eligibilityRuleSchema>;
 export type EligibilityRuleInput = z.input<typeof eligibilityRuleSchema>;
@@ -49,6 +57,8 @@ export interface EligibilityProfile {
   serviceYears?: number;
   domicileStateCode?: string | null;
   nationality: string;
+  /** Languages the candidate can read, write and speak. */
+  languages?: string[];
   education: Array<{
     level: EducationLevel;
     status: 'PASSED' | 'APPEARING';
@@ -59,7 +69,7 @@ export interface EligibilityProfile {
   }>;
 }
 
-export type CriterionCode = 'AGE' | 'QUALIFICATION' | 'DOMICILE' | 'GENDER' | 'NATIONALITY';
+export type CriterionCode = 'AGE' | 'QUALIFICATION' | 'DOMICILE' | 'GENDER' | 'NATIONALITY' | 'LANGUAGE';
 export interface CriterionResult {
   code: CriterionCode;
   passed: boolean;
@@ -142,6 +152,14 @@ export function evaluateEligibility(ruleInput: EligibilityRuleInput, p: Eligibil
   if (rule.genders && rule.genders.length > 0) {
     const ok = rule.genders.includes(p.gender);
     criteria.push({ code: 'GENDER', passed: ok, reasonKey: ok ? 'eligibility.gender.ok' : 'eligibility.gender.restricted', params: { genders: rule.genders.join(', ') } });
+  }
+
+  // Local language
+  if (rule.localLanguage) {
+    const known = (p.languages ?? []).map((l) => l.trim().toLowerCase());
+    const exempt = !!p.domicileStateCode && rule.localLanguage.exemptStateCodes.includes(p.domicileStateCode);
+    const ok = exempt || rule.localLanguage.languages.some((l) => known.includes(l.toLowerCase()));
+    criteria.push({ code: 'LANGUAGE', passed: ok, reasonKey: ok ? 'eligibility.language.ok' : 'eligibility.language.required', params: { languages: rule.localLanguage.languages.join(', ') } });
   }
 
   // Nationality

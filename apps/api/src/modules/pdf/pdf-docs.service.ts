@@ -17,6 +17,10 @@ const dmy = (iso: string | null) => (iso ? iso.split('-').reverse().join('-') : 
 const fmtAddr = (a: AddressLine | undefined | null, states: Map<string, string>, districts: Map<number, string>) =>
   a ? [a.line1, a.line2, a.city, districts.get(a.districtId), states.get(a.stateCode), a.pin].filter(Boolean).join(', ') : '';
 
+/** Directions link for the exam centre: coordinates when known, otherwise the address. */
+export const mapsUrl = (c: { name: string; address: string; lat: number | null; lng: number | null; city?: { cityName: string } }) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.lat !== null && c.lng !== null ? `${c.lat},${c.lng}` : `${c.name}, ${c.address}, ${c.city?.cityName ?? ''}`)}`;
+
 /** Builds data for each PDF, renders, caches in object storage. */
 @Injectable()
 export class PdfDocsService implements OnModuleInit {
@@ -120,7 +124,7 @@ export class PdfDocsService implements OnModuleInit {
   }
 
   async admitCard(admitCardId: string, force = false): Promise<string> {
-    const ac = await this.prisma.admitCard.findUniqueOrThrow({ where: { id: admitCardId }, include: { centre: { include: { city: true } }, application: { include: { exam: { include: { posts: true } } } } } });
+    const ac = await this.prisma.admitCard.findUniqueOrThrow({ where: { id: admitCardId }, include: { shift: true, centre: { include: { city: true } }, application: { include: { exam: { include: { posts: true } } } } } });
     if (ac.pdfObjectKey && !force) return ac.pdfObjectKey;
     const app = ac.application;
     const snap = this.crypto.decJson<CandidateView>(app.profileSnapshotEnc) ?? (await this.data.view(app.candidateId));
@@ -133,7 +137,10 @@ export class PdfDocsService implements OnModuleInit {
       ...this.common(snap), ref: ac.rollNo, rollNo: ac.rollNo, otrId: snap.otrId, applicationNo: app.applicationNo,
       exam: { title: app.exam.titleEn }, post: app.exam.posts.find((p) => p.id === app.postIds[0])?.titleEn ?? '',
       centre: ac.centre ? { name: ac.centre.name, code: ac.centre.code, address: ac.centre.address, city: ac.centre.city.cityName, reportingTime: ac.centre.reportingTime, gateClosingTime: ac.centre.gateClosingTime } : {},
-      examDate: dmy(dates.examDate ?? null),
+      examDate: dmy(ac.shift?.date ?? dates.examDate ?? null),
+      shift: ac.shift ? { code: ac.shift.code, time: `${ac.shift.startTime} to ${ac.shift.endTime}`, mode: ac.shift.mode === 'OMR' ? 'Pen and paper (OMR)' : 'Computer based test' } : null,
+      mapQr: ac.centre ? await QRCode.toDataURL(mapsUrl(ac.centre), { errorCorrectionLevel: 'M', margin: 1, width: 200, color: { dark: '#07102D', light: '#FFFFFF' } }) : null,
+      mapUrl: ac.centre ? mapsUrl(ac.centre) : null,
       photo: await this.dataUrl(app.photoKey), signature: await this.dataUrl(app.signatureKey), qr,
     });
     const key = `exams/${app.examId}/admit-cards/${ac.rollNo}.pdf`;

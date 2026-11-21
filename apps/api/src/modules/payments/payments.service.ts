@@ -56,6 +56,25 @@ export class PaymentsService implements OnModuleInit {
     return { paymentId: p.id, merchantTxnId, redirectUrl };
   }
 
+  /** Answer-key objection fee: same gateway, reconciliation and audit path as application fees. */
+  async initiateObjection(candidateId: string, objectionId: string) {
+    const o = await this.prisma.objection.findFirst({ where: { id: objectionId, candidateId } });
+    if (!o) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Objection not found.' });
+    if (o.status !== 'PAYMENT_PENDING') throw new AppError('PAYMENT_NOT_DUE', 'No payment is due for this objection.', 409);
+    const paper = await this.prisma.examPaper.findUniqueOrThrow({ where: { id: o.paperId } });
+    if (paper.objectionDeadline && paper.objectionDeadline < new Date()) throw new AppError('OBJECTION_CLOSED', 'The objection window has closed.');
+    const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const merchantTxnId = `VTLO${ymd}${randomBytes(5).toString('hex').toUpperCase()}`;
+    const p = await this.prisma.payment.create({ data: { applicationId: o.applicationId, purpose: 'OBJECTION', objectionId: o.id, merchantTxnId, gateway: this.gateway.name, amount: o.fee, events: { create: { source: 'INITIATE', idempotencyKey: `INITIATE:${merchantTxnId}`, payload: { amount: o.fee, objectionId: o.id } } } } });
+    const { redirectUrl } = await this.gateway.createOrder({
+      merchantTxnId, amount: o.fee, description: `Answer key objection Q${o.qno}`,
+      returnUrl: `${this.env.CANDIDATE_WEB_URL}/results?txn=${merchantTxnId}`,
+      callbackUrl: `${this.env.PUBLIC_API_URL}/api/v1/payments/callback/${this.gateway.name}`,
+    });
+    await this.audit.log({ action: 'PAYMENT_INITIATED', entity: 'Payment', entityId: p.id, after: { amount: p.amount, merchantTxnId, purpose: 'OBJECTION' } });
+    return { paymentId: p.id, merchantTxnId, redirectUrl };
+  }
+
   /** Idempotent: the same (source, txn, status, gatewayTxn) is applied once; replays return current state. */
   async applyGatewayResult(r: PaymentCallbackResult, source: 'CALLBACK' | 'RECON'): Promise<Payment> {
     if (!r.signatureValid) {
@@ -85,16 +104,22 @@ export class PaymentsService implements OnModuleInit {
         data: { status: next, gatewayTxnId: r.gatewayTxnId ?? p.gatewayTxnId, rawCallback: r.raw as Prisma.InputJsonValue, ...(source === 'RECON' && { reconciledAt: new Date(), reconciliationNote: note ?? `Reconciled: ${next}` }), ...(note && { reconciliationNote: note }) },
       });
       const app = await tx.application.findUniqueOrThrow({ where: { id: p.applicationId }, include: { exam: true } });
-      if (next === 'SUCCESS') {
+      if (p.purpose === 'OBJECTION') {
+        if (next === 'SUCCESS' && p.objectionId) {
+          const o = await tx.objection.findUnique({ where: { id: p.objectionId } });
+          if (o?.status === 'PAYMENT_PENDING') await tx.objection.update({ where: { id: o.id }, data: { status: 'SUBMITTED', paymentId: p.id } });
+          else await tx.payment.update({ where: { id: p.id }, data: { reconciliationNote: 'DUPLICATE_PAYMENT: objection already paid; eligible for refund' } });
+        }
+      } else if (next === 'SUCCESS') {
         if (app.status === 'PAYMENT_PENDING') {
           await tx.application.update({ where: { id: app.id }, data: { status: 'PAID', events: { create: { status: 'PAID', note: `Fee received. Ref ${u.gatewayTxnId}` } } } });
           await tx.notification.create({ data: { candidateId: app.candidateId, titleKey: 'notifications.paymentSuccess', params: { applicationNo: app.applicationNo, amount: u.amount }, link: `/applications/${app.id}` } });
         } else if (app.status === 'PAID') {
           await tx.payment.update({ where: { id: p.id }, data: { reconciliationNote: 'DUPLICATE_PAYMENT: application already paid; eligible for refund' } });
         }
-      } else if (next === 'FAILED') {
+      } else if (next === 'FAILED' && p.purpose !== 'OBJECTION') {
         await tx.applicationEvent.create({ data: { applicationId: app.id, status: 'PAYMENT_FAILED', note: note ?? `Payment ${u.merchantTxnId} failed` } });
-      } else if (next === 'PENDING') {
+      } else if (next === 'PENDING' && p.purpose !== 'OBJECTION') {
         await tx.applicationEvent.create({ data: { applicationId: app.id, status: 'PAYMENT_PENDING_CONFIRMATION', note: `Awaiting bank confirmation for ${u.merchantTxnId}` } });
       }
       await this.audit.log({ action: `PAYMENT_${next}`, entity: 'Payment', entityId: p.id, actorType: 'SYSTEM', before: { status: p.status }, after: { status: next, source, gatewayTxnId: r.gatewayTxnId } }, tx);

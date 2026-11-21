@@ -25,6 +25,8 @@ import { DashboardService } from './dashboard.service';
 import { ReportsService } from './reports.service';
 
 const READ_ALL = ['EXAM_ADMIN', 'VERIFIER', 'HELPDESK_AGENT', 'AUDITOR'] as const;
+/** Field staff scope: which centres / exams they may touch, and home district for conflict-of-interest checks. */
+const staffScopeSchema = z.object({ centreIds: z.array(z.string().uuid()).max(200).optional(), examIds: z.array(z.string().uuid()).max(50).optional(), homeDistrict: z.string().max(80).optional(), agency: z.string().max(120).optional() });
 const page = (q: unknown) => parseOrThrow(paginationSchema, q);
 
 // ───────────── Auth ─────────────
@@ -107,15 +109,15 @@ export class AdminUsersController {
   @Roles('AUDITOR')
   async list() {
     const rows = await this.prisma.adminUser.findMany({ orderBy: { createdAt: 'asc' } });
-    return rows.map((a) => ({ id: a.id, name: a.name, email: a.email, roles: a.roles, isActive: a.isActive, totpEnrolled: !!a.totpEnrolledAt, lastLoginAt: a.lastLoginAt, createdAt: a.createdAt }));
+    return rows.map((a) => ({ id: a.id, name: a.name, email: a.email, roles: a.roles, scope: a.scope, isActive: a.isActive, totpEnrolled: !!a.totpEnrolledAt, lastLoginAt: a.lastLoginAt, createdAt: a.createdAt }));
   }
 
   @Post()
   @Roles('SUPER_ADMIN')
   @StepUp()
   async create(@CurrentUser() u: AccessClaims, @Body() b: unknown) {
-    const x = parseOrThrow(z.object({ name: z.string().min(2).max(100), email: z.string().email(), password: passwordSchema, roles: z.array(z.enum(ADMIN_ROLES)).min(1) }), b);
-    const a = await this.prisma.adminUser.create({ data: { name: x.name, email: x.email.toLowerCase(), roles: x.roles, passwordHash: await hashPassword(x.password) } });
+    const x = parseOrThrow(z.object({ name: z.string().min(2).max(100), email: z.string().email(), password: passwordSchema, roles: z.array(z.enum(ADMIN_ROLES)).min(1), scope: staffScopeSchema.optional() }), b);
+    const a = await this.prisma.adminUser.create({ data: { name: x.name, email: x.email.toLowerCase(), roles: x.roles, scope: x.scope ?? {}, passwordHash: await hashPassword(x.password) } });
     await this.audit.log({ action: 'ADMIN_USER_CREATED', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: u.sub, after: { email: a.email, roles: a.roles } });
     return { id: a.id };
   }
@@ -124,11 +126,11 @@ export class AdminUsersController {
   @Roles('SUPER_ADMIN')
   @StepUp()
   async update(@CurrentUser() u: AccessClaims, @Param('id', ParseUUIDPipe) id: string, @Body() b: unknown) {
-    const x = parseOrThrow(z.object({ roles: z.array(z.enum(ADMIN_ROLES)).min(1).optional(), isActive: z.boolean().optional(), name: z.string().min(2).optional() }), b);
+    const x = parseOrThrow(z.object({ roles: z.array(z.enum(ADMIN_ROLES)).min(1).optional(), isActive: z.boolean().optional(), name: z.string().min(2).optional(), scope: staffScopeSchema.optional() }), b);
     if (id === u.sub && x.isActive === false) throw new AppError('SELF_DEACTIVATE', 'You cannot deactivate yourself.');
     const before = await this.prisma.adminUser.findUniqueOrThrow({ where: { id } });
     await this.prisma.adminUser.update({ where: { id }, data: x });
-    if (x.isActive === false || x.roles) await this.tokens.revokeAllFor('ADMIN', id);
+    if (x.isActive === false || x.roles || x.scope) await this.tokens.revokeAllFor('ADMIN', id);
     await this.audit.log({ action: 'ADMIN_USER_UPDATED', entity: 'AdminUser', entityId: id, actorType: 'ADMIN', actorId: u.sub, before: { roles: before.roles, isActive: before.isActive }, after: x });
     return { ok: true };
   }

@@ -18,7 +18,7 @@ function fontFace(family: string, pkg: string, file: string, weight: number): st
   return `@font-face{font-family:'${family}';font-weight:${weight};font-style:normal;src:url(data:font/woff2;base64,${readFileSync(p).toString('base64')}) format('woff2');}`;
 }
 
-export type PdfTemplate = 'otr-slip' | 'application-form' | 'receipt' | 'admit-card';
+export type PdfTemplate = 'otr-slip' | 'application-form' | 'receipt' | 'admit-card' | 'roll-sheet' | 'call-letter';
 
 /** Server-side PDFs via headless Chromium (correct Devanagari shaping), fonts and images embedded. */
 @Injectable()

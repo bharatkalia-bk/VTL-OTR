@@ -38,6 +38,10 @@ enum AdminRole {
   VERIFIER
   HELPDESK_AGENT
   AUDITOR
+  OBSERVER
+  AGENCY
+  CENTRE_SUPERINTENDENT
+  INTERVIEW_PANEL
 }
 
 enum VerificationStatus {
@@ -49,6 +53,8 @@ enum VerificationStatus {
 enum MediaKind {
   PHOTO
   SIGNATURE
+  THUMB
+  DECLARATION
 }
 
 enum ExamStatus {
@@ -105,40 +111,40 @@ enum JobStatus {
 // ───────────────────────── Candidates ─────────────────────────
 
 model Candidate {
-  id              String          @id @default(uuid()) @db.Uuid
-  otrId           String?         @unique
-  otrSeq          Int?
-  status          CandidateStatus @default(DRAFT)
-  mobileEnc       String
-  mobileIdx       String          @unique
-  emailEnc        String
-  emailIdx        String          @unique
+  id               String          @id @default(uuid()) @db.Uuid
+  otrId            String?         @unique
+  otrSeq           Int?
+  status           CandidateStatus @default(DRAFT)
+  mobileEnc        String
+  mobileIdx        String          @unique
+  emailEnc         String
+  emailIdx         String          @unique
   mobileVerifiedAt DateTime?
-  emailVerifiedAt DateTime?
-  passwordHash    String?
-  failedLogins    Int             @default(0)
-  lockedUntil     DateTime?
-  language        String          @default("en")
+  emailVerifiedAt  DateTime?
+  passwordHash     String?
+  failedLogins     Int             @default(0)
+  lockedUntil      DateTime?
+  language         String          @default("en")
   /// HMAC of normalised (name + DOB + father's name), for duplicate-identity detection
-  dedupeKey       String
+  dedupeKey        String
   /// HMAC tokens of normalised name parts, for admin search without plaintext
-  nameTokens      String[]
-  blockedReason   String?
-  submittedAt     DateTime?
-  lastLoginAt     DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  nameTokens       String[]
+  blockedReason    String?
+  submittedAt      DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
-  profile         CandidateProfile?
-  education       Education[]
-  documents       Document[]
-  media           MediaAsset[]
-  photoAttempts   PhotoAttempt[]
-  consents        Consent[]
-  corrections     CorrectionRequest[]
-  applications    Application[]
-  tickets         HelpdeskTicket[]
-  notifications   Notification[]
+  profile       CandidateProfile?
+  education     Education[]
+  documents     Document[]
+  media         MediaAsset[]
+  photoAttempts PhotoAttempt[]
+  consents      Consent[]
+  corrections   CorrectionRequest[]
+  applications  Application[]
+  tickets       HelpdeskTicket[]
+  notifications Notification[]
 
   @@index([dedupeKey])
   @@index([status, createdAt])
@@ -146,43 +152,45 @@ model Candidate {
 }
 
 model CandidateProfile {
-  candidateId          String    @id @db.Uuid
-  candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-  fullNameEnc          String?
-  fatherNameEnc        String?
-  motherNameEnc        String?
-  dobEnc               String?
-  gender               Gender?
-  nationality          String?
-  maritalStatus        String?
-  idMark1Enc           String?
-  idMark2Enc           String?
-  category             Category?
-  pwd                  Boolean   @default(false)
-  pwdType              String?
-  pwdPercent           Int?
-  exServiceman         Boolean   @default(false)
-  serviceYears         Int?
-  domicileStateCode    String?
-  categoryCertDocId    String?   @db.Uuid
-  pwdCertDocId         String?   @db.Uuid
-  exsmCertDocId        String?   @db.Uuid
+  candidateId              String    @id @db.Uuid
+  candidate                Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  fullNameEnc              String?
+  fatherNameEnc            String?
+  motherNameEnc            String?
+  dobEnc                   String?
+  gender                   Gender?
+  nationality              String?
+  maritalStatus            String?
+  idMark1Enc               String?
+  idMark2Enc               String?
+  category                 Category?
+  pwd                      Boolean   @default(false)
+  pwdType                  String?
+  pwdPercent               Int?
+  exServiceman             Boolean   @default(false)
+  serviceYears             Int?
+  domicileStateCode        String?
+  categoryCertDocId        String?   @db.Uuid
+  pwdCertDocId             String?   @db.Uuid
+  exsmCertDocId            String?   @db.Uuid
   /// encrypted JSON of permanent / correspondence address
-  permanentAddressEnc  String?
+  permanentAddressEnc      String?
   correspondenceAddressEnc String?
-  sameAddress          Boolean   @default(true)
+  sameAddress              Boolean   @default(true)
   /// non-sensitive geography kept in clear for reports
-  stateCode            String?
-  districtId           Int?
-  declarationAt        DateTime?
-  declarationPlace     String?
-  completedSteps       String[]
-  aadhaarMasked        String?
-  aadhaarRefToken      String?
-  aadhaarVerifiedAt    DateTime?
-  apaarIdEnc           String?
-  digilockerLinkedAt   DateTime?
-  updatedAt            DateTime  @updatedAt
+  stateCode                String?
+  districtId               Int?
+  declarationAt            DateTime?
+  declarationPlace         String?
+  completedSteps           String[]
+  aadhaarMasked            String?
+  aadhaarRefToken          String?
+  aadhaarVerifiedAt        DateTime?
+  apaarIdEnc               String?
+  digilockerLinkedAt       DateTime?
+  /// languages the candidate can read, write and speak (local-language eligibility)
+  languages                String[]  @default([])
+  updatedAt                DateTime  @updatedAt
 
   @@index([stateCode])
   @@index([category])
@@ -323,37 +331,39 @@ model CorrectionRequest {
 // ───────────────────────── Auth / staff ─────────────────────────
 
 model RefreshToken {
-  id          String    @id @default(uuid()) @db.Uuid
-  subjectType String
-  subjectId   String    @db.Uuid
-  familyId    String    @db.Uuid
-  tokenHash   String    @unique
-  expiresAt   DateTime
-  revokedAt   DateTime?
-  replacedById String?  @db.Uuid
-  ip          String?
-  userAgent   String?
-  createdAt   DateTime  @default(now())
+  id           String    @id @default(uuid()) @db.Uuid
+  subjectType  String
+  subjectId    String    @db.Uuid
+  familyId     String    @db.Uuid
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?   @db.Uuid
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime  @default(now())
 
   @@index([subjectType, subjectId])
   @@index([familyId])
 }
 
 model AdminUser {
-  id            String      @id @default(uuid()) @db.Uuid
-  name          String
-  email         String      @unique
-  passwordHash  String
-  roles         AdminRole[]
-  totpSecretEnc String?
+  id             String      @id @default(uuid()) @db.Uuid
+  name           String
+  email          String      @unique
+  passwordHash   String
+  roles          AdminRole[]
+  totpSecretEnc  String?
   totpEnrolledAt DateTime?
-  recoveryCodes String[]
-  isActive      Boolean     @default(true)
-  failedLogins  Int         @default(0)
-  lockedUntil   DateTime?
-  lastLoginAt   DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  recoveryCodes  String[]
+  isActive       Boolean     @default(true)
+  /// role scope: { centreIds?, examIds?, homeDistrict?, agency? }
+  scope          Json        @default("{}")
+  failedLogins   Int         @default(0)
+  lockedUntil    DateTime?
+  lastLoginAt    DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
 
 /// Append-only (enforced by trigger in migration).
@@ -379,29 +389,36 @@ model AuditLog {
 // ───────────────────────── Exams ─────────────────────────
 
 model Exam {
-  id                   String      @id @default(uuid()) @db.Uuid
-  code                 String      @unique
+  id                   String     @id @default(uuid()) @db.Uuid
+  code                 String     @unique
   titleEn              String
   titleHi              String
   notificationNo       String
   conductingBody       String
-  descriptionEn        String      @default("")
-  descriptionHi        String      @default("")
-  status               ExamStatus  @default(DRAFT)
+  descriptionEn        String     @default("")
+  descriptionHi        String     @default("")
+  status               ExamStatus @default(DRAFT)
   dates                Json
   ageCutoffDate        String
-  maxCentrePreferences Int         @default(3)
-  customFields         Json        @default("[]")
-  rollNoPrefix         String      @default("VTL")
+  maxCentrePreferences Int        @default(3)
+  customFields         Json       @default("[]")
+  rollNoPrefix         String     @default("VTL")
   admitCardsReleasedAt DateTime?
   resultsPublishedAt   DateTime?
-  createdAt            DateTime    @default(now())
-  updatedAt            DateTime    @updatedAt
+  /// ordered stages, e.g. ["TIER1","TIER2","INTERVIEW"]
+  stages               String[]   @default(["TIER1"])
+  objectionFee         Int        @default(100)
+  /// final merit weights in percent
+  writtenWeight        Int        @default(100)
+  interviewWeight      Int        @default(0)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
 
   posts        Post[]
   feeRules     FeeRule[]
   centreCities ExamCentreCity[]
   applications Application[]
+  shifts       ExamShift[]
 
   @@index([status])
 }
@@ -452,6 +469,9 @@ model ExamCentre {
   capacity        Int
   reportingTime   String
   gateClosingTime String
+  districtName    String?
+  lat             Float?
+  lng             Float?
   admitCards      AdmitCard[]
 
   @@unique([cityId, code])
@@ -478,10 +498,11 @@ model Application {
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 
-  events    ApplicationEvent[]
-  payments  Payment[]
-  admitCard AdmitCard?
-  result    Result?
+  events     ApplicationEvent[]
+  payments   Payment[]
+  admitCard  AdmitCard?
+  result     Result?
+  scoreCards ScoreCard[]
 
   @@unique([candidateId, examId])
   @@index([examId, status])
@@ -500,22 +521,25 @@ model ApplicationEvent {
 }
 
 model Payment {
-  id                 String        @id @default(uuid()) @db.Uuid
-  applicationId      String        @db.Uuid
-  application        Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  merchantTxnId      String        @unique
+  id                 String         @id @default(uuid()) @db.Uuid
+  applicationId      String         @db.Uuid
+  application        Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  merchantTxnId      String         @unique
+  /// APPLICATION or OBJECTION
+  purpose            String         @default("APPLICATION")
+  objectionId        String?        @db.Uuid
   gateway            String
-  gatewayTxnId       String?       @unique
+  gatewayTxnId       String?        @unique
   amount             Int
-  status             PaymentStatus @default(INITIATED)
+  status             PaymentStatus  @default(INITIATED)
   rawCallback        Json?
   reconciledAt       DateTime?
   reconciliationNote String?
-  manualVerifiedById String?       @db.Uuid
+  manualVerifiedById String?        @db.Uuid
   refundMarkedAt     DateTime?
   refundNote         String?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
   events             PaymentEvent[]
 
   @@index([status, createdAt])
@@ -533,19 +557,23 @@ model PaymentEvent {
 }
 
 model AdmitCard {
-  id               String      @id @default(uuid()) @db.Uuid
-  applicationId    String      @unique @db.Uuid
-  application      Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  examId           String      @db.Uuid
+  id               String         @id @default(uuid()) @db.Uuid
+  applicationId    String         @unique @db.Uuid
+  application      Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  examId           String         @db.Uuid
   rollNo           String
-  centreId         String?     @db.Uuid
-  centre           ExamCentre? @relation(fields: [centreId], references: [id])
-  allocationMethod String      @default("AUTO")
+  centreId         String?        @db.Uuid
+  centre           ExamCentre?    @relation(fields: [centreId], references: [id])
+  allocationMethod String         @default("AUTO")
   qrToken          String?
   pdfObjectKey     String?
   generatedAt      DateTime?
   releasedAt       DateTime?
   downloadedAt     DateTime?
+  shiftId          String?        @db.Uuid
+  shift            ExamShift?     @relation(fields: [shiftId], references: [id])
+  attendance       Attendance?
+  responseSheet    ResponseSheet?
 
   @@unique([examId, rollNo])
   @@index([centreId])
@@ -573,6 +601,9 @@ model HelpdeskTicket {
   category     String
   subject      String
   status       TicketStatus    @default(OPEN)
+  /// WEB, CHAT, PHONE, IVR, EMAIL
+  channel      String          @default("WEB")
+  callerRef    String?
   assignedToId String?         @db.Uuid
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
@@ -707,4 +738,410 @@ model SystemSetting {
   value       Json
   updatedById String?  @db.Uuid
   updatedAt   DateTime @updatedAt
+}
+
+// ───────────── Exam day ─────────────
+model ExamShift {
+  id         String      @id @default(uuid()) @db.Uuid
+  examId     String      @db.Uuid
+  exam       Exam        @relation(fields: [examId], references: [id], onDelete: Cascade)
+  stage      String      @default("TIER1")
+  code       String
+  date       String
+  startTime  String
+  endTime    String
+  /// CBT or OMR
+  mode       String      @default("CBT")
+  admitCards AdmitCard[]
+
+  @@unique([examId, code])
+}
+
+model Attendance {
+  id          String    @id @default(uuid()) @db.Uuid
+  admitCardId String    @unique @db.Uuid
+  admitCard   AdmitCard @relation(fields: [admitCardId], references: [id], onDelete: Cascade)
+  /// PRESENT or ABSENT
+  status      String
+  /// QR, MANUAL, AGENCY
+  method      String
+  faceCheck   String?
+  markedById  String?   @db.Uuid
+  note        String?
+  markedAt    DateTime  @default(now())
+}
+
+model ObserverAssignment {
+  id            String           @id @default(uuid()) @db.Uuid
+  observerId    String           @db.Uuid
+  examId        String           @db.Uuid
+  centreId      String           @db.Uuid
+  shiftId       String?          @db.Uuid
+  /// PENDING, DECLARED_CLEAR, CONFLICT, WAIVED
+  coiStatus     String           @default("PENDING")
+  coiNote       String?
+  coiDeclaredAt DateTime?
+  autoCoiFlags  Json             @default("[]")
+  createdAt     DateTime         @default(now())
+  reports       ObserverReport[]
+
+  @@unique([observerId, examId, centreId])
+}
+
+model ObserverReport {
+  id           String             @id @default(uuid()) @db.Uuid
+  assignmentId String             @db.Uuid
+  assignment   ObserverAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  /// client-generated id: offline sync is idempotent
+  clientId     String             @unique
+  /// ARRIVAL, CHECKLIST, INCIDENT, FINAL
+  kind         String
+  severity     String             @default("INFO")
+  payload      Json
+  lat          Float?
+  lng          Float?
+  capturedAt   DateTime
+  syncedAt     DateTime           @default(now())
+}
+
+model BiometricAlert {
+  id           String    @id @default(uuid()) @db.Uuid
+  examId       String    @db.Uuid
+  admitCardId  String?   @db.Uuid
+  rollNo       String
+  centreId     String?   @db.Uuid
+  /// FACE_MISMATCH, FINGERPRINT_MISMATCH, DUPLICATE_BIOMETRIC, NOT_CAPTURED
+  kind         String
+  score        Float?
+  /// AGENCY, DESK, SYSTEM
+  source       String
+  details      Json      @default("{}")
+  /// OPEN, CLEARED, CONFIRMED
+  status       String    @default("OPEN")
+  reviewedById String?   @db.Uuid
+  reviewNote   String?
+  reviewedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([examId, status])
+}
+
+model AgencyKey {
+  id         String    @id @default(uuid()) @db.Uuid
+  name       String
+  ownerId    String    @db.Uuid
+  examId     String?   @db.Uuid
+  prefix     String    @unique
+  keyHash    String
+  scopes     String[]
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+}
+
+model AgencySubmission {
+  id            String   @id @default(uuid()) @db.Uuid
+  examId        String   @db.Uuid
+  /// CBT_RESPONSES, OMR_READS, ATTENDANCE, BIOMETRIC_ALERTS
+  kind          String
+  /// UI or API
+  source        String
+  keyId         String?  @db.Uuid
+  submittedById String?  @db.Uuid
+  fileName      String?
+  checksum      String
+  records       Int
+  accepted      Int
+  rejected      Int
+  errors        Json     @default("[]")
+  createdAt     DateTime @default(now())
+
+  @@unique([examId, kind, checksum])
+}
+
+// ───────────── Assessment ─────────────
+model ExamPaper {
+  id                     String    @id @default(uuid()) @db.Uuid
+  examId                 String    @db.Uuid
+  shiftId                String    @unique @db.Uuid
+  questionCount          Int
+  marksCorrect           Float     @default(2)
+  marksWrong             Float     @default(0.5)
+  /// [{ name, from, to }]
+  sections               Json      @default("[]")
+  /// { "1": ["A"], ... }
+  provisionalKey         Json?
+  finalKey               Json?
+  provisionalPublishedAt DateTime?
+  objectionDeadline      DateTime?
+  finalPublishedAt       DateTime?
+  dropped                Int[]     @default([])
+  /// [{ qno, from, to, reason }]
+  changes                Json      @default("[]")
+}
+
+model ResponseSheet {
+  id               String    @id @default(uuid()) @db.Uuid
+  admitCardId      String    @unique @db.Uuid
+  admitCard        AdmitCard @relation(fields: [admitCardId], references: [id], onDelete: Cascade)
+  shiftId          String    @db.Uuid
+  /// CBT or OMR
+  source           String
+  /// { "1": "A" | null }
+  responses        Json
+  timings          Json?
+  omrScanKey       String?
+  carbonCopyKey    String?
+  carbonUploadedAt DateTime?
+  submissionId     String?   @db.Uuid
+  receivedAt       DateTime  @default(now())
+}
+
+model TechnicalException {
+  id                  String    @id @default(uuid()) @db.Uuid
+  examId              String    @db.Uuid
+  shiftId             String?   @db.Uuid
+  centreId            String?   @db.Uuid
+  rollNos             String[]
+  /// SYSTEM_FAILURE, POWER, NETWORK, OMR_DAMAGED, OTHER
+  kind                String
+  minutesLost         Int       @default(0)
+  description         String
+  reportedById        String?   @db.Uuid
+  reportedVia         String    @default("DESK")
+  /// OPEN, COMPENSATED, RE_EXAM, REJECTED
+  status              String    @default("OPEN")
+  resolution          String?
+  compensationMinutes Int?
+  decidedById         String?   @db.Uuid
+  decidedAt           DateTime?
+  createdAt           DateTime  @default(now())
+
+  @@index([examId, status])
+}
+
+model Objection {
+  id             String    @id @default(uuid()) @db.Uuid
+  examId         String    @db.Uuid
+  paperId        String    @db.Uuid
+  applicationId  String    @db.Uuid
+  candidateId    String    @db.Uuid
+  qno            Int
+  claimedOptions String[]
+  reasoning      String
+  fee            Int
+  /// PAYMENT_PENDING, SUBMITTED, ACCEPTED, REJECTED
+  status         String    @default("PAYMENT_PENDING")
+  paymentId      String?   @db.Uuid
+  aiReview       Json?
+  decisionNote   String?
+  decidedById    String?   @db.Uuid
+  decidedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@unique([applicationId, qno])
+  @@index([paperId, qno])
+}
+
+model ResultRun {
+  id           String    @id @default(uuid()) @db.Uuid
+  examId       String    @db.Uuid
+  stage        String
+  /// DRAFT, PENDING_APPROVAL, APPROVED, PUBLISHED
+  status       String    @default("DRAFT")
+  cutoffs      Json      @default("{}")
+  stats        Json      @default("{}")
+  anomalies    Json      @default("[]")
+  computedById String?   @db.Uuid
+  computedAt   DateTime?
+  submittedAt  DateTime?
+  approvedById String?   @db.Uuid
+  approvedAt   DateTime?
+  rejectNote   String?
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([examId, stage])
+}
+
+model ScoreCard {
+  id            String      @id @default(uuid()) @db.Uuid
+  applicationId String      @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  examId        String      @db.Uuid
+  stage         String
+  raw           Float
+  normalised    Float?
+  percentile    Float?
+  correct       Int         @default(0)
+  wrong         Int         @default(0)
+  unattempted   Int         @default(0)
+  sectionScores Json        @default("{}")
+  rank          Int?
+  categoryRank  Int?
+  qualified     Boolean     @default(false)
+  withheld      Boolean     @default(false)
+  publishedAt   DateTime?
+
+  @@unique([applicationId, stage])
+  @@index([examId, stage])
+}
+
+model Debarment {
+  id           String    @id @default(uuid()) @db.Uuid
+  candidateId  String    @db.Uuid
+  examId       String?   @db.Uuid
+  /// ALL (every exam) or EXAM
+  scope        String    @default("ALL")
+  reason       String
+  evidence     Json      @default("[]")
+  /// MANUAL, OBSERVER_REPORT, BIOMETRIC, ANOMALY
+  sourceType   String    @default("MANUAL")
+  sourceId     String?
+  fromDate     DateTime
+  untilDate    DateTime?
+  /// PROPOSED, ACTIVE, REJECTED, REVOKED
+  status       String    @default("PROPOSED")
+  proposedById String    @db.Uuid
+  approvedById String?   @db.Uuid
+  approvedAt   DateTime?
+  revokedById  String?   @db.Uuid
+  revokedAt    DateTime?
+  revokeReason String?
+  createdAt    DateTime  @default(now())
+
+  @@index([candidateId, status])
+}
+
+// ───────────── Selection ─────────────
+model StageCall {
+  id               String    @id @default(uuid()) @db.Uuid
+  applicationId    String    @db.Uuid
+  examId           String    @db.Uuid
+  /// TIER2, INTERVIEW
+  stage            String
+  /// SHORTLISTED, CALLED, APPEARED, ABSENT
+  status           String    @default("SHORTLISTED")
+  rollNo           String?
+  shiftId          String?   @db.Uuid
+  centreId         String?   @db.Uuid
+  panelId          String?   @db.Uuid
+  slotAt           DateTime?
+  venue            String?
+  letterReleasedAt DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@unique([applicationId, stage])
+  @@index([examId, stage])
+  @@index([panelId])
+}
+
+model InterviewPanel {
+  id        String   @id @default(uuid()) @db.Uuid
+  examId    String   @db.Uuid
+  name      String
+  memberIds String[]
+  date      String
+  venue     String
+  /// [{ key, label, max }]
+  criteria  Json
+  createdAt DateTime @default(now())
+}
+
+model PanelMark {
+  id          String   @id @default(uuid()) @db.Uuid
+  panelId     String   @db.Uuid
+  stageCallId String   @db.Uuid
+  memberId    String   @db.Uuid
+  marks       Json
+  total       Float
+  remarks     String?
+  submittedAt DateTime @default(now())
+
+  @@unique([stageCallId, memberId])
+}
+
+model VacancyRow {
+  id       String @id @default(uuid()) @db.Uuid
+  examId   String @db.Uuid
+  postId   String @db.Uuid
+  orgCode  String
+  orgName  String
+  category String
+  count    Int
+
+  @@unique([examId, postId, orgCode, category])
+}
+
+model AllotmentPreference {
+  applicationId String   @id @db.Uuid
+  examId        String   @db.Uuid
+  /// ordered "postId:orgCode"
+  prefs         String[]
+  submittedAt   DateTime @default(now())
+}
+
+model Allotment {
+  id            String    @id @default(uuid()) @db.Uuid
+  applicationId String    @unique @db.Uuid
+  examId        String    @db.Uuid
+  postId        String    @db.Uuid
+  orgCode       String
+  orgName       String
+  /// vacancy category the seat was taken from
+  category      String
+  meritRank     Int
+  prefNo        Int
+  round         Int       @default(1)
+  /// PROVISIONAL, ACCEPTED, DECLINED, DV_CLEARED, DV_FAILED, APPOINTED
+  status        String    @default("PROVISIONAL")
+  respondedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([examId, status])
+}
+
+model DvSession {
+  id            String    @id @default(uuid()) @db.Uuid
+  applicationId String    @unique @db.Uuid
+  examId        String    @db.Uuid
+  date          String
+  slot          String
+  venue         String
+  /// SCHEDULED, REPORTED, VERIFIED, DEFICIENT, ABSENT
+  status        String    @default("SCHEDULED")
+  checklist     Json      @default("[]")
+  aiFindings    Json      @default("[]")
+  officerId     String?   @db.Uuid
+  remarks       String?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([examId, date])
+}
+
+// ───────────── Helpdesk channels ─────────────
+model ChatSession {
+  id                String   @id @default(uuid()) @db.Uuid
+  candidateId       String?  @db.Uuid
+  lang              String   @default("en")
+  messages          Json     @default("[]")
+  escalatedTicketId String?  @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model IvrCall {
+  id           String    @id @default(uuid()) @db.Uuid
+  callerIdx    String
+  callerMasked String
+  lang         String    @default("en")
+  path         String[]
+  transcript   Json      @default("[]")
+  outcome      String?
+  ticketId     String?   @db.Uuid
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+
+  @@index([callerIdx])
 }

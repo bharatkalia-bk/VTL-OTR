@@ -131,6 +131,39 @@ export class MediaService {
     return { id: asset.id, sizeBytes: asset.sizeBytes };
   }
 
+  /**
+   * Left-thumb impression and handwritten declaration: scanned uploads are allowed (unlike the photo).
+   * JPEG only, metadata stripped, sensible dimension and size ranges.
+   */
+  async saveAuxiliary(candidateId: string, kind: 'THUMB' | 'DECLARATION', file: Express.Multer.File | undefined) {
+    if (!file) throw new BadRequestException({ code: 'FILE_REQUIRED', message: 'Choose a JPEG file.' });
+    const profile = await this.prisma.candidateProfile.findUnique({ where: { candidateId }, select: { candidateId: true } });
+    const cand = await this.prisma.candidate.findUniqueOrThrow({ where: { id: candidateId } });
+    if (!profile || cand.status !== 'DRAFT') {
+      const has = await this.prisma.mediaAsset.count({ where: { candidateId, kind, isCurrent: true } });
+      if (has) throw new AppError('LOCKED', 'Your OTR is submitted. Request a correction to replace this image.', 409);
+    }
+    const spec = kind === 'THUMB' ? { min: [200, 200], max: [800, 800], minB: 10 * 1024, maxB: 100 * 1024 } : { min: [600, 300], max: [2400, 1600], minB: 50 * 1024, maxB: 300 * 1024 };
+    const buf = file.buffer;
+    if (isPng(buf) || !isJpeg(buf)) throw new AppError('INVALID_IMAGE_TYPE', 'Only JPEG images are accepted.');
+    let clean: Buffer;
+    let meta: sharp.Metadata;
+    try { clean = stripJpegMetadata(buf); meta = await sharp(clean).metadata(); await sharp(clean).raw().toBuffer(); } catch { throw new AppError('INVALID_IMAGE', 'The image file is corrupt.'); }
+    const [w, h] = [meta.width ?? 0, meta.height ?? 0];
+    if (w < spec.min[0]! || h < spec.min[1]! || w > spec.max[0]! || h > spec.max[1]!) throw new AppError('INVALID_DIMENSIONS', `Image must be between ${spec.min.join('x')} and ${spec.max.join('x')} pixels.`, 400, { got: { width: w, height: h } });
+    if (clean.length < spec.minB || clean.length > spec.maxB) throw new AppError('INVALID_SIZE', `Image size must be between ${spec.minB / 1024} KB and ${spec.maxB / 1024} KB.`, 400, { sizeBytes: clean.length });
+    const hash = sha256(clean);
+    const objectKey = `candidates/${candidateId}/${kind.toLowerCase()}/${randomUUID()}.jpg`;
+    await this.storage.put(objectKey, clean, 'image/jpeg');
+    const asset = await this.prisma.$transaction(async (tx) => {
+      await tx.mediaAsset.updateMany({ where: { candidateId, kind, isCurrent: true }, data: { isCurrent: false } });
+      const a = await tx.mediaAsset.create({ data: { candidateId, kind, objectKey, sha256: hash, width: w, height: h, sizeBytes: clean.length, method: 'UPLOADED' } });
+      await this.audit.log({ action: `${kind}_SAVED`, entity: 'Candidate', entityId: candidateId, after: { sha256: hash, sizeBytes: clean.length } }, tx);
+      return a;
+    });
+    return { id: asset.id, sizeBytes: asset.sizeBytes };
+  }
+
   /** Real JPEG check, exact dimensions, metadata stripped, size range checked on the stored bytes. */
   async validateJpeg(buf: Buffer, width: number, height: number, minBytes: number, maxBytes: number): Promise<Buffer> {
     if (isPng(buf) || !isJpeg(buf)) throw new AppError('INVALID_IMAGE_TYPE', 'Only JPEG images are accepted.');
@@ -158,6 +191,10 @@ export class MediaService {
       const p = await this.prisma.candidateProfile.findUnique({ where: { candidateId }, select: { completedSteps: true } });
       if (p && !p.completedSteps.includes('photo')) await this.prisma.candidateProfile.update({ where: { candidateId }, data: { completedSteps: { push: 'photo' } } });
     }
+  }
+
+  read(objectKey: string): Promise<Buffer> {
+    return this.storage.get(objectKey);
   }
 
   async signedUrl(objectKey: string): Promise<string> {

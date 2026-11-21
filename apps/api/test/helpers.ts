@@ -54,6 +54,9 @@ export async function resetDb(prisma: PrismaClient, redis: Redis) {
     await prisma.adminUser.create({ data: { name: email, email, roles: [...roles], passwordHash: pw, totpSecretEnc: crypto.encrypt(TOTP_SECRET), totpEnrolledAt: new Date() } });
   }
   await prisma.adminUser.create({ data: { name: 'new', email: 'new@t.in', roles: ['VERIFIER'], passwordHash: pw } });
+  for (const [email, roles, name] of [['exam2@t.in', ['EXAM_ADMIN'], 'Second Exam Admin'], ['centre@t.in', ['CENTRE_SUPERINTENDENT'], 'Centre Supdt'], ['observer@t.in', ['OBSERVER'], 'Observer Verma'], ['agency@t.in', ['AGENCY'], 'Agency Ops'], ['panel@t.in', ['INTERVIEW_PANEL'], 'Panel Member']] as const) {
+    await prisma.adminUser.create({ data: { name, email, roles: [...roles], passwordHash: pw, totpSecretEnc: crypto.encrypt(TOTP_SECRET), totpEnrolledAt: new Date() } });
+  }
 }
 
 export async function createExam(prisma: PrismaClient, opts: { code?: string; applyEnd?: string; genders?: string[] } = {}) {

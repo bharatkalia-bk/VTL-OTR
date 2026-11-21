@@ -1,0 +1,22 @@
+{{> header title="Attendance Roll Sheet / उपस्थिति पत्रक" subtitle=exam.title}}
+<table class="kv" style="margin-top:8px">
+  <tr><td class="k">Centre</td><td class="v">{{centre.name}} ({{centre.code}}), {{centre.city}}</td></tr>
+  <tr><td class="k">Shift</td><td class="v num">{{shift}}</td></tr>
+</table>
+<table class="grid" style="margin-top:10px;width:100%;border-collapse:collapse">
+  <thead><tr style="background:#07102D;color:#fff"><th>S.No.</th><th>Photo</th><th>Roll No.</th><th>Name / Father's name</th><th>Signature on record</th><th>Signature at centre</th><th>Invigilator</th></tr></thead>
+  <tbody>
+  {{#each rows}}
+    <tr style="border-bottom:1px solid #d6dae6;height:70px">
+      <td class="num" style="text-align:center">{{sn}}</td>
+      <td>{{#if photo}}<img src="{{photo}}" style="width:42px;height:54px;object-fit:cover" alt="">{{/if}}</td>
+      <td class="num">{{rollNo}}</td>
+      <td><strong>{{name}}</strong><br><span class="muted">{{father}}</span></td>
+      <td>{{#if signature}}<img src="{{signature}}" style="width:100px;height:32px;object-fit:contain" alt="">{{/if}}</td>
+      <td style="width:120px"></td><td style="width:70px"></td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+<div class="row" style="margin-top:20px"><div class="grow muted">Total present: ______ &nbsp; Total absent: ______</div><div class="grow muted" style="text-align:right">Centre Superintendent's signature and seal<br><br>________________________</div></div>
+{{> footer}}

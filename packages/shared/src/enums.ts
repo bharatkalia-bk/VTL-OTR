@@ -33,8 +33,20 @@ export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
 export const CANDIDATE_STATUSES = ['DRAFT', 'SUBMITTED', 'BLOCKED'] as const;
 export type CandidateStatus = (typeof CANDIDATE_STATUSES)[number];
 
-export const ADMIN_ROLES = ['SUPER_ADMIN', 'EXAM_ADMIN', 'VERIFIER', 'HELPDESK_AGENT', 'AUDITOR'] as const;
+export const ADMIN_ROLES = [
+  'SUPER_ADMIN', 'EXAM_ADMIN', 'VERIFIER', 'HELPDESK_AGENT', 'AUDITOR',
+  'OBSERVER', 'AGENCY', 'CENTRE_SUPERINTENDENT', 'INTERVIEW_PANEL',
+] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];
+/** Field roles see only their own workspace in the staff console, never candidate-wide data. */
+export const FIELD_ROLES = ['OBSERVER', 'AGENCY', 'CENTRE_SUPERINTENDENT', 'INTERVIEW_PANEL'] as const;
+export type FieldRole = (typeof FIELD_ROLES)[number];
+export const ROLE_LABELS: Record<AdminRole, string> = {
+  SUPER_ADMIN: 'Super Admin', EXAM_ADMIN: 'Exam Admin', VERIFIER: 'Verifier', HELPDESK_AGENT: 'Helpdesk Agent', AUDITOR: 'Auditor',
+  OBSERVER: 'Observer', AGENCY: 'Conducting Agency', CENTRE_SUPERINTENDENT: 'Centre Superintendent', INTERVIEW_PANEL: 'Interview Panel',
+};
+
+export const LANGUAGES = ['Hindi', 'English', 'Assamese', 'Bengali', 'Gujarati', 'Kannada', 'Konkani', 'Malayalam', 'Manipuri', 'Marathi', 'Odia', 'Punjabi', 'Tamil', 'Telugu', 'Urdu'] as const;
 
 export const EXAM_STATUSES = ['DRAFT', 'PUBLISHED', 'CLOSED', 'ARCHIVED'] as const;
 export type ExamStatus = (typeof EXAM_STATUSES)[number];
@@ -56,6 +68,9 @@ export const TICKET_CATEGORIES = [
   'REGISTRATION', 'OTP', 'PHOTO_SIGNATURE', 'PAYMENT', 'APPLICATION', 'ADMIT_CARD', 'DATA_PRIVACY', 'OTHER',
 ] as const;
 export type TicketCategory = (typeof TICKET_CATEGORIES)[number];
+
+export const TICKET_CHANNELS = ['WEB', 'CHAT', 'PHONE', 'IVR', 'EMAIL'] as const;
+export type TicketChannel = (typeof TICKET_CHANNELS)[number];
 
 export const TICKET_STATUSES = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const;
 export type TicketStatus = (typeof TICKET_STATUSES)[number];

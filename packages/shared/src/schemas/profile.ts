@@ -29,6 +29,8 @@ export const categorySchema = z
     categoryCertDocId: z.string().uuid().optional().nullable(),
     pwdCertDocId: z.string().uuid().optional().nullable(),
     exsmCertDocId: z.string().uuid().optional().nullable(),
+    /** Languages the candidate can read, write and speak (needed for state posts with a local-language rule). */
+    languages: z.array(z.string().min(2).max(40)).max(15).default([]),
   })
   .superRefine((v, ctx) => {
     if (v.pwd && !v.pwdType) ctx.addIssue({ code: 'custom', path: ['pwdType'], message: 'validation.required' });

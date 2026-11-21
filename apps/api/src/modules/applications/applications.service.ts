@@ -1,3 +1,4 @@
+import { DebarmentService } from '../lifecycle/debarment.service';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { applicationDraftSchema, customFieldSchema, type CustomField } from '@vtl/shared';
@@ -19,6 +20,7 @@ export class ApplicationsService {
     private readonly crypto: FieldCrypto,
     private readonly audit: AuditService,
     private readonly notify: NotifyService,
+    private readonly debar: DebarmentService,
   ) {}
 
   private validateCustom(defs: CustomField[], values: Record<string, unknown>) {
@@ -46,6 +48,7 @@ export class ApplicationsService {
     const exam = await this.prisma.exam.findUnique({ where: { id: b.examId }, include: { posts: true, feeRules: true, centreCities: true } });
     if (!exam) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Exam not found.' });
     if (!applyWindow(exam).open) throw new AppError('APPLY_CLOSED', 'Applications for this exam are not open.');
+    await this.debar.assertNotDebarred(candidateId, exam.id);
     const existing = await this.prisma.application.findUnique({ where: { candidateId_examId: { candidateId, examId: exam.id } } });
     if (existing && existing.status !== 'DRAFT') throw new AppError('ALREADY_SUBMITTED', 'You have already submitted an application for this exam.', 409, { applicationId: existing.id });
     if (new Set(b.postIds).size !== b.postIds.length || new Set(b.centreCityIds).size !== b.centreCityIds.length) throw new AppError('DUPLICATE_PREFERENCE', 'Preferences must be unique.');
