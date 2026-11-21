@@ -18,7 +18,7 @@ const NAV: Array<{ to: string; label: string; icon: ReactNode; roles: AdminRole[
   { to: '/tickets', label: 'Helpdesk', icon: <Headset />, roles: ['HELPDESK_AGENT', 'AUDITOR'] },
   { to: '/audit', label: 'Audit logs', icon: <FileClock />, roles: ['AUDITOR'] },
   { to: '/users', label: 'Admin users', icon: <ShieldCheck />, roles: ['AUDITOR'] },
-  { to: '/settings', label: 'Settings & masters', icon: <Settings />, roles: ['AUDITOR', 'EXAM_ADMIN'] },
+  { to: '/settings', label: 'Settings & account', icon: <Settings />, roles: ['AUDITOR', 'EXAM_ADMIN', 'VERIFIER', 'HELPDESK_AGENT'] },
 ];
 
 export function Shell({ children }: { children: ReactNode }) {

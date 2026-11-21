@@ -15,3 +15,5 @@ dump.rdb
 *.rdb
 apps/candidate-web/test-results/
 apps/candidate-web/playwright-report/
+deploy/.env
+deploy/.seeded

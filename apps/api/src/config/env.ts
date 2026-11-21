@@ -38,10 +38,18 @@ const envSchema = z.object({
   S3_SECRET_KEY: z.string().optional(),
   S3_PUBLIC_ENDPOINT: z.string().optional(),
 
-  SMS_DRIVER: z.enum(['mock']).default('mock'),
+  SMS_DRIVER: z.enum(['mock', 'http']).default('mock'),
+  /** Generic HTTP SMS gateway (MSG91 / Gupshup / NIC style). Placeholders: {to} {text} {dlt} (URL-encoded). */
+  SMS_HTTP_URL: z.string().optional(),
+  SMS_HTTP_METHOD: z.enum(['GET', 'POST']).default('GET'),
+  SMS_HTTP_BODY: z.string().optional(),
+  SMS_HTTP_SUCCESS_REGEX: z.string().optional(),
   EMAIL_DRIVER: z.enum(['smtp', 'mock']).default('mock'),
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().default(1025),
+  SMTP_SECURE: bool.default(false),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().default('VTL OTR <no-reply@vtl-otr.local>'),
   PAYMENT_DRIVER: z.enum(['mock']).default('mock'),
   PAYMENT_WEBHOOK_SECRET: z.string().min(16).default('mock-gateway-webhook-secret'),
@@ -52,6 +60,8 @@ const envSchema = z.object({
 
   /** Expose OTPs/captcha answers via /dev endpoints (never in production). */
   DEV_EXPOSE_SECRETS: bool.default(false),
+  /** Public demo server: mock SMS/email, demo inbox and seeded test data, with a visible banner. Never for real candidates. */
+  DEMO_MODE: bool.default(false),
   QUEUE_INLINE: bool.default(false),
   RUN_WORKER_IN_API: bool.default(false),
   SWAGGER_ENABLED: bool.default(true),
@@ -69,9 +79,10 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid environment configuration:\n${issues}`);
   }
-  if (parsed.data.NODE_ENV === 'production' && parsed.data.DEV_EXPOSE_SECRETS) {
-    throw new Error('DEV_EXPOSE_SECRETS must be false in production');
+  if (parsed.data.NODE_ENV === 'production' && parsed.data.DEV_EXPOSE_SECRETS && !parsed.data.DEMO_MODE) {
+    throw new Error('DEV_EXPOSE_SECRETS must be false in production (allowed only with DEMO_MODE=true on a demo server)');
   }
+  if (parsed.data.SMS_DRIVER === 'http' && !parsed.data.SMS_HTTP_URL) throw new Error('SMS_HTTP_URL is required when SMS_DRIVER=http');
   if (source === process.env) cached = parsed.data;
   return parsed.data;
 }

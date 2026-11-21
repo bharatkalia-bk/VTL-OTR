@@ -10,7 +10,7 @@ export class DevController {
   constructor(private readonly redis: RedisService, @Inject(ENV) private readonly env: Env) {}
 
   private guard() {
-    if (!this.env.DEV_EXPOSE_SECRETS || this.env.NODE_ENV === 'production') throw new ForbiddenException();
+    if (!this.env.DEV_EXPOSE_SECRETS || (this.env.NODE_ENV === 'production' && !this.env.DEMO_MODE)) throw new ForbiddenException();
   }
 
   @Get('otp')

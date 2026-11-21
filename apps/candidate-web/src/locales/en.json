@@ -20,9 +20,27 @@
     "optional": "optional",
     "select": "Select"
   },
-  "common": { "stepOf": "Step {{cur}} of {{total}}" },
-  "nav": { "main": "Main navigation", "home": "Home", "dashboard": "Dashboard", "profile": "My profile", "exams": "Exams", "applications": "Applications", "helpdesk": "Helpdesk", "login": "Log in", "register": "Register" },
-  "footer": { "policies": "Website policies", "help": "Help", "styleguide": "Design system", "rights": "All rights reserved.", "lastUpdated": "Last updated: {{date}}" },
+  "common": {
+    "stepOf": "Step {{cur}} of {{total}}"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "My profile",
+    "exams": "Exams",
+    "applications": "Applications",
+    "helpdesk": "Helpdesk",
+    "login": "Log in",
+    "register": "Register"
+  },
+  "footer": {
+    "policies": "Website policies",
+    "help": "Help",
+    "styleguide": "Design system",
+    "rights": "All rights reserved.",
+    "lastUpdated": "Last updated: {{date}}"
+  },
   "landing": {
     "badge": "Register once. Apply anywhere.",
     "heroTitle": "One verified profile for every government examination",
@@ -55,7 +73,12 @@
     "raiseTicket": "Raise a ticket",
     "otpWarning": "Never share your OTP or password with anyone, including helpdesk staff."
   },
-  "auth": { "captcha": "Security check", "captchaHint": "Type the characters shown in the image.", "captchaImage": "Captcha image", "captchaRefresh": "Get a new captcha" },
+  "auth": {
+    "captcha": "Security check",
+    "captchaHint": "Type the characters shown in the image.",
+    "captchaImage": "Captcha image",
+    "captchaRefresh": "Get a new captcha"
+  },
   "register": {
     "title": "New registration",
     "subtitle": "Register once to get your permanent OTR ID.",
@@ -100,8 +123,21 @@
     "forgotPassword": "Forgot password?",
     "newHere": "New candidate?"
   },
-  "forgotOtr": { "title": "Forgot OTR ID", "subtitle": "We will send your OTR ID to your registered mobile and email.", "identifier": "Registered mobile or email", "submit": "Send my OTR ID", "sentTitle": "Request received", "sentBody": "If the details match a submitted registration, your OTR ID has been sent to your registered mobile and email." },
-  "forgotPw": { "title": "Reset password", "subtitle": "Verify with an OTP and choose a new password.", "reset": "Reset password", "doneTitle": "Password changed", "doneBody": "You can now log in with your new password." },
+  "forgotOtr": {
+    "title": "Forgot OTR ID",
+    "subtitle": "We will send your OTR ID to your registered mobile and email.",
+    "identifier": "Registered mobile or email",
+    "submit": "Send my OTR ID",
+    "sentTitle": "Request received",
+    "sentBody": "If the details match a submitted registration, your OTR ID has been sent to your registered mobile and email."
+  },
+  "forgotPw": {
+    "title": "Reset password",
+    "subtitle": "Verify with an OTP and choose a new password.",
+    "reset": "Reset password",
+    "doneTitle": "Password changed",
+    "doneBody": "You can now log in with your new password."
+  },
   "fields": {
     "fullName": "Full name (as per Class 10 certificate)",
     "fullNameHint": "Letters, spaces, dots, hyphens and apostrophes only.",
@@ -224,37 +260,162 @@
     "TOO_MANY_CENTRES": "You have selected too many centre cities."
   },
   "enums": {
-    "gender": { "MALE": "Male", "FEMALE": "Female", "TRANSGENDER": "Transgender" },
-    "nationality": { "INDIAN": "Indian", "NEPAL": "Subject of Nepal", "BHUTAN": "Subject of Bhutan", "OTHER": "Other (as per notice)" },
-    "marital": { "UNMARRIED": "Unmarried", "MARRIED": "Married", "WIDOWED": "Widowed", "DIVORCED": "Divorced", "SEPARATED": "Judicially separated" },
-    "category": { "GEN": "General (UR)", "EWS": "EWS", "OBC_NCL": "OBC (Non-Creamy Layer)", "SC": "SC", "ST": "ST" },
-    "pwd": { "VH": "Visual impairment", "HH": "Hearing impairment", "OH": "Locomotor disability", "ID_MI": "Intellectual disability / mental illness", "MD": "Multiple disabilities", "null": "" },
-    "education": { "CLASS_10": "Class 10", "CLASS_12": "Class 12", "DIPLOMA": "Diploma", "GRADUATION": "Graduation", "PG": "Post-graduation", "OTHER": "Other qualification" },
-    "eduStatus": { "PASSED": "Passed", "APPEARING": "Appearing" },
-    "resultType": { "PERCENT": "Percentage / marks", "CGPA": "CGPA" },
-    "candidateStatus": { "DRAFT": "Profile in progress", "SUBMITTED": "OTR submitted", "BLOCKED": "Blocked" },
-    "appStatus": { "DRAFT": "Draft", "SUBMITTED": "Submitted", "PAYMENT_PENDING": "Fee pending", "PAID": "Fee paid", "FEE_EXEMPT": "Fee exempted", "REJECTED": "Rejected", "WITHDRAWN": "Withdrawn" },
-    "payStatus": { "INITIATED": "Initiated", "PENDING": "Awaiting bank", "SUCCESS": "Successful", "FAILED": "Failed", "REFUND_MARKED": "Refund marked" },
-    "event": { "DRAFT": "Application started", "SUBMITTED": "Application submitted", "PAYMENT_PENDING": "Fee payment pending", "PAID": "Fee received", "FEE_EXEMPT": "Fee exempted", "PAYMENT_FAILED": "Payment failed", "PAYMENT_PENDING_CONFIRMATION": "Awaiting bank confirmation", "REJECTED": "Application rejected" },
-    "result": { "QUALIFIED": "Qualified", "NOT_QUALIFIED": "Not qualified", "ABSENT": "Absent", "WITHHELD": "Withheld" },
-    "correctionField": { "FULL_NAME": "Full name", "FATHER_NAME": "Father's name", "MOTHER_NAME": "Mother's name", "DOB": "Date of birth", "GENDER": "Gender", "CATEGORY": "Category", "PHOTO": "Photograph", "SIGNATURE": "Signature", "MOBILE": "Mobile number" },
-    "decision": { "PENDING": "Pending", "APPROVED": "Approved", "REJECTED": "Rejected" },
-    "ticketCategory": { "REGISTRATION": "Registration", "OTP": "OTP not received", "PHOTO_SIGNATURE": "Photo / signature", "PAYMENT": "Payment", "APPLICATION": "Application", "ADMIT_CARD": "Admit card", "DATA_PRIVACY": "Data privacy request", "OTHER": "Other" },
-    "ticketStatus": { "OPEN": "Open", "IN_PROGRESS": "In progress", "RESOLVED": "Resolved", "CLOSED": "Closed" }
+    "gender": {
+      "MALE": "Male",
+      "FEMALE": "Female",
+      "TRANSGENDER": "Transgender"
+    },
+    "nationality": {
+      "INDIAN": "Indian",
+      "NEPAL": "Subject of Nepal",
+      "BHUTAN": "Subject of Bhutan",
+      "OTHER": "Other (as per notice)"
+    },
+    "marital": {
+      "UNMARRIED": "Unmarried",
+      "MARRIED": "Married",
+      "WIDOWED": "Widowed",
+      "DIVORCED": "Divorced",
+      "SEPARATED": "Judicially separated"
+    },
+    "category": {
+      "GEN": "General (UR)",
+      "EWS": "EWS",
+      "OBC_NCL": "OBC (Non-Creamy Layer)",
+      "SC": "SC",
+      "ST": "ST"
+    },
+    "pwd": {
+      "VH": "Visual impairment",
+      "HH": "Hearing impairment",
+      "OH": "Locomotor disability",
+      "ID_MI": "Intellectual disability / mental illness",
+      "MD": "Multiple disabilities",
+      "null": ""
+    },
+    "education": {
+      "CLASS_10": "Class 10",
+      "CLASS_12": "Class 12",
+      "DIPLOMA": "Diploma",
+      "GRADUATION": "Graduation",
+      "PG": "Post-graduation",
+      "OTHER": "Other qualification"
+    },
+    "eduStatus": {
+      "PASSED": "Passed",
+      "APPEARING": "Appearing"
+    },
+    "resultType": {
+      "PERCENT": "Percentage / marks",
+      "CGPA": "CGPA"
+    },
+    "candidateStatus": {
+      "DRAFT": "Profile in progress",
+      "SUBMITTED": "OTR submitted",
+      "BLOCKED": "Blocked"
+    },
+    "appStatus": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "PAYMENT_PENDING": "Fee pending",
+      "PAID": "Fee paid",
+      "FEE_EXEMPT": "Fee exempted",
+      "REJECTED": "Rejected",
+      "WITHDRAWN": "Withdrawn"
+    },
+    "payStatus": {
+      "INITIATED": "Initiated",
+      "PENDING": "Awaiting bank",
+      "SUCCESS": "Successful",
+      "FAILED": "Failed",
+      "REFUND_MARKED": "Refund marked"
+    },
+    "event": {
+      "DRAFT": "Application started",
+      "SUBMITTED": "Application submitted",
+      "PAYMENT_PENDING": "Fee payment pending",
+      "PAID": "Fee received",
+      "FEE_EXEMPT": "Fee exempted",
+      "PAYMENT_FAILED": "Payment failed",
+      "PAYMENT_PENDING_CONFIRMATION": "Awaiting bank confirmation",
+      "REJECTED": "Application rejected"
+    },
+    "result": {
+      "QUALIFIED": "Qualified",
+      "NOT_QUALIFIED": "Not qualified",
+      "ABSENT": "Absent",
+      "WITHHELD": "Withheld"
+    },
+    "correctionField": {
+      "FULL_NAME": "Full name",
+      "FATHER_NAME": "Father's name",
+      "MOTHER_NAME": "Mother's name",
+      "DOB": "Date of birth",
+      "GENDER": "Gender",
+      "CATEGORY": "Category",
+      "PHOTO": "Photograph",
+      "SIGNATURE": "Signature",
+      "MOBILE": "Mobile number"
+    },
+    "decision": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    },
+    "ticketCategory": {
+      "REGISTRATION": "Registration",
+      "OTP": "OTP not received",
+      "PHOTO_SIGNATURE": "Photo / signature",
+      "PAYMENT": "Payment",
+      "APPLICATION": "Application",
+      "ADMIT_CARD": "Admit card",
+      "DATA_PRIVACY": "Data privacy request",
+      "OTHER": "Other"
+    },
+    "ticketStatus": {
+      "OPEN": "Open",
+      "IN_PROGRESS": "In progress",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed"
+    }
   },
   "eligibility": {
-    "age": { "ok": "Age {{age}} is within {{min}}–{{max}} years.", "tooYoung": "Minimum age is {{min}} years as on {{cutoff}} (you are {{age}}).", "tooOld": "Upper age limit (with relaxation) is {{max}} years as on {{cutoff}} (you are {{age}})." },
-    "qualification": { "ok": "Qualification requirement met.", "missing": "Requires {{level}} or higher.", "lowMarks": "Requires at least {{minPercent}}% in {{level}}." },
-    "domicile": { "ok": "Domicile requirement met.", "required": "Only for domicile of: {{states}}." },
-    "gender": { "ok": "Gender requirement met.", "restricted": "Open only to: {{genders}}." },
-    "nationality": { "ok": "Nationality requirement met.", "restricted": "Nationality not eligible." }
+    "age": {
+      "ok": "Age {{age}} is within {{min}}–{{max}} years.",
+      "tooYoung": "Minimum age is {{min}} years as on {{cutoff}} (you are {{age}}).",
+      "tooOld": "Upper age limit (with relaxation) is {{max}} years as on {{cutoff}} (you are {{age}})."
+    },
+    "qualification": {
+      "ok": "Qualification requirement met.",
+      "missing": "Requires {{level}} or higher.",
+      "lowMarks": "Requires at least {{minPercent}}% in {{level}}."
+    },
+    "domicile": {
+      "ok": "Domicile requirement met.",
+      "required": "Only for domicile of: {{states}}."
+    },
+    "gender": {
+      "ok": "Gender requirement met.",
+      "restricted": "Open only to: {{genders}}."
+    },
+    "nationality": {
+      "ok": "Nationality requirement met.",
+      "restricted": "Nationality not eligible."
+    }
   },
   "wizard": {
     "title": "My OTR profile",
     "subtitle": "Your progress is saved automatically. You can continue later from any device.",
     "submittedNote": "Submitted. Your OTR ID is {{otrId}}.",
     "completion": "Profile completion",
-    "steps": { "personal": "Personal", "category": "Category", "address": "Address", "education": "Education", "photo": "Photo & signature", "declaration": "Review & submit" },
+    "steps": {
+      "personal": "Personal",
+      "category": "Category",
+      "address": "Address",
+      "education": "Education",
+      "photo": "Photo & signature",
+      "declaration": "Review & submit"
+    },
     "personalDesc": "Enter details exactly as in your Class 10 certificate.",
     "categoryDesc": "Reservation details with supporting certificates.",
     "addressDesc": "Use the address where you can receive post.",
@@ -303,8 +464,26 @@
     "remove": "Remove file",
     "tooLarge": "File is larger than {{kb}} KB.",
     "wrongType": "Only PDF files are allowed.",
-    "status": { "PENDING": "Pending verification", "APPROVED": "Verified", "REJECTED": "Rejected" },
-    "kind": { "CATEGORY_CERT": "Category certificate", "EWS_CERT": "EWS certificate", "PWD_CERT": "Disability certificate", "EXSM_CERT": "Discharge certificate", "DOMICILE_CERT": "Domicile certificate", "EDU_CLASS_10": "Class 10 marksheet", "EDU_CLASS_12": "Class 12 marksheet", "EDU_DIPLOMA": "Diploma", "EDU_GRADUATION": "Graduation", "EDU_PG": "Post-graduation", "EDU_OTHER": "Other qualification", "CORRECTION_PROOF": "Correction proof", "HELPDESK_ATTACHMENT": "Attachment" }
+    "status": {
+      "PENDING": "Pending verification",
+      "APPROVED": "Verified",
+      "REJECTED": "Rejected"
+    },
+    "kind": {
+      "CATEGORY_CERT": "Category certificate",
+      "EWS_CERT": "EWS certificate",
+      "PWD_CERT": "Disability certificate",
+      "EXSM_CERT": "Discharge certificate",
+      "DOMICILE_CERT": "Domicile certificate",
+      "EDU_CLASS_10": "Class 10 marksheet",
+      "EDU_CLASS_12": "Class 12 marksheet",
+      "EDU_DIPLOMA": "Diploma",
+      "EDU_GRADUATION": "Graduation",
+      "EDU_PG": "Post-graduation",
+      "EDU_OTHER": "Other qualification",
+      "CORRECTION_PROOF": "Correction proof",
+      "HELPDESK_ATTACHMENT": "Attachment"
+    }
   },
   "photo": {
     "title": "Live photograph",
@@ -314,7 +493,12 @@
     "retakePhoto": "Retake photograph",
     "locked": "Locked after submission. Raise a correction request to change it."
   },
-  "signature": { "title": "Signature", "desc": "Draw your signature on screen or upload a scanned signature.", "current": "Your signature", "change": "Change signature" },
+  "signature": {
+    "title": "Signature",
+    "desc": "Draw your signature on screen or upload a scanned signature.",
+    "current": "Your signature",
+    "change": "Change signature"
+  },
   "declaration": {
     "title": "Declaration",
     "truth": "I declare that all information given by me is true, complete and correct to the best of my knowledge. I understand that my candidature may be cancelled if any information is found false.",
@@ -433,8 +617,18 @@
   },
   "payment": {
     "checking": "Checking payment status…",
-    "title": { "SUCCESS": "Payment successful", "FAILED": "Payment failed", "PENDING": "Payment pending", "INITIATED": "Payment not completed" },
-    "body": { "SUCCESS": "Your fee has been received.", "FAILED": "No money was taken, or it will be refunded by your bank. You can try again.", "PENDING": "Your bank has not confirmed the payment yet.", "INITIATED": "The payment was not completed." },
+    "title": {
+      "SUCCESS": "Payment successful",
+      "FAILED": "Payment failed",
+      "PENDING": "Payment pending",
+      "INITIATED": "Payment not completed"
+    },
+    "body": {
+      "SUCCESS": "Your fee has been received.",
+      "FAILED": "No money was taken, or it will be refunded by your bank. You can try again.",
+      "PENDING": "Your bank has not confirmed the payment yet.",
+      "INITIATED": "The payment was not completed."
+    },
     "pendingNote": "Do not pay again. We check with the bank automatically and this page updates by itself.",
     "backToApplication": "Back to application"
   },
@@ -485,21 +679,71 @@
     "publicDesc": "Cannot log in? Raise a ticket and we will contact you.",
     "publicDone": "We will contact you on your mobile or email."
   },
-  "verify": { "title": "Admit card verification", "valid": "Valid admit card", "photo": "Candidate photograph on record", "issued": "Issued", "match": "Match the candidate's face with this photograph and the photo ID.", "invalid": "Invalid or tampered QR code", "invalidBody": "This admit card could not be verified." },
-  "styleguide": { "title": "VTL design system", "subtitle": "Brand tokens and components used across VTL OTR." },
-  "notFound": { "title": "Page not found", "body": "The page you are looking for does not exist." },
+  "verify": {
+    "title": "Admit card verification",
+    "valid": "Valid admit card",
+    "photo": "Candidate photograph on record",
+    "issued": "Issued",
+    "match": "Match the candidate's face with this photograph and the photo ID.",
+    "invalid": "Invalid or tampered QR code",
+    "invalidBody": "This admit card could not be verified."
+  },
+  "styleguide": {
+    "title": "VTL design system",
+    "subtitle": "Brand tokens and components used across VTL OTR."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you are looking for does not exist."
+  },
   "legal": {
-    "privacy": { "title": "Privacy notice", "body": [
-      "Vensysco Technologies Limited operates the VTL One Time Registration Platform as a data processor on behalf of examination bodies (data fiduciaries) under the Digital Personal Data Protection Act, 2023.",
-      "Purpose: your personal data (identity, contact, category, education, photograph and signature) is collected only to create your One Time Registration and to process your applications for examinations you choose to apply for.",
-      "Security: personal data is encrypted at rest, transmitted only over secure connections and accessed only by authorised staff. Every access and change is recorded in an audit log.",
-      "Sharing: data is shared only with the examination body for which you apply, and with service providers (SMS, email, payment) strictly as needed.",
-      "Retention: incomplete registrations are deleted after 180 days of inactivity. Submitted registrations are retained until you request withdrawal, subject to legal requirements.",
-      "Your rights: you can request access, correction, or erasure of your data, or withdraw consent, by raising a helpdesk ticket under the category ‘Data privacy request’."
-    ] },
-    "terms": { "title": "Terms of use", "body": ["Use this portal only to register and apply for examinations for yourself. Providing false information may lead to cancellation of candidature and legal action.", "Do not share your password or OTP with anyone. You are responsible for all activity under your account."] },
-    "accessibility": { "title": "Accessibility statement", "body": ["This portal aims to conform to WCAG 2.1 Level AA and GIGW 3.0. It supports keyboard navigation, screen readers, text resizing and has sufficient colour contrast.", "If you face any difficulty, please contact the helpdesk and we will assist you."] },
-    "hyperlink": { "title": "Hyperlinking policy", "body": ["Links to external websites are provided for convenience. We are not responsible for their content. Prior permission is not required to link to this portal, but it must not be loaded into frames on your site."] },
-    "copyright": { "title": "Copyright policy", "body": ["Content on this portal is the property of Vensysco Technologies Limited and the respective examination bodies. It may be reproduced free of charge with proper acknowledgement, but not for commercial purposes or in a misleading context."] }
+    "privacy": {
+      "title": "Privacy notice",
+      "body": [
+        "Vensysco Technologies Limited operates the VTL One Time Registration Platform as a data processor on behalf of examination bodies (data fiduciaries) under the Digital Personal Data Protection Act, 2023.",
+        "Purpose: your personal data (identity, contact, category, education, photograph and signature) is collected only to create your One Time Registration and to process your applications for examinations you choose to apply for.",
+        "Security: personal data is encrypted at rest, transmitted only over secure connections and accessed only by authorised staff. Every access and change is recorded in an audit log.",
+        "Sharing: data is shared only with the examination body for which you apply, and with service providers (SMS, email, payment) strictly as needed.",
+        "Retention: incomplete registrations are deleted after 180 days of inactivity. Submitted registrations are retained until you request withdrawal, subject to legal requirements.",
+        "Your rights: you can request access, correction, or erasure of your data, or withdraw consent, by raising a helpdesk ticket under the category ‘Data privacy request’."
+      ]
+    },
+    "terms": {
+      "title": "Terms of use",
+      "body": [
+        "Use this portal only to register and apply for examinations for yourself. Providing false information may lead to cancellation of candidature and legal action.",
+        "Do not share your password or OTP with anyone. You are responsible for all activity under your account."
+      ]
+    },
+    "accessibility": {
+      "title": "Accessibility statement",
+      "body": [
+        "This portal aims to conform to WCAG 2.1 Level AA and GIGW 3.0. It supports keyboard navigation, screen readers, text resizing and has sufficient colour contrast.",
+        "If you face any difficulty, please contact the helpdesk and we will assist you."
+      ]
+    },
+    "hyperlink": {
+      "title": "Hyperlinking policy",
+      "body": [
+        "Links to external websites are provided for convenience. We are not responsible for their content. Prior permission is not required to link to this portal, but it must not be loaded into frames on your site."
+      ]
+    },
+    "copyright": {
+      "title": "Copyright policy",
+      "body": [
+        "Content on this portal is the property of Vensysco Technologies Limited and the respective examination bodies. It may be reproduced free of charge with proper acknowledgement, but not for commercial purposes or in a misleading context."
+      ]
+    }
+  },
+  "demo": {
+    "banner": "Demo server: test data only. Do not enter real personal information.",
+    "inboxLink": "Open demo inbox (OTPs)",
+    "title": "Demo inbox",
+    "subtitle": "Messages that would be sent by SMS and email on a live system.",
+    "warning": "This page exists only on the demo server. A live deployment sends codes by real SMS and email.",
+    "show": "Show messages",
+    "none": "No messages yet",
+    "sms": "SMS",
+    "emails": "Email"
   }
 }

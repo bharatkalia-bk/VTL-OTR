@@ -12,7 +12,7 @@ Candidates register once, verify mobile and email with OTP, complete a profile w
 | Design system | `packages/ui` | VTL tokens, components, `LivePhotoCapture` (MediaPipe), `SignaturePad` |
 | Shared rules | `packages/shared` | Zod schemas, eligibility, age relaxation, fee matrix, OTR ID |
 
-Docs: [Plan](docs/PLAN.md) · [Architecture and data model](docs/ARCHITECTURE.md) · [API](docs/API.md) (live OpenAPI at `/api/docs`) · [Assumptions](docs/ASSUMPTIONS.md) · [Brief](docs/BRIEF.md)
+Docs: **[Deploy on a server](docs/DEPLOYMENT.md)** · [Plan](docs/PLAN.md) · [Architecture and data model](docs/ARCHITECTURE.md) · [API](docs/API.md) (live OpenAPI at `/api/docs`) · [Assumptions](docs/ASSUMPTIONS.md) · [Brief](docs/BRIEF.md)
 
 ---
 

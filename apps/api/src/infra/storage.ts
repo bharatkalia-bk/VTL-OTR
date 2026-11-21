@@ -83,7 +83,7 @@ export class FsStorage implements StorageAdapter {
     const sig = FsStorage.sign(this.env.FILE_URL_SECRET, key, exp, downloadName);
     const q = new URLSearchParams({ key, exp: String(exp), sig });
     if (downloadName) q.set('dl', downloadName);
-    return `${this.env.PUBLIC_API_URL}/api/v1/files?${q.toString()}`;
+    return `/api/v1/files?${q.toString()}`;
   }
   static sign(secret: string, key: string, exp: number, dl?: string): string {
     return createHmac('sha256', secret).update(`${key}|${exp}|${dl ?? ''}`).digest('base64url');

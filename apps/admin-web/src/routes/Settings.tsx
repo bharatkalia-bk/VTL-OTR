@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardHeader, Field, Select, Textarea } from '@vtl/ui';
+import { Button, Card, CardBody, CardHeader, Field, Input, Select, Textarea } from '@vtl/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useAction } from '../components/kit';
@@ -14,10 +14,16 @@ export default function Settings() {
   const { run, banner, busy } = useAction();
   const sa = user?.roles.includes('SUPER_ADMIN');
   const [master, setMaster] = useState({ type: 'boards', body: '{ "name": "New Board" }' });
+  const [pw, setPw] = useState({ currentPassword: '', newPassword: '' });
   return (
     <>
       <PageTitle title="Settings & masters" description="OTR ID format, photo/signature spec, liveness, OTP limits, lockout, retention (DPDP), helpdesk and FAQs." />
       {banner}
+      <Card className="mb-4"><CardHeader title="Change my password" description="Needs your current password and an authenticator code. Your other sessions are signed out." /><CardBody className="flex flex-wrap items-end gap-3">
+        <Field label="Current password">{(f) => <Input id={f.id} type="password" autoComplete="current-password" value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} />}</Field>
+        <Field label="New password" hint="8+ chars with upper, lower, digit, symbol">{(f) => <Input id={f.id} type="password" autoComplete="new-password" value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} />}</Field>
+        <Button variant="secondary" loading={busy} disabled={!pw.currentPassword || pw.newPassword.length < 8} onClick={() => void run(async () => { await api.post('/admin/auth/password', pw); setPw({ currentPassword: '', newPassword: '' }); }, 'Password changed.')}>Change password</Button>
+      </CardBody></Card>
       <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
         <Card><CardHeader title="System settings" /><CardBody className="space-y-3">
           <Textarea aria-label="Settings JSON" className="min-h-[520px] font-mono text-xs" value={json} onChange={(e) => setJson(e.target.value)} readOnly={!sa} />

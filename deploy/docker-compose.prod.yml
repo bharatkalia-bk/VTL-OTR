@@ -1,0 +1,101 @@
+# VTL OTR production / demo deployment (single server). Started by deploy/install.sh.
+# Public ports: 80/443 only (Caddy, automatic HTTPS). Database, Redis and the API are internal.
+name: vtl-otr
+
+x-api-env: &api-env
+  NODE_ENV: production
+  PORT: 4000
+  PUBLIC_API_URL: https://${CANDIDATE_DOMAIN}
+  CANDIDATE_WEB_URL: https://${CANDIDATE_DOMAIN}
+  ADMIN_WEB_URL: https://${ADMIN_DOMAIN}
+  CORS_ORIGINS: https://${CANDIDATE_DOMAIN},https://${ADMIN_DOMAIN}
+  DATABASE_URL: postgresql://vtl:${POSTGRES_PASSWORD}@postgres:5432/vtl_otr?schema=public
+  REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+  PII_ENC_KEY: ${PII_ENC_KEY}
+  PII_INDEX_KEY: ${PII_INDEX_KEY}
+  FILE_URL_SECRET: ${FILE_URL_SECRET}
+  PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET}
+  COOKIE_SECURE: "true"
+  STORAGE_DRIVER: fs
+  STORAGE_FS_ROOT: /data/storage
+  SMS_DRIVER: ${SMS_DRIVER:-mock}
+  SMS_HTTP_URL: ${SMS_HTTP_URL:-}
+  SMS_HTTP_METHOD: ${SMS_HTTP_METHOD:-GET}
+  SMS_HTTP_SUCCESS_REGEX: ${SMS_HTTP_SUCCESS_REGEX:-}
+  EMAIL_DRIVER: ${EMAIL_DRIVER:-mock}
+  SMTP_HOST: ${SMTP_HOST:-localhost}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_SECURE: ${SMTP_SECURE:-false}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASS: ${SMTP_PASS:-}
+  EMAIL_FROM: ${EMAIL_FROM:-VTL OTR <no-reply@localhost>}
+  DEMO_MODE: ${DEMO_MODE:-false}
+  DEV_EXPOSE_SECRETS: ${DEMO_MODE:-false}
+  SWAGGER_ENABLED: "false"
+  LOG_LEVEL: info
+  SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+  SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment: { POSTGRES_USER: vtl, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}", POSTGRES_DB: vtl_otr }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U vtl"], interval: 5s, retries: 20 }
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes: [redisdata:/data]
+    healthcheck: { test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"], interval: 5s, retries: 20 }
+    environment: { REDIS_PASSWORD: "${REDIS_PASSWORD}" }
+
+  api:
+    build: { context: .., dockerfile: docker/api.Dockerfile }
+    image: vtl-otr-api
+    restart: unless-stopped
+    environment: *api-env
+    volumes: [storage:/data/storage]
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_healthy } }
+
+  worker:
+    build: { context: .., dockerfile: docker/api.Dockerfile }
+    image: vtl-otr-api
+    restart: unless-stopped
+    command: ["node", "dist/src/worker.js"]
+    environment: *api-env
+    volumes: [storage:/data/storage]
+    depends_on: [api]
+
+  candidate-web:
+    build: { context: .., dockerfile: docker/web.Dockerfile, args: { APP: candidate-web } }
+    restart: unless-stopped
+
+  admin-web:
+    build: { context: .., dockerfile: docker/web.Dockerfile, args: { APP: admin-web } }
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      CANDIDATE_DOMAIN: ${CANDIDATE_DOMAIN}
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on: [api, candidate-web, admin-web]
+
+volumes:
+  pgdata:
+  redisdata:
+  storage:
+  caddydata:
+  caddyconfig:

@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/.env
+**/.storage
+**/test-results
+**/playwright-report
+**/*.y4m
+apps/candidate-web/public/mediapipe/wasm
+.git
+deploy/.env

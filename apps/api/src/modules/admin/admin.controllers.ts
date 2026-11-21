@@ -11,7 +11,7 @@ import { PrismaService } from '../../infra/prisma.service';
 import { RedisService } from '../../infra/redis.service';
 import { SettingsService, settingsSchema } from '../../infra/settings.service';
 import { FieldCrypto } from '../../security/field-crypto';
-import { hashPassword } from '../../security/password';
+import { hashPassword, verifyPassword } from '../../security/password';
 import { TokensService, type AccessClaims } from '../../security/tokens.service';
 import { HelpdeskService } from '../helpdesk/helpdesk.service';
 import { PaymentsService } from '../payments/payments.service';
@@ -31,7 +31,7 @@ const page = (q: unknown) => parseOrThrow(paginationSchema, q);
 @ApiTags('Admin auth')
 @Controller('admin/auth')
 export class AdminAuthController {
-  constructor(private readonly auth: AdminAuthService, private readonly tokens: TokensService) {}
+  constructor(private readonly auth: AdminAuthService, private readonly tokens: TokensService, private readonly prisma: PrismaService, private readonly audit: AuditService) {}
 
   @Post('login')
   @HttpCode(200)
@@ -70,6 +70,21 @@ export class AdminAuthController {
       try { await this.tokens.revokeFamily(this.tokens.verifyAccess(raw).sid); } catch { /* ignore */ }
     }
     this.tokens.clear(res, 'ADMIN');
+    return { ok: true };
+  }
+
+  /** Change own password (requires current password + step-up TOTP); revokes other sessions. */
+  @Post('password')
+  @HttpCode(200)
+  @UseGuards(AdminGuard)
+  @StepUp()
+  async changePassword(@CurrentUser() u: AccessClaims, @Body() b: unknown) {
+    const x = parseOrThrow(z.object({ currentPassword: z.string().min(1), newPassword: passwordSchema }), b);
+    const a = await this.prisma.adminUser.findUniqueOrThrow({ where: { id: u.sub } });
+    if (!(await verifyPassword(a.passwordHash, x.currentPassword))) throw new AppError('INVALID_CREDENTIALS', 'Current password is incorrect.', 400);
+    await this.prisma.adminUser.update({ where: { id: a.id }, data: { passwordHash: await hashPassword(x.newPassword) } });
+    await this.prisma.refreshToken.updateMany({ where: { subjectType: 'ADMIN', subjectId: a.id, revokedAt: null, familyId: { not: u.sid } }, data: { revokedAt: new Date() } });
+    await this.audit.log({ action: 'ADMIN_PASSWORD_CHANGED', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: a.id });
     return { ok: true };
   }
 

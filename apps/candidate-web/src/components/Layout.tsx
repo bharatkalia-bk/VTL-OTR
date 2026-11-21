@@ -1,5 +1,6 @@
 import { Button, Logo, SkipLink, cn } from '@vtl/ui';
 import { Globe, LogOut, Menu, UserRound, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -24,6 +25,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
+  const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ demoMode?: boolean }>('/public/config'), staleTime: Infinity });
   const links = user
     ? [{ to: '/dashboard', label: t('nav.dashboard') }, { to: '/profile', label: t('nav.profile') }, { to: '/exams', label: t('nav.exams') }, { to: '/applications', label: t('nav.applications') }, { to: '/helpdesk', label: t('nav.helpdesk') }]
     : [{ to: '/', label: t('nav.home') }, { to: '/helpdesk', label: t('nav.helpdesk') }];
@@ -32,6 +34,14 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <SkipLink label={t('app.skipToContent')} />
+      {cfg.data?.demoMode && (
+        <div className="bg-warning-50 text-warning-700" role="note" data-testid="demo-banner">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-1.5 text-xs font-medium">
+            <span>{t('demo.banner')}</span>
+            <Link to="/demo-inbox" className="underline">{t('demo.inboxLink')}</Link>
+          </div>
+        </div>
+      )}
       <div className="bg-navy-700 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-1 text-xs">
           <span>{t('app.govNotice')}</span>

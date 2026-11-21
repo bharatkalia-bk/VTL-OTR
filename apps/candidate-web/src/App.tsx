@@ -24,6 +24,7 @@ const Verify = lazy(() => import('./routes/Verify'));
 const Styleguide = lazy(() => import('./routes/Styleguide'));
 const Legal = lazy(() => import('./routes/Legal'));
 const NotFound = lazy(() => import('./routes/NotFound'));
+const DemoInbox = lazy(() => import('./routes/DemoInbox'));
 
 function ScrollTop() {
   const { pathname } = useLocation();
@@ -58,6 +59,7 @@ export function App() {
           <Route path="/verify/:token" element={<Verify />} />
           <Route path="/styleguide" element={<Styleguide />} />
           <Route path="/legal/:page" element={<Legal />} />
+          <Route path="/demo-inbox" element={<DemoInbox />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

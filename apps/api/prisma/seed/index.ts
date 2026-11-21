@@ -177,7 +177,29 @@ async function seedExams() {
   return { cgl, chsl, upw };
 }
 
+/**
+ * Production bootstrap (`--minimal`): never deletes data. Loads masters if empty and creates the first
+ * Super Admin from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD (TOTP enrolment is forced on first login).
+ */
+async function minimal() {
+  if ((await prisma.state.count()) === 0) await seedMasters();
+  else console.log('Masters already present, skipped.');
+  const email = process.env.SEED_ADMIN_EMAIL?.toLowerCase();
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  if (!email || !password) throw new Error('Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD');
+  if (await prisma.adminUser.findUnique({ where: { email } })) {
+    console.log(`Admin ${email} already exists, unchanged.`);
+  } else {
+    await prisma.adminUser.create({ data: { name: 'Super Admin', email, roles: ['SUPER_ADMIN'], passwordHash: await hashPassword(password) } });
+    console.log(`Created Super Admin ${email}. Two-factor enrolment is required at first login.`);
+  }
+}
+
 async function main() {
+  if (process.argv.includes('--minimal')) return minimal();
+  if (env.NODE_ENV === 'production' && !env.DEMO_MODE) {
+    throw new Error('Refusing to run the demo seed (it erases all data) on a production server. Use --minimal.');
+  }
   console.log('Seeding VTL OTR…');
   await storage.ensureReady();
   await reset();
