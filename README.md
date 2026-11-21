@@ -27,15 +27,27 @@ Docs: **[Try it in GitHub Codespaces](docs/CODESPACES.md)** · **[Deploy on a se
 
 ---
 
-## Quick start with Docker
+## Quick start with Docker (run it on your own computer)
+
+You need **Git** and **Docker Desktop** (Windows or macOS) or Docker Engine with the Compose plugin (Linux). Give Docker at least 4 GB of memory. Nothing else is required.
 
 ```bash
-cp .env.example .env
+git clone https://github.com/bharatkalia-bk/VTL-OTR.git
+```
+
+```bash
+cd VTL-OTR
+```
+
+```bash
+git checkout claude/intelligent-wright-gsglml
 ```
 
 ```bash
 docker compose up --build -d
 ```
+
+The first build downloads and compiles everything (about 5 to 15 minutes). Then load the demo data:
 
 ```bash
 docker compose --profile seed run --rm seed
@@ -43,11 +55,13 @@ docker compose --profile seed run --rm seed
 
 | Service | URL |
 |---|---|
-| Candidate portal | http://localhost:5173 |
-| Admin console | http://localhost:5174 |
+| Homepage and candidate portal | http://localhost:5173 |
+| Staff console (all staff roles) | http://localhost:5174 |
 | API docs (Swagger) | http://localhost:4000/api/docs |
-| Mailpit (all emails) | http://localhost:8025 |
-| MinIO console | http://localhost:9001 (vtl-minio / vtl-minio-secret) |
+| Mailpit (all emails sent) | http://localhost:8025 |
+| OTPs for new registrations | http://localhost:5173/demo-inbox |
+
+No `.env` file is needed: the local stack uses built-in development-only keys. Files are stored in a Docker volume. Stop with `docker compose down`; add `-v` to also delete the data. To update later: `git pull`, then the `up --build -d` command again (re-run the seed only if you want fresh demo data; it erases everything).
 
 The camera needs a **secure context**. `localhost` counts as secure. To test on a phone over the LAN, serve the app over HTTPS (for example behind a TLS reverse proxy).
 
@@ -60,7 +74,7 @@ pnpm install
 ```
 
 ```bash
-cp .env.example apps/api/.env   # then set real random keys (see comments in the file)
+cp .env.example apps/api/.env   # then fill the five secrets with `openssl rand -base64 32`
 ```
 
 ```bash

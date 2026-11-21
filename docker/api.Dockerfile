@@ -17,7 +17,7 @@ FROM base AS runtime
 ENV NODE_ENV=production
 COPY --from=build /app /app
 WORKDIR /app/apps/api
-RUN mkdir -p /data/storage && chown -R pwuser /data/storage
+RUN mkdir -p /data/storage && chown -R pwuser /data/storage && chmod -R a+rX /app/apps/api/templates /app/apps/api/dist
 USER pwuser
 EXPOSE 4000
 HEALTHCHECK --interval=15s --timeout=5s CMD node -e "fetch('http://localhost:4000/api/v1/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
