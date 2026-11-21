@@ -216,3 +216,15 @@ export class ChannelsPublicController {
   }
   @Post('ivr') @HttpCode(200) ivr(@Body() b: unknown) { return this.svc.ivr(b); }
 }
+
+/** Staff directory for assignment pickers (observers, panel members). No contact details beyond email. */
+@ApiTags('Staff directory')
+@Controller('admin/staff')
+@UseGuards(AdminGuard)
+export class StaffDirectoryController {
+  constructor(private readonly prisma: PrismaService) {}
+  @Get() @Roles('EXAM_ADMIN', 'AUDITOR') async list(@Query('role') role?: string) {
+    const rows = await this.prisma.adminUser.findMany({ where: { isActive: true, ...(role && { roles: { has: role as never } }) }, select: { id: true, name: true, email: true, roles: true, scope: true }, orderBy: { name: 'asc' } });
+    return rows;
+  }
+}

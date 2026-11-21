@@ -38,6 +38,12 @@ export const examUpsertSchema = z.object({
   maxCentrePreferences: z.number().int().min(1).max(10).default(3),
   customFields: z.array(customFieldSchema).default([]),
   rollNoPrefix: z.string().regex(/^[A-Z0-9]{2,8}$/).default('VTL'),
+  /** Selection stages in order; INTERVIEW last when present. */
+  stages: z.array(z.enum(['TIER1', 'TIER2', 'INTERVIEW'])).min(1).max(3).default(['TIER1'])
+    .refine((s) => s[0] === 'TIER1' && new Set(s).size === s.length && (!s.includes('INTERVIEW') || s[s.length - 1] === 'INTERVIEW'), { message: 'Stages must start with TIER1, be unique, and end with INTERVIEW if used' }),
+  objectionFee: z.number().int().min(0).max(5000).default(100),
+  writtenWeight: z.number().int().min(0).max(100).default(100),
+  interviewWeight: z.number().int().min(0).max(100).default(0),
 });
 export type ExamUpsertInput = z.infer<typeof examUpsertSchema>;
 

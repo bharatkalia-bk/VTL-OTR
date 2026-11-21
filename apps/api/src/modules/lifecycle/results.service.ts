@@ -172,6 +172,7 @@ export class ResultsService {
   /** Final merit: written stages (normalised) and interview, weighted as notified (e.g. 80:20). */
   private async computeFinal(adminId: string, examId: string, cutoffs: Partial<Record<string, number>>) {
     const exam = await this.prisma.exam.findUniqueOrThrow({ where: { id: examId }, include: { shifts: true } });
+    if (exam.interviewWeight && exam.writtenWeight + exam.interviewWeight !== 100) throw new AppError('INVALID_WEIGHTS', 'Written and interview weights must add up to 100. Fix them in the exam settings.');
     const written = exam.stages.filter((s) => s !== 'INTERVIEW');
     const lastWritten = written[written.length - 1]!;
     const runs = await this.prisma.resultRun.findMany({ where: { examId } });

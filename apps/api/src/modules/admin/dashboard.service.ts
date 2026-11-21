@@ -27,6 +27,21 @@ export class DashboardService {
         this.prisma.$queryRaw<Array<{ step: string; n: bigint }>>`SELECT unnest("completedSteps") AS step, COUNT(*) AS n FROM "CandidateProfile" GROUP BY 1`,
         this.prisma.$queryRaw<Array<{ d: string; n: bigint }>>`SELECT to_char(date_trunc('day', "createdAt" AT TIME ZONE 'Asia/Kolkata'), 'YYYY-MM-DD') AS d, COUNT(*) AS n FROM "Candidate" WHERE "createdAt" > now() - interval '14 days' GROUP BY 1 ORDER BY 1`,
       ]);
+      const [last14Submitted, recent, lifecycle] = await Promise.all([
+        this.prisma.$queryRaw<Array<{ d: string; n: bigint }>>`SELECT to_char(date_trunc('day', "submittedAt" AT TIME ZONE 'Asia/Kolkata'), 'YYYY-MM-DD') AS d, COUNT(*) AS n FROM "Candidate" WHERE "submittedAt" > now() - interval '14 days' GROUP BY 1 ORDER BY 1`,
+        this.prisma.auditLog.findMany({ orderBy: { at: 'desc' }, take: 8, select: { id: true, action: true, entity: true, actorType: true, actorId: true, at: true } }),
+        Promise.all([
+          this.prisma.attendance.count({ where: { status: 'PRESENT' } }),
+          this.prisma.objection.count({ where: { status: 'SUBMITTED' } }),
+          this.prisma.biometricAlert.count({ where: { status: 'OPEN' } }),
+          this.prisma.technicalException.count({ where: { status: 'OPEN' } }),
+          this.prisma.resultRun.count({ where: { status: 'PENDING_APPROVAL' } }),
+          this.prisma.allotment.count({ where: { status: { in: ['ACCEPTED', 'DV_CLEARED', 'APPOINTED'] } } }),
+          this.prisma.debarment.count({ where: { status: 'PROPOSED' } }),
+        ]),
+      ]);
+      const admins = new Map((await this.prisma.adminUser.findMany({ where: { id: { in: recent.flatMap((r) => (r.actorType === 'ADMIN' && r.actorId ? [r.actorId] : [])) } }, select: { id: true, name: true } })).map((a) => [a.id, a.name]));
+      const subMap = new Map(last14Submitted.map((r) => [r.d, Number(r.n)]));
       const states = new Map((await this.prisma.state.findMany()).map((s) => [s.code, s.nameEn]));
       const stepCount = new Map(steps.map((s) => [s.step, Number(s.n)]));
       return {
@@ -42,7 +57,9 @@ export class DashboardService {
         byState: byState.map((s) => ({ state: states.get(s.stateCode ?? '') ?? s.stateCode, count: s._count })).sort((a, b) => b.count - a.count).slice(0, 12),
         byCategory: byCategory.map((s) => ({ category: s.category, count: s._count })),
         byGender: byGender.map((s) => ({ gender: s.gender, count: s._count })),
-        daily: last14.map((r) => ({ date: r.d, count: Number(r.n) })),
+        daily: last14.map((r) => ({ date: r.d, count: Number(r.n), submitted: subMap.get(r.d) ?? 0 })),
+        recent: recent.map((r) => ({ id: String(r.id), action: r.action, entity: r.entity, actor: r.actorType === 'ADMIN' ? admins.get(r.actorId ?? '') ?? 'Staff' : r.actorType === 'CANDIDATE' ? 'Candidate' : 'System', at: r.at })),
+        lifecycle: { present: lifecycle[0], objectionsPending: lifecycle[1], biometricOpen: lifecycle[2], exceptionsOpen: lifecycle[3], resultsAwaitingApproval: lifecycle[4], selected: lifecycle[5], debarmentsProposed: lifecycle[6] },
         generatedAt: new Date().toISOString(),
       };
     });

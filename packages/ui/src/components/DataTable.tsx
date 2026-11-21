@@ -14,10 +14,10 @@ export function DataTable<T>({ columns, rows, rowKey, caption, empty, onRowClick
   columns: Column<T>[]; rows: T[]; rowKey: (r: T) => string; caption: string; empty?: ReactNode; onRowClick?: (r: T) => void; selectedKey?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-card border border-border bg-white">
+    <div className="overflow-x-auto rounded-card border border-border bg-white shadow-card">
       <table className="w-full text-left text-sm">
         <caption className="sr-only">{caption}</caption>
-        <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
+        <thead className="bg-navy text-xs uppercase tracking-wide text-white">
           <tr>{columns.map((c) => <th key={c.key} scope="col" className={cn('px-4 py-3 font-semibold', c.numeric && 'text-right', c.className)}>{c.header}</th>)}</tr>
         </thead>
         <tbody className="divide-y divide-border">
@@ -26,7 +26,7 @@ export function DataTable<T>({ columns, rows, rowKey, caption, empty, onRowClick
             const k = rowKey(r);
             return (
               <tr key={k} onClick={onRowClick ? () => onRowClick(r) : undefined}
-                className={cn(onRowClick && 'cursor-pointer hover:bg-navy-50', selectedKey === k && 'bg-orange-50')}>
+                className={cn('even:bg-surface/60', onRowClick && 'cursor-pointer hover:bg-navy-50', selectedKey === k && '!bg-orange-50')}>
                 {columns.map((c) => <td key={c.key} className={cn('px-4 py-3 align-top', c.numeric && 'text-right tabular-nums', c.className)}>{c.cell(r)}</td>)}
               </tr>
             );
