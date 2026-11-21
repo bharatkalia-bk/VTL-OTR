@@ -30,7 +30,7 @@ export class PublicController {
   @Get('public/config')
   async config() {
     const s = await this.settings.get();
-    return { demoMode: this.env.DEMO_MODE, adminUrl: this.env.ADMIN_WEB_URL, candidateUrl: this.env.CANDIDATE_WEB_URL, aiProvider: this.env.AI_PROVIDER, helpdesk: s.helpdesk, faqs: s.faqs, photoSpec: s.photoSpec, livenessMethods: s.livenessMethods, signatureSpec: s.signatureSpec, documentMaxBytes: s.documentMaxBytes, otrIdFormat: s.otrIdFormat };
+    return { demoMode: this.env.DEMO_MODE, demoFixedOtp: this.env.DEMO_MODE ? this.env.DEMO_FIXED_OTP ?? null : null, adminUrl: this.env.ADMIN_WEB_URL, candidateUrl: this.env.CANDIDATE_WEB_URL, aiProvider: this.env.AI_PROVIDER, helpdesk: s.helpdesk, faqs: s.faqs, photoSpec: s.photoSpec, livenessMethods: s.livenessMethods, signatureSpec: s.signatureSpec, documentMaxBytes: s.documentMaxBytes, otrIdFormat: s.otrIdFormat };
   }
 
   @Get('public/exams')

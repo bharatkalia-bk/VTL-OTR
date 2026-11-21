@@ -19,7 +19,7 @@ export default function Settings() {
     <>
       <PageTitle title="Settings & masters" description="OTR ID format, photo/signature spec, liveness, OTP limits, lockout, retention (DPDP), helpdesk and FAQs." />
       {banner}
-      <Card className="mb-4"><CardHeader title="Change my password" description="Needs your current password and an authenticator code. Your other sessions are signed out." /><CardBody className="flex flex-wrap items-end gap-3">
+      <Card className="mb-4"><CardHeader title="Change my password" description="Needs your current password and a one-time code sent to your email. Your other sessions are signed out." /><CardBody className="flex flex-wrap items-end gap-3">
         <Field label="Current password">{(f) => <Input id={f.id} type="password" autoComplete="current-password" value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} />}</Field>
         <Field label="New password" hint="8+ chars with upper, lower, digit, symbol">{(f) => <Input id={f.id} type="password" autoComplete="new-password" value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} />}</Field>
         <Button variant="secondary" loading={busy} disabled={!pw.currentPassword || pw.newPassword.length < 8} onClick={() => void run(async () => { await api.post('/admin/auth/password', pw); setPw({ currentPassword: '', newPassword: '' }); }, 'Password changed.')}>Change password</Button>

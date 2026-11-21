@@ -24,6 +24,8 @@ const PURPOSE_LABEL: Record<OtpPurpose, { en: string; hi: string }> = {
   FORGOT_PASSWORD: { en: 'password reset', hi: 'पासवर्ड रीसेट' },
   FORGOT_OTR: { en: 'OTR ID recovery', hi: 'OTR ID पुनः प्राप्ति' },
   CONTACT_CHANGE: { en: 'contact change', hi: 'संपर्क परिवर्तन' },
+  STAFF_LOGIN: { en: 'staff sign-in', hi: 'स्टाफ़ साइन इन' },
+  STAFF_STEP_UP: { en: 'action confirmation', hi: 'कार्य पुष्टि' },
 };
 
 /** OTPs: 6 digits, hashed in Redis, TTL, attempt limits, send rate-limit and resend cooldown per target. */
@@ -43,12 +45,13 @@ export class OtpService {
   }
   private key(id: string) { return this.redis.key('otp', id); }
 
-  async create(purpose: OtpPurpose, subject: string, targets: { mobile?: string | null; email?: string | null }, lang: 'en' | 'hi', data?: Record<string, unknown>): Promise<{ challengeId: string; expiresIn: number; resendIn: number }> {
+  async create(purpose: OtpPurpose, subject: string, targets: { mobile?: string | null; email?: string | null }, lang: 'en' | 'hi', data?: Record<string, unknown>, opts: { cooldown?: boolean; maxSends?: number } = {}): Promise<{ challengeId: string; expiresIn: number; resendIn: number }> {
     const s = await this.settings.get();
     for (const [ch, v] of Object.entries(targets) as Array<[Channel, string | null | undefined]>) {
       if (!v) continue;
       const idx = this.crypto.blindIndex(ch, v);
-      await this.rl.hit(`otp-send:${purpose}`, idx, s.otp.maxSendsPer15Min, 15 * 60);
+      await this.rl.hit(`otp-send:${purpose}`, idx, opts.maxSends ?? s.otp.maxSendsPer15Min, 15 * 60);
+      if (opts.cooldown === false) continue;
       const cd = this.redis.key('otp-cd', purpose, idx);
       if (await this.redis.client.exists(cd)) {
         const ttl = await this.redis.client.ttl(cd);
@@ -61,7 +64,7 @@ export class OtpService {
     const sends: Array<Promise<void>> = [];
     for (const [channel, v] of Object.entries(targets) as Array<[Channel, string | null | undefined]>) {
       if (!v) continue;
-      const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+      const code = this.env.DEMO_FIXED_OTP ?? String(randomInt(0, 1_000_000)).padStart(6, '0');
       ch.codes[channel] = this.hash(challengeId, code);
       if (this.env.DEV_EXPOSE_SECRETS) await this.redis.client.set(this.redis.key('dev', 'otp', v.toLowerCase()), code, 'EX', s.otp.ttlSeconds);
       sends.push(this.notify.send({ templateCode: 'OTP', lang, [channel]: v, params: { otp: code, purpose: PURPOSE_LABEL[purpose][lang] } }));

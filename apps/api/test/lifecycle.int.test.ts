@@ -1,9 +1,8 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { PrismaClient } from '@prisma/client';
 import type Redis from 'ioredis';
-import { authenticator } from 'otplib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { adminLogin, bootstrap, Client, completeProfile, createExam, registerCandidate, resetDb, TOTP_SECRET } from './helpers';
+import { adminLogin, bootstrap, Client, completeProfile, createExam, registerCandidate, resetDb, stepUp } from './helpers';
 
 let app: NestExpressApplication;
 let prisma: PrismaClient;
@@ -18,7 +17,6 @@ afterAll(async () => {
   redis.disconnect();
 });
 
-const stepUp = (c: Client, method: 'post' | 'put', url: string, body: object = {}) => c.agent[method](url).set('X-CSRF-Token', c.csrf).set('X-TOTP-Code', authenticator.generate(TOTP_SECRET)).send(body);
 const KEY: Record<string, string[]> = Object.fromEntries(Array.from({ length: 10 }, (_, i) => [String(i + 1), ['A']]));
 
 describe('full exam lifecycle: exam day → assessment → results → selection', () => {

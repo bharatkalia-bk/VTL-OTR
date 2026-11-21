@@ -69,6 +69,8 @@ const envSchema = z.object({
   AI_MODEL: z.string().default('claude-opus-5-5'),
   /** Pepper for hashing agency API keys (falls back to the JWT secret). */
   AGENCY_KEY_PEPPER: z.string().optional(),
+  /** Demo only: every OTP (candidates and staff) is this fixed 6-digit code. Refused in production unless DEMO_MODE. */
+  DEMO_FIXED_OTP: z.string().regex(/^\d{6}$/).optional().or(z.literal('').transform(() => undefined)),
   QUEUE_INLINE: bool.default(false),
   RUN_WORKER_IN_API: bool.default(false),
   SWAGGER_ENABLED: bool.default(true),
@@ -88,6 +90,9 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   }
   if (parsed.data.NODE_ENV === 'production' && parsed.data.DEV_EXPOSE_SECRETS && !parsed.data.DEMO_MODE) {
     throw new Error('DEV_EXPOSE_SECRETS must be false in production (allowed only with DEMO_MODE=true on a demo server)');
+  }
+  if (parsed.data.NODE_ENV === 'production' && parsed.data.DEMO_FIXED_OTP && !parsed.data.DEMO_MODE) {
+    throw new Error('DEMO_FIXED_OTP must not be set in production (allowed only with DEMO_MODE=true on a demo server)');
   }
   if (parsed.data.AI_PROVIDER === 'claude' && !parsed.data.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is required when AI_PROVIDER=claude');
   if (parsed.data.SMS_DRIVER === 'http' && !parsed.data.SMS_HTTP_URL) throw new Error('SMS_HTTP_URL is required when SMS_DRIVER=http');

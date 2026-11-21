@@ -56,7 +56,7 @@ if [[ ! -f $ENV_FILE ]]; then
     } >> $ENV_FILE
     sed -i 's/^SMTP_PORT=$/SMTP_PORT=587/' $ENV_FILE
   else
-    { echo "DEMO_MODE=true"; echo "SMS_DRIVER=mock"; echo "EMAIL_DRIVER=mock"; } >> $ENV_FILE
+    { echo "DEMO_MODE=true"; echo "DEMO_FIXED_OTP=123456"; echo "SMS_DRIVER=mock"; echo "EMAIL_DRIVER=mock"; } >> $ENV_FILE
   fi
   chmod 600 $ENV_FILE
   echo "Saved configuration to deploy/$ENV_FILE (keep a secure backup: it holds the encryption keys)."
@@ -89,8 +89,7 @@ echo "Candidate portal: https://$CANDIDATE_DOMAIN"
 echo "Admin console:    https://$ADMIN_DOMAIN"
 if [[ ${DEMO_MODE:-false} == true ]]; then
   echo "Demo logins: candidate01@example.in / Candidate@123 ; superadmin@vtl-otr.local / Admin@12345"
-  echo "Admin TOTP secret (add to an authenticator app): KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD"
-  echo "OTPs for new registrations: https://$CANDIDATE_DOMAIN/demo-inbox"
+  echo "Every OTP (candidates and staff) on this demo server: 123456"
 else
-  echo "Super Admin: $SEED_ADMIN_EMAIL  password: $SEED_ADMIN_PASSWORD  (change it; set up 2FA on first login)"
+  echo "Super Admin: $SEED_ADMIN_EMAIL  password: $SEED_ADMIN_PASSWORD  (change it after first sign-in; sign-in codes are emailed to this address)"
 fi

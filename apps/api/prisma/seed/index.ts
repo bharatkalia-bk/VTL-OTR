@@ -2,7 +2,6 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import { DEFAULT_FEE_RULES, formatOtrId, normaliseName, type EligibilityRuleInput } from '@vtl/shared';
 import { createHash, randomUUID } from 'node:crypto';
 import sharp from 'sharp';
-import { authenticator } from 'otplib';
 import { loadEnv } from '../../src/config/env';
 import { createStorage } from '../../src/infra/storage';
 import { buildSimplePdf } from '../../src/modules/pdf/simple-pdf';
@@ -16,8 +15,6 @@ const prisma = new PrismaClient();
 const crypto = new FieldCrypto(env.PII_ENC_KEY, env.PII_INDEX_KEY);
 const storage = createStorage(env);
 
-/** Dev-only TOTP secret for seeded admins (documented in README). Never use in production. */
-export const DEV_TOTP_SECRET = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD';
 export const DEV_ADMIN_PASSWORD = 'Admin@12345';
 export const DEV_CANDIDATE_PASSWORD = 'Candidate@123';
 
@@ -95,7 +92,6 @@ async function seedMasters() {
 
 async function seedAdmins() {
   const pw = await hashPassword(DEV_ADMIN_PASSWORD);
-  const totp = crypto.encrypt(DEV_TOTP_SECRET);
   const users: Array<[string, string, Prisma.AdminUserCreateInput['roles']]> = [
     ['Super Admin', 'superadmin@vtl-otr.local', ['SUPER_ADMIN']],
     ['Exam Admin', 'examadmin@vtl-otr.local', ['EXAM_ADMIN']],
@@ -111,10 +107,8 @@ async function seedAdmins() {
   ];
   const created = [];
   for (const [name, email, roles] of users) {
-    created.push(await prisma.adminUser.create({ data: { name, email, roles, passwordHash: pw, totpSecretEnc: totp, totpEnrolledAt: new Date(), recoveryCodes: [], ...(email.startsWith('observer@') && { scope: { homeDistrict: 'Lucknow' } }) } }));
+    created.push(await prisma.adminUser.create({ data: { name, email, roles, passwordHash: pw, ...(email.startsWith('observer@') && { scope: { homeDistrict: 'Lucknow' } }) } }));
   }
-  // One admin without TOTP to demonstrate mandatory enrolment on first login.
-  await prisma.adminUser.create({ data: { name: 'New Verifier', email: 'newverifier@vtl-otr.local', roles: ['VERIFIER'], passwordHash: pw } });
   return created;
 }
 
@@ -198,7 +192,7 @@ async function seedExams() {
 
 /**
  * Production bootstrap (`--minimal`): never deletes data. Loads masters if empty and creates the first
- * Super Admin from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD (TOTP enrolment is forced on first login).
+ * Super Admin from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD (signs in with password plus an emailed one-time code).
  */
 async function minimal() {
   if ((await prisma.state.count()) === 0) await seedMasters();
@@ -386,10 +380,10 @@ async function main() {
   console.log(`\n  Lifecycle: CHSL ${lc.chslCandidates} sat the exam (answer key open), JE 2025 final merit ${lc.jeFinal} with allotment, SO 2026 ${lc.soShortlist} interviews pending`);
 
   console.log('\nSeed complete.');
-  console.log(`  Admin logins (password ${DEV_ADMIN_PASSWORD}, TOTP secret ${DEV_TOTP_SECRET}, current code ${authenticator.generate(DEV_TOTP_SECRET)}):`);
-  console.log('    superadmin@ examadmin@ examadmin2@ verifier@ helpdesk@ auditor@ (vtl-otr.local); newverifier@ must enrol TOTP');
+  console.log(`  Staff logins (password ${DEV_ADMIN_PASSWORD}, then the one-time code${env.DEMO_FIXED_OTP ? ` ${env.DEMO_FIXED_OTP}` : ' from Mailpit or /demo-inbox'}):`);
+  console.log('    superadmin@ examadmin@ examadmin2@ verifier@ helpdesk@ auditor@ (vtl-otr.local)');
   console.log('    field roles: centre@ observer@ agency@ panel@ panel2@ (vtl-otr.local)');
-  console.log(`  Candidates: candidate01@example.in … candidate50@example.in (password ${DEV_CANDIDATE_PASSWORD})`);
+  console.log(`  Candidates: candidate01@example.in … candidate50@example.in (password ${DEV_CANDIDATE_PASSWORD})${env.DEMO_FIXED_OTP ? `; every OTP is ${env.DEMO_FIXED_OTP}` : ''}`);
 }
 
 main()

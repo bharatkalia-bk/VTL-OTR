@@ -48,6 +48,8 @@ export const forgotPasswordResetSchema = z
 
 export const adminLoginSchema = z.object({ email: emailSchema, password: z.string().min(1).max(128) });
 export const totpCodeSchema = z.object({ code: z.string().regex(/^\d{6}$|^[A-Z0-9]{10}$/) });
+/** Staff login second step: the 6-digit code sent to the staff member's email. */
+export const staffOtpSchema = z.object({ challengeId: z.string().min(8).max(64), code: z.string().regex(/^\d{6}$/, 'validation.otp') });
 
 export interface SessionUser {
   id: string;

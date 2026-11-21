@@ -75,7 +75,7 @@ export type TicketChannel = (typeof TICKET_CHANNELS)[number];
 export const TICKET_STATUSES = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const;
 export type TicketStatus = (typeof TICKET_STATUSES)[number];
 
-export const OTP_PURPOSES = ['REGISTER', 'LOGIN', 'FORGOT_PASSWORD', 'FORGOT_OTR', 'CONTACT_CHANGE'] as const;
+export const OTP_PURPOSES = ['REGISTER', 'LOGIN', 'FORGOT_PASSWORD', 'FORGOT_OTR', 'CONTACT_CHANGE', 'STAFF_LOGIN', 'STAFF_STEP_UP'] as const;
 export type OtpPurpose = (typeof OTP_PURPOSES)[number];
 
 export const LIVENESS_METHODS = ['BLINK', 'HEAD_TURN'] as const;

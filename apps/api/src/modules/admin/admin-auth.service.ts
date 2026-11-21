@@ -1,10 +1,8 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { SessionUser } from '@vtl/shared';
 import type { Request, Response } from 'express';
-import { createHash, randomBytes } from 'node:crypto';
-import { authenticator } from 'otplib';
-import QRCode from 'qrcode';
-import { AppError } from '../../common/errors';
+import { maskEmail } from '@vtl/shared';
+import { createHash } from 'node:crypto';
 import { AuditService } from '../../infra/audit.service';
 import { PrismaService } from '../../infra/prisma.service';
 import { RedisService } from '../../infra/redis.service';
@@ -13,11 +11,11 @@ import { SettingsService } from '../../infra/settings.service';
 import { FieldCrypto } from '../../security/field-crypto';
 import { dummyVerify, verifyPassword } from '../../security/password';
 import { TokensService, type AccessClaims } from '../../security/tokens.service';
+import { OtpService } from '../notify/otp.service';
 
-authenticator.options = { window: 1, step: 30, digits: 6 };
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 
-/** Admin login with mandatory TOTP. Sessions start "partial" (tv=false) until TOTP is enrolled/verified. */
+/** Staff login: password, then a one-time code emailed to the staff member. Sessions stay "partial" (tv=false) until the code is verified. */
 @Injectable()
 export class AdminAuthService {
   constructor(
@@ -28,9 +26,10 @@ export class AdminAuthService {
     private readonly rl: RateLimitService,
     private readonly settings: SettingsService,
     private readonly redis: RedisService,
+    private readonly otp: OtpService,
   ) {}
 
-  async login(email: string, password: string, req: Request, res: Response) {
+  async login(email: string, password: string, req: Request, res: Response): Promise<{ next: 'OTP_VERIFY'; challengeId: string; sentTo: string }> {
     await this.rl.hit('admin-login-ip', req.ip ?? 'x', 30, 15 * 60);
     await this.rl.hit('admin-login-id', sha(email.toLowerCase()), 10, 15 * 60);
     const a = await this.prisma.adminUser.findUnique({ where: { email: email.toLowerCase() } });
@@ -50,59 +49,51 @@ export class AdminAuthService {
     await this.prisma.adminUser.update({ where: { id: a.id }, data: { failedLogins: 0, lockedUntil: null } });
     await this.tokens.issue(res, req, { sub: a.id, typ: 'ADMIN', roles: a.roles, tv: false });
     await this.audit.log({ action: 'ADMIN_PASSWORD_OK', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: a.id });
-    return { totpEnrolled: !!a.totpEnrolledAt, next: a.totpEnrolledAt ? 'TOTP_VERIFY' : 'TOTP_ENROL' };
+    const c = await this.challenge({ sub: a.id } as AccessClaims);
+    return { next: 'OTP_VERIFY' as const, ...c };
   }
 
-  async enrolStart(claims: AccessClaims) {
+  private pendingKey(adminId: string) { return this.redis.key('staff-otp', adminId); }
+
+  /** Returns the pending sign-in code challenge for this staff member, sending a new code only when none is pending. */
+  async challenge(claims: AccessClaims, fresh = false): Promise<{ challengeId: string; sentTo: string }> {
     const a = await this.prisma.adminUser.findUniqueOrThrow({ where: { id: claims.sub } });
-    if (a.totpEnrolledAt) throw new AppError('ALREADY_ENROLLED', 'Authenticator already set up.', 409);
-    const secret = authenticator.generateSecret(20);
-    await this.prisma.adminUser.update({ where: { id: a.id }, data: { totpSecretEnc: this.crypto.encrypt(secret) } });
-    const otpauth = authenticator.keyuri(a.email, 'VTL OTR Admin', secret);
-    return { secret, otpauth, qr: await QRCode.toDataURL(otpauth, { margin: 1, width: 220, color: { dark: '#07102D', light: '#FFFFFF' } }) };
+    const key = this.pendingKey(a.id);
+    const pending = fresh ? null : await this.redis.client.get(key);
+    if (pending) return { challengeId: pending, sentTo: maskEmail(a.email) };
+    const c = await this.otp.create('STAFF_LOGIN', a.id, { email: a.email }, 'en', undefined, { cooldown: false, maxSends: 30 });
+    await this.redis.client.set(key, c.challengeId, 'EX', c.expiresIn);
+    return { challengeId: c.challengeId, sentTo: maskEmail(a.email) };
   }
 
-  /** Verifies a TOTP (or a single-use recovery code). Completes enrolment if pending. Upgrades session to tv=true. */
-  async verify(claims: AccessClaims, code: string, req: Request, res: Response): Promise<SessionUser & { recoveryCodes?: string[] }> {
-    await this.rl.hit('admin-totp', claims.sub, 10, 15 * 60);
+  /** Second sign-in step: the 6-digit code emailed to the staff member. Upgrades the session to verified. */
+  async verify(claims: AccessClaims, challengeId: string, code: string, req: Request, res: Response): Promise<SessionUser> {
+    await this.rl.hit('admin-otp', claims.sub, 10, 15 * 60);
+    let ch;
+    try {
+      ch = await this.otp.verify(challengeId, { email: code }, 'STAFF_LOGIN');
+    } catch (e) {
+      await this.audit.log({ action: 'ADMIN_OTP_FAILED', entity: 'AdminUser', entityId: claims.sub, actorType: 'ADMIN', actorId: claims.sub });
+      throw e;
+    }
+    if (ch.subject !== claims.sub) throw new UnauthorizedException({ code: 'OTP_INVALID', message: 'The code entered is incorrect.' });
+    await this.redis.client.del(this.pendingKey(claims.sub));
     const a = await this.prisma.adminUser.findUniqueOrThrow({ where: { id: claims.sub } });
-    if (!a.totpSecretEnc) throw new AppError('ENROL_FIRST', 'Set up your authenticator first.');
-    const secret = this.crypto.decrypt(a.totpSecretEnc);
-    let ok = /^\d{6}$/.test(code) && authenticator.check(code, secret);
-    let usedRecovery = false;
-    if (!ok && a.totpEnrolledAt && /^[A-Z0-9]{10}$/.test(code)) {
-      const h = sha(code);
-      if (a.recoveryCodes.includes(h)) {
-        ok = true;
-        usedRecovery = true;
-        await this.prisma.adminUser.update({ where: { id: a.id }, data: { recoveryCodes: a.recoveryCodes.filter((x) => x !== h) } });
-      }
-    }
-    if (!ok) {
-      await this.audit.log({ action: 'ADMIN_TOTP_FAILED', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: a.id });
-      throw new UnauthorizedException({ code: 'TOTP_INVALID', message: 'The authenticator code is incorrect.' });
-    }
-    let recoveryCodes: string[] | undefined;
-    if (!a.totpEnrolledAt) {
-      recoveryCodes = Array.from({ length: 8 }, () => randomBytes(8).toString('base64').replace(/[^A-Z0-9]/gi, '').toUpperCase().padEnd(10, 'X').slice(0, 10));
-      await this.prisma.adminUser.update({ where: { id: a.id }, data: { totpEnrolledAt: new Date(), recoveryCodes: recoveryCodes.map(sha) } });
-      await this.audit.log({ action: 'ADMIN_TOTP_ENROLLED', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: a.id });
-    }
     await this.tokens.revokeFamily(claims.sid);
     const sid = await this.tokens.issue(res, req, { sub: a.id, typ: 'ADMIN', roles: a.roles, tv: true });
     await this.redis.client.set(this.redis.key('admtv', sid), '1', 'EX', 12 * 3600);
     await this.prisma.adminUser.update({ where: { id: a.id }, data: { lastLoginAt: new Date() } });
-    await this.audit.log({ action: usedRecovery ? 'ADMIN_LOGIN_RECOVERY_CODE' : 'ADMIN_LOGIN', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: a.id });
-    return { ...(await this.sessionUser(a.id, true)), recoveryCodes };
+    await this.audit.log({ action: 'ADMIN_LOGIN', entity: 'AdminUser', entityId: a.id, actorType: 'ADMIN', actorId: a.id });
+    return this.sessionUser(a.id, true);
   }
 
   async sessionUser(id: string, tv: boolean): Promise<SessionUser & { totpEnrolled: boolean; email: string }> {
     const a = await this.prisma.adminUser.findUniqueOrThrow({ where: { id } });
-    return { id: a.id, type: 'ADMIN', name: a.name, roles: a.roles, totpVerified: tv, totpEnrolled: !!a.totpEnrolledAt, email: a.email };
+    return { id: a.id, type: 'ADMIN', name: a.name, roles: a.roles, totpVerified: tv, totpEnrolled: true, email: a.email };
   }
 
   async refresh(req: Request, res: Response) {
-    // TOTP state is bound to the session family (Redis); a partial session never becomes verified via refresh.
+    // Verified state is bound to the session family (Redis); a partial session never becomes verified via refresh.
     const claims = await this.tokens.rotate(req, res, 'ADMIN', async (id, familyId) => {
       const a = await this.prisma.adminUser.findUnique({ where: { id } });
       const tv = (await this.redis.client.exists(this.redis.key('admtv', familyId))) === 1;

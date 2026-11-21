@@ -17,9 +17,9 @@ The setup tries to make both links **public** so anyone with the link can open t
 | Who | Login | Password | Extra |
 |---|---|---|---|
 | Candidate | `candidate01@example.in` … `candidate50@example.in` | `Candidate@123` | type the captcha |
-| Admin | `superadmin@vtl-otr.local` (also `examadmin@`, `verifier@`, `helpdesk@`, `auditor@`) | `Admin@12345` | authenticator code: add secret `KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD` to Google/Microsoft Authenticator |
+| Staff | `superadmin@vtl-otr.local` (also `examadmin@`, `verifier@`, `helpdesk@`, `auditor@`, `centre@`, `observer@`, `agency@`, `panel@`) | `Admin@12345` | verification code `123456` |
 
-New registrations work too: OTPs are not really sent in demo mode, so open **Demo inbox** (link in the yellow banner) and enter the mobile/email you registered with.
+Every OTP in the codespace is **`123456`**: staff sign-in codes, codes for sensitive staff actions, and candidate registration, login and recovery OTPs. Nothing is really sent; the **Demo inbox** (link in the yellow banner) shows what would have gone out.
 
 ## Good to know
 

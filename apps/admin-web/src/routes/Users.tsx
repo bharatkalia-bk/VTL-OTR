@@ -9,7 +9,7 @@ import { useAuth } from '../lib/auth';
 
 interface Scope { centreIds?: string[]; examIds?: string[]; homeDistrict?: string; agency?: string }
 interface Ctr { id: string; code: string; name: string; city: string; exam: { id: string; code: string } }
-interface U { id: string; name: string; email: string; scope: Scope; roles: string[]; isActive: boolean; totpEnrolled: boolean; lastLoginAt: string | null }
+interface U { id: string; name: string; email: string; scope: Scope; roles: string[]; isActive: boolean; lastLoginAt: string | null }
 
 export default function Users() {
   const { can, user } = useAuth();
@@ -23,16 +23,14 @@ export default function Users() {
   const isField = (r: U) => r.roles.some((x) => (FIELD_ROLES as readonly string[]).includes(x));
   return (
     <>
-      <PageTitle title="Staff users" description="Console roles and field roles (centre superintendent, observer, agency, interview panel). TOTP is mandatory for everyone." />
+      <PageTitle title="Staff users" description="Console roles and field roles (centre superintendent, observer, agency, interview panel). Everyone signs in with password plus a one-time code sent to their email." />
       {banner}
       <DataTable caption="Admin users" rows={q.data ?? []} rowKey={(r) => r.id} columns={[
         { key: 'n', header: 'Name', cell: (r) => r.name }, { key: 'e', header: 'Email', cell: (r) => r.email },
         { key: 'r', header: 'Roles', cell: (r) => <span className="flex flex-wrap gap-1">{r.roles.map((x) => <Badge key={x} tone={(FIELD_ROLES as readonly string[]).includes(x) ? 'brand' : 'neutral'}>{ROLE_LABELS[x as AdminRole] ?? x}</Badge>)}</span> },
-        { key: 't', header: '2FA', cell: (r) => (r.totpEnrolled ? <Badge tone="success">Enrolled</Badge> : <Badge tone="warning">Pending</Badge>) },
         { key: 'a', header: 'Active', cell: (r) => (r.isActive ? 'Yes' : 'No') }, { key: 'l', header: 'Last login', cell: (r) => fmt.dt(r.lastLoginAt) },
         { key: 'x', header: '', cell: (r) => sa && r.id !== user?.id && <span className="flex gap-1">
           <Button size="sm" onClick={() => void run(() => api.put(`/admin/users/${r.id}`, { isActive: !r.isActive }).then(() => q.refetch()), 'Updated.')}>{r.isActive ? 'Deactivate' : 'Activate'}</Button>
-          <Button size="sm" variant="ghost" onClick={() => void run(() => api.post(`/admin/users/${r.id}/reset-totp`).then(() => q.refetch()), '2FA reset; user must re-enrol.')}>Reset 2FA</Button>
           {isField(r) && <Button size="sm" variant="ghost" onClick={() => { setEdit(r); setSc(r.scope ?? {}); }}>Scope</Button>}
         </span> },
       ]} />
@@ -41,7 +39,7 @@ export default function Users() {
         <Field label="Email">{(f) => <Input id={f.id} type="email" value={n.email} onChange={(e) => setN({ ...n, email: e.target.value })} />}</Field>
         <Field label="Initial password" hint="8+ chars with upper, lower, digit, symbol">{(f) => <Input id={f.id} type="password" autoComplete="new-password" value={n.password} onChange={(e) => setN({ ...n, password: e.target.value })} />}</Field>
         <div className="flex flex-wrap gap-4 md:col-span-3">{ADMIN_ROLES.map((r) => <Checkbox key={r} label={ROLE_LABELS[r]} checked={n.roles.includes(r)} onChange={(e) => setN({ ...n, roles: e.target.checked ? [...n.roles, r] : n.roles.filter((x) => x !== r) })} />)}</div>
-        <div><Button variant="primary" loading={busy} onClick={() => void run(async () => { await api.post('/admin/users', n); setN({ name: '', email: '', password: '', roles: [] }); await q.refetch(); }, 'User created. They must enrol TOTP on first login.')}>Create user</Button></div>
+        <div><Button variant="primary" loading={busy} onClick={() => void run(async () => { await api.post('/admin/users', n); setN({ name: '', email: '', password: '', roles: [] }); await q.refetch(); }, 'User created. They sign in with this password and a code sent to their email.')}>Create user</Button></div>
       </CardBody></Card>}
       <Dialog open={!!edit} onClose={() => setEdit(null)} title={`Scope: ${edit?.name}`} closeLabel="Close" size="lg"
         footer={<><Button onClick={() => setEdit(null)}>Cancel</Button><Button variant="primary" loading={busy} onClick={() => void run(async () => { await api.put(`/admin/users/${edit!.id}`, { scope: sc }); setEdit(null); await q.refetch(); }, 'Scope saved; the user must sign in again.')}>Save scope</Button></>}>

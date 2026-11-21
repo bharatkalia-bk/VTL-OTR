@@ -759,7 +759,8 @@
     "show": "Show messages",
     "none": "No messages yet",
     "sms": "SMS",
-    "emails": "Email"
+    "emails": "Email",
+    "fixedOtp": "Every OTP on this demo is {{code}}."
   },
   "portals": {
     "title": "Sign in to your portal",

@@ -17,7 +17,7 @@ export default function Corrections() {
   const openDoc = async (id: string) => window.open((await api.get<{ url: string }>(`/admin/documents/${id}/url`)).url, '_blank', 'noopener');
   return (
     <>
-      <PageTitle title="Correction requests" description="Approval applies the change immediately (photo/signature approvals unlock re-capture). Approvals need your authenticator code." actions={<Select aria-label="Status" className="w-40" value={status} onChange={(e) => setStatus(e.target.value)}><option>PENDING</option><option>APPROVED</option><option>REJECTED</option></Select>} />
+      <PageTitle title="Correction requests" description="Approval applies the change immediately (photo/signature approvals unlock re-capture). Approvals ask for a one-time code sent to your email." actions={<Select aria-label="Status" className="w-40" value={status} onChange={(e) => setStatus(e.target.value)}><option>PENDING</option><option>APPROVED</option><option>REJECTED</option></Select>} />
       {banner}
       <DataTable caption="Corrections" rows={list.items} rowKey={(r) => r.id} empty="No requests"
         columns={[

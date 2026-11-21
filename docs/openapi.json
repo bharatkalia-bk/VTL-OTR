@@ -1145,9 +1145,9 @@
         ]
       }
     },
-    "/api/v1/admin/auth/totp/enrol": {
+    "/api/v1/admin/auth/otp/challenge": {
       "post": {
-        "operationId": "AdminAuthController_enrol",
+        "operationId": "AdminAuthController_challenge",
         "parameters": [],
         "responses": {
           "200": {
@@ -1159,7 +1159,7 @@
         ]
       }
     },
-    "/api/v1/admin/auth/totp/verify": {
+    "/api/v1/admin/auth/otp/verify": {
       "post": {
         "operationId": "AdminAuthController_verify",
         "parameters": [],
@@ -1258,29 +1258,6 @@
     "/api/v1/admin/users/{id}": {
       "put": {
         "operationId": "AdminUsersController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Admin users"
-        ]
-      }
-    },
-    "/api/v1/admin/users/{id}/reset-totp": {
-      "post": {
-        "operationId": "AdminUsersController_resetTotp",
         "parameters": [
           {
             "name": "id",

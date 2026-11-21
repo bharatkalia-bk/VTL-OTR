@@ -1,9 +1,8 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { PrismaClient } from '@prisma/client';
 import type Redis from 'ioredis';
-import { authenticator } from 'otplib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ADMIN_PW, adminLogin, bootstrap, Client, completeProfile, createExam, registerCandidate, resetDb, TOTP_SECRET } from './helpers';
+import { ADMIN_PW, adminLogin, bootstrap, Client, completeProfile, createExam, registerCandidate, resetDb, stepUp as stepUpAny, devOtp } from './helpers';
 
 let app: NestExpressApplication;
 let prisma: PrismaClient;
@@ -19,22 +18,25 @@ afterAll(async () => {
   redis.disconnect();
 });
 
-const stepUp = (c: Client, url: string, body: object = {}) => c.agent.post(url).set('X-CSRF-Token', c.csrf).set('X-TOTP-Code', authenticator.generate(TOTP_SECRET)).send(body);
+const stepUp = (c: Client, url: string, body: object = {}) => stepUpAny(c, 'post', url, body);
 
 describe('admin auth', () => {
-  it('requires TOTP before any admin API; enrolment issues recovery codes', async () => {
+  it('requires the emailed code before any admin API; wrong codes are refused', async () => {
     const c = await new Client(app).init();
     const r = await c.post('/api/v1/admin/auth/login', { email: 'new@t.in', password: ADMIN_PW });
-    expect(r.body.next).toBe('TOTP_ENROL');
+    expect(r.body).toMatchObject({ next: 'OTP_VERIFY', sentTo: expect.stringContaining('@') });
     expect((await c.get('/api/v1/admin/dashboard')).body.code).toBe('TOTP_REQUIRED');
-    const en = await c.post('/api/v1/admin/auth/totp/enrol');
-    expect(en.body.otpauth).toContain('otpauth://totp/');
-    expect((await c.post('/api/v1/admin/auth/totp/verify', { code: '000000' })).body.code).toBe('TOTP_INVALID');
-    const ok = await c.post('/api/v1/admin/auth/totp/verify', { code: authenticator.generate(en.body.secret) });
-    expect(ok.body.recoveryCodes).toHaveLength(8);
+    // challenge endpoint returns the same pending challenge instead of sending another code
+    expect((await c.post('/api/v1/admin/auth/otp/challenge', {})).body.challengeId).toBe(r.body.challengeId);
+    const code = await devOtp(c, 'new@t.in');
+    const wrong = code === '000000' ? '111111' : '000000';
+    expect((await c.post('/api/v1/admin/auth/otp/verify', { challengeId: r.body.challengeId, code: wrong })).body.code).toBe('OTP_INVALID');
+    expect((await c.post('/api/v1/admin/auth/otp/verify', { challengeId: r.body.challengeId, code })).body.totpVerified).toBe(true);
     expect((await c.get('/api/v1/admin/dashboard')).status).toBe(200);
-    // refresh keeps TOTP state
+    // refresh keeps the verified state; signing in again straight away works (no resend cooldown for staff)
     expect((await c.post('/api/v1/admin/auth/refresh')).body.totpVerified).toBe(true);
+    const again = await new Client(app).init();
+    expect((await again.post('/api/v1/admin/auth/login', { email: 'new@t.in', password: ADMIN_PW })).body.next).toBe('OTP_VERIFY');
   });
 
   it('candidate sessions cannot reach admin APIs', async () => {

@@ -34,6 +34,7 @@ x-api-env: &api-env
   SMTP_PASS: ${SMTP_PASS:-}
   EMAIL_FROM: ${EMAIL_FROM:-VTL OTR <no-reply@localhost>}
   DEMO_MODE: ${DEMO_MODE:-false}
+  DEMO_FIXED_OTP: ${DEMO_FIXED_OTP:-}
   DEV_EXPOSE_SECRETS: ${DEMO_MODE:-false}
   SWAGGER_ENABLED: "false"
   LOG_LEVEL: info

@@ -6,7 +6,7 @@
 flowchart LR
   subgraph Browser
     CW["candidate-web<br/>React, mobile-first, EN/HI<br/>LivePhotoCapture (MediaPipe WASM, self-hosted)"]
-    AW["admin-web<br/>React, desktop-first<br/>RBAC + TOTP + step-up"]
+    AW["admin-web<br/>React, desktop-first<br/>RBAC + emailed OTP + step-up"]
   end
   CW -- "HTTPS · httpOnly cookies · CSRF header" --> NG[nginx<br/>strict CSP]
   AW -- "HTTPS · httpOnly cookies · CSRF header" --> NG
@@ -25,7 +25,7 @@ flowchart LR
 ### Request lifecycle
 1. The `requestContext` middleware assigns a request ID and captures the IP and user agent (AsyncLocalStorage), so every audit row and log line can be correlated.
 2. `helmet` applies the security headers: a strict CSP whose only script exception is `'wasm-unsafe-eval'` for MediaPipe, and `Permissions-Policy: camera=(self)`. `pino-http` writes structured logs with PII redacted. The CSRF double-submit check follows.
-3. Guards: `CandidateGuard` and `AdminGuard`. The admin guard checks the TOTP-verified session flag, roles (`@Roles`) and step-up TOTP (`@StepUp`).
+3. Guards: `CandidateGuard` and `AdminGuard`. The admin guard checks the OTP-verified session flag, roles (`@Roles`) and step-up code (`@StepUp`).
 4. Controllers validate input with the **shared Zod schemas**. Services enforce business rules, also from `packages/shared` (eligibility, age relaxation, fees, OTR ID). Slow work is enqueued in BullMQ.
 
 ### Scaling for peak load (lakhs of registrations near deadlines)
@@ -41,7 +41,7 @@ flowchart LR
 | Passwords | Argon2id (`@node-rs/argon2`, m=19 MiB, t=2), dummy verify for unknown users (timing) |
 | Sessions | 15-minute access JWT + opaque rotating refresh tokens (SHA-256 hashed in DB); reuse revokes the family; httpOnly, SameSite=Strict, Secure in production |
 | CSRF | Double-submit token (`vtl_csrf` cookie ↔ `X-CSRF-Token`); gateway callbacks are exempt but HMAC-verified |
-| Admin 2FA | Mandatory TOTP enrolment (secret encrypted), recovery codes (hashed), step-up TOTP for sensitive actions, TOTP state bound to the session family |
+| Staff sign-in | Password, then a 6-digit code emailed to the staff member (hashed in Redis, attempt-limited). The session stays partial until the code is verified. Sensitive actions need a fresh emailed code (step-up, valid 5 minutes). `DEMO_FIXED_OTP` fixes every OTP for demos and is refused in production unless `DEMO_MODE`. |
 | PII at rest | AES-256-GCM per field (names, DOB, mobile, email, addresses, roll numbers, audit before/after, application snapshots) behind a `KeyProvider`; HMAC-SHA256 **blind indexes** for lookups (mobile, email, identity dedupe, name tokens) |
 | Aadhaar | Never stored: only `XXXX-XXXX-1234` and a reference token |
 | Files | Private bucket; only signed, short-lived URLs after an ownership or role check; magic-byte validation; PDFs only for certificates |

@@ -16,7 +16,7 @@ The platform then runs the rest of the recruitment cycle:
 | Part | Path | Stack |
 |---|---|---|
 | Candidate portal (mobile-first, EN/HI) | `apps/candidate-web` | React 18, Vite, Tailwind, TanStack Query, RHF + Zod, i18next |
-| Staff console (RBAC + TOTP; field workspaces are mobile-friendly) | `apps/admin-web` | React 18, Vite, Recharts, jsQR |
+| Staff console (RBAC, emailed sign-in codes; field workspaces are mobile-friendly) | `apps/admin-web` | React 18, Vite, Recharts, jsQR |
 | API + worker | `apps/api` | NestJS 11, Prisma 6, PostgreSQL 16, Redis 7, BullMQ, MinIO/S3, Chromium PDFs |
 | Design system | `packages/ui` | VTL tokens, components, `LivePhotoCapture` (MediaPipe), `SignaturePad` |
 | Shared rules | `packages/shared` | Zod schemas, eligibility, age relaxation, fee matrix, OTR ID |
@@ -59,9 +59,9 @@ docker compose --profile seed run --rm seed
 | Staff console (all staff roles) | http://localhost:5174 |
 | API docs (Swagger) | http://localhost:4000/api/docs |
 | Mailpit (all emails sent) | http://localhost:8025 |
-| OTPs for new registrations | http://localhost:5173/demo-inbox |
+| Messages that would be SMS / email | http://localhost:5173/demo-inbox |
 
-No `.env` file is needed: the local stack uses built-in development-only keys. Files are stored in a Docker volume. Stop with `docker compose down`; add `-v` to also delete the data. To update later: `git pull`, then the `up --build -d` command again (re-run the seed only if you want fresh demo data; it erases everything).
+No `.env` file is needed: the local stack uses built-in development-only keys, and **every OTP is `123456`** (candidates and staff). Files are stored in a Docker volume. Stop with `docker compose down`; add `-v` to also delete the data. To update later: `git pull`, then the `up --build -d` command again (re-run the seed only if you want fresh demo data; it erases everything).
 
 The camera needs a **secure context**. `localhost` counts as secure. To test on a phone over the LAN, serve the app over HTTPS (for example behind a TLS reverse proxy).
 
@@ -89,19 +89,18 @@ Without MinIO, `STORAGE_DRIVER=fs` stores files under `apps/api/.storage` and se
 
 ### Seeded accounts (development only)
 
-| Who | Login | Password | 2FA |
-|---|---|---|---|
-| Super Admin | `superadmin@vtl-otr.local` | `Admin@12345` | TOTP secret `KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD` |
-| Exam Admin / Verifier / Helpdesk / Auditor | `examadmin@` `verifier@` `helpdesk@` `auditor@` (`vtl-otr.local`) | `Admin@12345` | same secret |
-| Second Exam Admin (approves results: maker-checker) | `examadmin2@vtl-otr.local` | `Admin@12345` | same secret |
-| Centre Superintendent (CHSL centres in Patna) | `centre@vtl-otr.local` | `Admin@12345` | same secret |
-| Observer (CHSL, one centre declared, one pending) | `observer@vtl-otr.local` | `Admin@12345` | same secret |
-| Conducting Agency | `agency@vtl-otr.local` | `Admin@12345` | same secret |
-| Interview Panel members | `panel@vtl-otr.local`, `panel2@vtl-otr.local` | `Admin@12345` | same secret |
-| New verifier (shows mandatory TOTP enrolment) | `newverifier@vtl-otr.local` | `Admin@12345` | enrols on first login |
-| Candidates 01 to 50 | `candidate01@example.in` … `candidate50@example.in` | `Candidate@123` | n/a |
+| Who | Login | Password |
+|---|---|---|
+| Super Admin | `superadmin@vtl-otr.local` | `Admin@12345` |
+| Exam Admin / Verifier / Helpdesk / Auditor | `examadmin@` `verifier@` `helpdesk@` `auditor@` (`vtl-otr.local`) | `Admin@12345` |
+| Second Exam Admin (approves results: maker-checker) | `examadmin2@vtl-otr.local` | `Admin@12345` |
+| Centre Superintendent (CHSL centres in Patna) | `centre@vtl-otr.local` | `Admin@12345` |
+| Observer (CHSL, one centre declared, one pending) | `observer@vtl-otr.local` | `Admin@12345` |
+| Conducting Agency | `agency@vtl-otr.local` | `Admin@12345` |
+| Interview Panel members | `panel@vtl-otr.local`, `panel2@vtl-otr.local` | `Admin@12345` |
+| Candidates 01 to 50 | `candidate01@example.in` … `candidate50@example.in` | `Candidate@123` |
 
-Add the TOTP secret to any authenticator app, or print the current code with `node -e "console.log(require('otplib').authenticator.generate('KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD'))"` (run it from `apps/api`).
+**One-time codes.** Staff sign in with password, then a 6-digit code sent to their email. Sensitive actions (publishing, approvals, allotment, agency keys) ask for a fresh code. Candidates get OTPs by SMS and email. On the demo setups (Docker quick start, Codespaces, demo-mode server) **every OTP is `123456`**, set by `DEMO_FIXED_OTP`. The API refuses to start with `DEMO_FIXED_OTP` on a production server unless `DEMO_MODE=true`. Without it, codes are random and appear in Mailpit and at `/demo-inbox` (development) or are really sent (production).
 
 The seed creates 5 exams:
 

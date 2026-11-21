@@ -6,7 +6,7 @@ Base URL: `/api/v1`. Interactive docs (Swagger UI) at **`/api/docs`**; the machi
 
 - **Auth**: httpOnly cookies. Candidates: `vtl_at` (15 min JWT) + `vtl_rt` (rotating refresh, path `/api/v1/auth`). Admins: `vtl_adm_at` + `vtl_adm_rt`. Refresh-token reuse revokes the whole session family.
 - **CSRF**: double-submit. `GET /auth/csrf` sets `vtl_csrf`; every non-GET request must send the same value in `X-CSRF-Token`. Gateway callbacks are exempt and verified by HMAC signature instead.
-- **Admin 2FA**: sessions are partial until `POST /admin/auth/totp/verify`. Sensitive actions (correction approval, admit-card release, manual payment verification, refund marker, bulk campaigns, exports, settings, user management) also need `X-TOTP-Code` (step-up, valid 5 minutes).
+- **Staff sign-in**: `POST /admin/auth/login` returns `{ next: 'OTP_VERIFY', challengeId, sentTo }` and emails a 6-digit code; the session is partial until `POST /admin/auth/otp/verify { challengeId, code }`. `POST /admin/auth/otp/challenge` returns the pending challenge (`{ fresh: true }` sends a new code). Sensitive actions answer `403 STEP_UP_REQUIRED` and email a code; retry with header `X-OTP-Code`. With `DEMO_FIXED_OTP` (demo only) every code is that value.
 - **Validation**: bodies are validated with the shared Zod schemas from `packages/shared`. Errors: `{ code, message, issues?: [{ path, message }], requestId }`.
 - **Pagination**: list endpoints are keyset-paginated: `?cursor=<id>&limit=<1..100>` → `{ items, nextCursor }`.
 - **Rate limits** (Redis): OTP sends 3 per 15 min per target with a 30 s cooldown, 5 verify attempts; login 50 per 15 min per IP and 20 per identifier; account lockout after 5 failures for 30 min.
@@ -15,7 +15,7 @@ Base URL: `/api/v1`. Interactive docs (Swagger UI) at **`/api/docs`**; the machi
 
 ## Endpoints
 
-226 operations, grouped by tag. Field roles (centre superintendent, observer, agency, interview panel) reach only their own workspace routes.
+225 operations, grouped by tag. Field roles (centre superintendent, observer, agency, interview panel) reach only their own workspace routes.
 
 ### Health
 
@@ -125,8 +125,8 @@ Base URL: `/api/v1`. Interactive docs (Swagger UI) at **`/api/docs`**; the machi
 | Method | Path |
 |---|---|
 | POST | `/admin/auth/login` |
-| POST | `/admin/auth/totp/enrol` |
-| POST | `/admin/auth/totp/verify` |
+| POST | `/admin/auth/otp/challenge` |
+| POST | `/admin/auth/otp/verify` |
 | POST | `/admin/auth/refresh` |
 | POST | `/admin/auth/logout` |
 | POST | `/admin/auth/password` |
@@ -139,7 +139,6 @@ Base URL: `/api/v1`. Interactive docs (Swagger UI) at **`/api/docs`**; the machi
 | GET | `/admin/users` |
 | POST | `/admin/users` |
 | PUT | `/admin/users/{id}` |
-| POST | `/admin/users/{id}/reset-totp` |
 
 ### Admin dashboard
 

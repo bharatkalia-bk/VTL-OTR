@@ -27,6 +27,8 @@ x-api-env: &api-env
   DEV_EXPOSE_SECRETS: "true"
   # Demo banner and /demo-inbox (OTPs on screen). Local use only.
   DEMO_MODE: "true"
+  # Every OTP (candidates and staff) is 123456 on this local demo stack.
+  DEMO_FIXED_OTP: "123456"
   AI_PROVIDER: ${AI_PROVIDER:-mock}
   ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
   SWAGGER_ENABLED: "true"

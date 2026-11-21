@@ -32,8 +32,8 @@ The installer installs Docker if needed, then asks for:
 1. the candidate and admin domains,
 2. an email for certificate notices,
 3. the **mode**:
-   - **demo**: loads the test data (3 exams, 50 candidates, admin accounts). SMS/email are simulated, and OTPs for new registrations appear at `https://<candidate-domain>/demo-inbox`. Every page shows a "Demo server" banner. Use it for reviews and UAT, never with real candidate data.
-   - **production**: starts empty except for master data, creates the first Super Admin (it prints a temporary password; change it in *Settings & account* after setting up 2FA), and asks for the SMS gateway URL and SMTP details.
+   - **demo**: loads the test data (3 exams, 50 candidates, admin accounts). SMS/email are simulated, and OTPs for new registrations appear at `https://<candidate-domain>/demo-inbox`. Every page shows a "Demo server" banner. Every OTP (candidates and staff) is `123456`. Use it for reviews and UAT, never with real candidate data.
+   - **production**: starts empty except for master data, creates the first Super Admin (it prints a temporary password; change it in *Settings & account*; sign-in codes go to the admin's email, so configure SMTP), and asks for the SMS gateway URL and SMTP details.
 
 It generates all secrets and encryption keys into `deploy/.env` (file mode 600). **Back up `deploy/.env` securely.** It contains the keys that decrypt personal data; losing it means losing that data.
 

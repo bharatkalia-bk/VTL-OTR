@@ -125,7 +125,7 @@ test('register → OTP → profile → live photo → submit → apply → pay �
   await page.getByTestId('download-receipt').click();
   expect((await receipt).suggestedFilename()).toMatch(/^Receipt-VTLP/);
 
-  // 7. Admin: allocate roll numbers & centres, generate, release (step-up TOTP)
+  // 7. Admin: allocate roll numbers & centres, generate, release (step-up code)
   const ctx = await pwRequest.newContext({ baseURL });
   const admin = await adminApi(ctx);
   const exams = await (await admin.get('/admin/exams')).json();

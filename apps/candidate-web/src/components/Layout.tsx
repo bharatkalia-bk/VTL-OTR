@@ -25,7 +25,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
-  const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ demoMode?: boolean }>('/public/config'), staleTime: Infinity });
+  const cfg = useQuery({ queryKey: ['public-config'], queryFn: () => api.get<{ demoMode?: boolean; demoFixedOtp?: string | null }>('/public/config'), staleTime: Infinity });
   const links = user
     ? [{ to: '/dashboard', label: t('nav.dashboard') }, { to: '/profile', label: t('nav.profile') }, { to: '/exams', label: t('nav.exams') }, { to: '/applications', label: t('nav.applications') }, { to: '/results', label: t('nav.results') }, { to: '/helpdesk', label: t('nav.helpdesk') }]
     : [{ to: '/', label: t('nav.home') }, { to: '/helpline', label: t('nav.helpline') }, { to: '/helpdesk', label: t('nav.helpdesk') }];
@@ -37,7 +37,7 @@ export function Layout({ children }: { children: ReactNode }) {
       {cfg.data?.demoMode && (
         <div className="bg-warning-50 text-warning-700" role="note" data-testid="demo-banner">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-1.5 text-xs font-medium">
-            <span>{t('demo.banner')}</span>
+            <span>{t('demo.banner')}{cfg.data.demoFixedOtp && <strong className="ml-1">{t('demo.fixedOtp', { code: cfg.data.demoFixedOtp })}</strong>}</span>
             <Link to="/demo-inbox" className="underline">{t('demo.inboxLink')}</Link>
           </div>
         </div>

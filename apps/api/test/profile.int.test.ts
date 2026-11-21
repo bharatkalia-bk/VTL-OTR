@@ -102,7 +102,7 @@ describe('profile wizard, OTR submission and locks', () => {
     expect(audit.length).toBeGreaterThan(0);
   }, 60000);
 
-  it('correction request flow: candidate requests, verifier approves with step-up TOTP, value changes', async () => {
+  it('correction request flow: candidate requests, verifier approves with an emailed step-up code, value changes', async () => {
     const { c } = await registerCandidate(app);
     await completeProfile(c);
     await c.post('/api/v1/me/submit');
@@ -113,8 +113,7 @@ describe('profile wizard, OTR submission and locks', () => {
     const v = await adminLogin(app, 'verifier@t.in');
     const noStep = await v.post(`/api/v1/admin/corrections/${cr.body.id}/approve`, {});
     expect(noStep.body.code).toBe('STEP_UP_REQUIRED');
-    const { authenticator } = await import('otplib');
-    const ok = await v.agent.post(`/api/v1/admin/corrections/${cr.body.id}/approve`).set('X-CSRF-Token', v.csrf).set('X-TOTP-Code', authenticator.generate('KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD')).send({});
+    const ok = await v.agent.post(`/api/v1/admin/corrections/${cr.body.id}/approve`).set('X-CSRF-Token', v.csrf).set('X-OTP-Code', await devOtp(v, 'verifier@t.in')).send({});
     expect(ok.body.status).toBe('APPROVED');
     const me = await c.get('/api/v1/me/profile');
     expect(me.body.personal.fatherName).toBe('CORRECTED FATHER');

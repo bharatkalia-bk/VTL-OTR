@@ -2,19 +2,18 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaClient } from '@prisma/client';
 import { DEFAULT_FEE_RULES } from '@vtl/shared';
 import Redis from 'ioredis';
-import { authenticator } from 'otplib';
 import sharp from 'sharp';
 import request from 'supertest';
 import { createApp } from '../src/main';
-import { FieldCrypto } from '../src/security/field-crypto';
 import { hashPassword } from '../src/security/password';
 
-export const TOTP_SECRET = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD';
 export const ADMIN_PW = 'Admin@12345';
 
 export class Client {
   agent: ReturnType<typeof request.agent>;
   csrf = '';
+  /** Staff email, set by adminLogin; used to read step-up codes in tests. */
+  email = '';
   constructor(app: NestExpressApplication) {
     this.agent = request.agent(app.getHttpServer());
   }
@@ -48,14 +47,13 @@ export async function resetDb(prisma: PrismaClient, redis: Redis) {
   await redis.flushdb();
   await prisma.state.create({ data: { code: 'UP', nameEn: 'Uttar Pradesh', nameHi: 'उत्तर प्रदेश', districts: { create: [{ name: 'Lucknow' }] } } });
   await prisma.state.create({ data: { code: 'DL', nameEn: 'Delhi', nameHi: 'दिल्ली', districts: { create: [{ name: 'New Delhi' }] } } });
-  const crypto = new FieldCrypto(process.env.PII_ENC_KEY!, process.env.PII_INDEX_KEY!);
   const pw = await hashPassword(ADMIN_PW);
   for (const [email, roles] of [['super@t.in', ['SUPER_ADMIN']], ['exam@t.in', ['EXAM_ADMIN']], ['verifier@t.in', ['VERIFIER']], ['helpdesk@t.in', ['HELPDESK_AGENT']], ['auditor@t.in', ['AUDITOR']]] as const) {
-    await prisma.adminUser.create({ data: { name: email, email, roles: [...roles], passwordHash: pw, totpSecretEnc: crypto.encrypt(TOTP_SECRET), totpEnrolledAt: new Date() } });
+    await prisma.adminUser.create({ data: { name: email, email, roles: [...roles], passwordHash: pw } });
   }
   await prisma.adminUser.create({ data: { name: 'new', email: 'new@t.in', roles: ['VERIFIER'], passwordHash: pw } });
   for (const [email, roles, name] of [['exam2@t.in', ['EXAM_ADMIN'], 'Second Exam Admin'], ['centre@t.in', ['CENTRE_SUPERINTENDENT'], 'Centre Supdt'], ['observer@t.in', ['OBSERVER'], 'Observer Verma'], ['agency@t.in', ['AGENCY'], 'Agency Ops'], ['panel@t.in', ['INTERVIEW_PANEL'], 'Panel Member']] as const) {
-    await prisma.adminUser.create({ data: { name, email, roles: [...roles], passwordHash: pw, totpSecretEnc: crypto.encrypt(TOTP_SECRET), totpEnrolledAt: new Date() } });
+    await prisma.adminUser.create({ data: { name, email, roles: [...roles], passwordHash: pw } });
   }
 }
 
@@ -109,8 +107,9 @@ export async function adminLogin(app: NestExpressApplication, email: string) {
   const c = await new Client(app).init();
   const r = await c.post('/api/v1/admin/auth/login', { email, password: ADMIN_PW });
   if (r.status !== 200) throw new Error(`admin login ${r.status}`);
-  const v = await c.post('/api/v1/admin/auth/totp/verify', { code: authenticator.generate(TOTP_SECRET) });
-  if (v.status !== 200) throw new Error(`totp ${v.status} ${JSON.stringify(v.body)}`);
+  const v = await c.post('/api/v1/admin/auth/otp/verify', { challengeId: r.body.challengeId, code: await devOtp(c, email) });
+  if (v.status !== 200) throw new Error(`staff otp ${v.status} ${JSON.stringify(v.body)}`);
+  c.email = email;
   return c;
 }
 
@@ -165,4 +164,11 @@ export async function uploadPhoto(c: Client, photo?: Buffer) {
 }
 export async function uploadSignature(c: Client) {
   return c.upload('/api/v1/me/signature', 'file', await jpeg(140, 60, 10 * 1024, 20 * 1024), 'sig.jpg', { method: 'DRAWN' });
+}
+
+/** Calls a step-up protected endpoint: the first attempt emails a code, the retry sends it in X-OTP-Code. */
+export async function stepUp(c: Client, method: 'post' | 'put', url: string, body: object = {}) {
+  const first = await c.agent[method](url).set('X-CSRF-Token', c.csrf).send(body);
+  if (first.body?.code !== 'STEP_UP_REQUIRED') return first;
+  return c.agent[method](url).set('X-CSRF-Token', c.csrf).set('X-OTP-Code', await devOtp(c, c.email)).send(body);
 }

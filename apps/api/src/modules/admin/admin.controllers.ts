@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ADMIN_ROLES, adminLoginSchema, decisionSchema, optionalDecisionSchema, paginationSchema, passwordSchema, totpCodeSchema } from '@vtl/shared';
+import { ADMIN_ROLES, adminLoginSchema, decisionSchema, optionalDecisionSchema, paginationSchema, passwordSchema, staffOtpSchema } from '@vtl/shared';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { AdminGuard, AllowPartialAdmin, CurrentUser, Roles, StepUp } from '../../common/auth';
@@ -42,20 +42,22 @@ export class AdminAuthController {
     return this.auth.login(x.email, x.password, req, res);
   }
 
-  @Post('totp/enrol')
+  /** Current sign-in code challenge (sends a code only if none is pending). `fresh: true` sends a new code. */
+  @Post('otp/challenge')
   @HttpCode(200)
   @UseGuards(AdminGuard)
   @AllowPartialAdmin()
-  enrol(@CurrentUser() u: AccessClaims) {
-    return this.auth.enrolStart(u);
+  challenge(@CurrentUser() u: AccessClaims, @Body() b: unknown) {
+    return this.auth.challenge(u, parseOrThrow(z.object({ fresh: z.boolean().default(false) }), b ?? {}).fresh);
   }
 
-  @Post('totp/verify')
+  @Post('otp/verify')
   @HttpCode(200)
   @UseGuards(AdminGuard)
   @AllowPartialAdmin()
   verify(@CurrentUser() u: AccessClaims, @Body() b: unknown, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return this.auth.verify(u, parseOrThrow(totpCodeSchema, b).code, req, res);
+    const x = parseOrThrow(staffOtpSchema, b);
+    return this.auth.verify(u, x.challengeId, x.code, req, res);
   }
 
   @Post('refresh')
@@ -132,17 +134,6 @@ export class AdminUsersController {
     await this.prisma.adminUser.update({ where: { id }, data: x });
     if (x.isActive === false || x.roles || x.scope) await this.tokens.revokeAllFor('ADMIN', id);
     await this.audit.log({ action: 'ADMIN_USER_UPDATED', entity: 'AdminUser', entityId: id, actorType: 'ADMIN', actorId: u.sub, before: { roles: before.roles, isActive: before.isActive }, after: x });
-    return { ok: true };
-  }
-
-  @Post(':id/reset-totp')
-  @HttpCode(200)
-  @Roles('SUPER_ADMIN')
-  @StepUp()
-  async resetTotp(@CurrentUser() u: AccessClaims, @Param('id', ParseUUIDPipe) id: string) {
-    await this.prisma.adminUser.update({ where: { id }, data: { totpSecretEnc: null, totpEnrolledAt: null, recoveryCodes: [] } });
-    await this.tokens.revokeAllFor('ADMIN', id);
-    await this.audit.log({ action: 'ADMIN_TOTP_RESET', entity: 'AdminUser', entityId: id, actorType: 'ADMIN', actorId: u.sub });
     return { ok: true };
   }
 }

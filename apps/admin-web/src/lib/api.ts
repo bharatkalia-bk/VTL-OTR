@@ -6,7 +6,7 @@ const csrf = () => decodeURIComponent(document.cookie.match(/(?:^|;\s*)vtl_csrf=
 let csrfInit: Promise<unknown> | null = null;
 const ensureCsrf = () => (csrf() ? Promise.resolve() : (csrfInit ??= fetch('/api/v1/auth/csrf', { credentials: 'same-origin' })));
 
-/** Registered by <StepUpProvider>: asks the admin for a fresh TOTP code. */
+/** Registered by <StepUpProvider>: asks the staff member for the one-time code just emailed to them. */
 let stepUpPrompt: (() => Promise<string | null>) | null = null;
 export const setStepUpPrompt = (fn: typeof stepUpPrompt) => { stepUpPrompt = fn; };
 
@@ -24,9 +24,9 @@ async function request<T>(path: string, method = 'GET', body?: unknown, extra: R
     if (await refresh()) return request<T>(path, method, body, extra, true);
   }
   if (!res.ok) {
-    if (data.code === 'STEP_UP_REQUIRED' && stepUpPrompt && !extra['X-TOTP-Code']) {
+    if (data.code === 'STEP_UP_REQUIRED' && stepUpPrompt && !extra['X-OTP-Code']) {
       const code = await stepUpPrompt();
-      if (code) return request<T>(path, method, body, { ...extra, 'X-TOTP-Code': code }, retried);
+      if (code) return request<T>(path, method, body, { ...extra, 'X-OTP-Code': code }, retried);
     }
     throw new ApiError(res.status, data.code ?? 'ERROR', data.message ?? res.statusText, data.issues ?? []);
   }
