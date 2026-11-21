@@ -13,9 +13,10 @@ export default defineConfig({
   server: {
     port: 5174,
     host: true,
+    allowedHosts: ['localhost', '.app.github.dev'],
     proxy: { '/api': { target: process.env.API_URL ?? 'http://localhost:4000', changeOrigin: false } },
   },
-  preview: { port: 5174, proxy: { '/api': { target: process.env.API_URL ?? 'http://localhost:4000' } } },
+  preview: { host: true, allowedHosts: ['localhost', '.app.github.dev'], port: 5174, proxy: { '/api': { target: process.env.API_URL ?? 'http://localhost:4000' } } },
   build: {
     target: 'es2020',
     sourcemap: true,

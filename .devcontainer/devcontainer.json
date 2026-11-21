@@ -1,0 +1,20 @@
+{
+  "name": "VTL OTR (full stack demo)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "shutdownAction": "stopCompose",
+  "hostRequirements": { "cpus": 4, "memory": "8gb" },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "forwardPorts": [5173, 5174],
+  "portsAttributes": {
+    "5173": { "label": "Candidate portal", "onAutoForward": "openBrowser" },
+    "5174": { "label": "Admin console", "onAutoForward": "notify" },
+    "4000": { "label": "API (internal)", "onAutoForward": "silent" }
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["docs/CODESPACES.md"] },
+    "vscode": { "extensions": ["Prisma.prisma", "dbaeumer.vscode-eslint", "bradlc.vscode-tailwindcss"] }
+  }
+}
